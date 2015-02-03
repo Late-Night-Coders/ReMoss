@@ -88,9 +88,20 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
                     long diff = 0;
                     if(imageAvant != null) {
                         for (int x = 0; x < myPixels.length; x++) {
-                            if (myPixels[x] != imageAvant[x]) {
+                            if(((myPixels[x] & 0x00ff0000) >> 16) <= ((imageAvant[x] & 0x00ff0000) >> 16) -25 || ((myPixels[x] & 0x00ff0000) >> 16) >= ((imageAvant[x] & 0x00ff0000) >> 16) + 25)
+                            {
                                 diff++;
                             }
+                            if(((myPixels[x] & 0x0000ff00) >> 8) <= ((imageAvant[x] & 0x0000ff00) >> 8) -25 || ((myPixels[x] & 0x0000ff00) >> 8) >= ((imageAvant[x] & 0x0000ff00) >> 8) + 25)
+                            {
+                                diff++;
+                            }
+                            if((myPixels[x] & 0x0000ff) <= (imageAvant[x] & 0x0000ff) -25 || (myPixels[x] & 0x0000ff) >= (imageAvant[x] & 0x0000ff00) + 25)
+                            {
+                                diff++;
+                            }
+                            //Log.d("CameraTest", Integer.toString((myPixels[x] & 0x00ff0000) >> 16));
+
                         }
                     }
 
@@ -139,7 +150,6 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
 
                 if (r < 0) {
                     r = 0;
-                    //Log.d("CameraTest", "R:" + r);
                 }
                 else if (r > 262143)
                     r = 262143;
@@ -151,7 +161,6 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
                     b = 0;
                 else if (b > 262143)
                     b = 262143;
-
                 rgb[yp] = 0xff000000 | ((r << 6) & 0xff0000) | ((g >> 2) & 0xff00) | ((b >> 10) & 0xff);
             }
         }
