@@ -92,17 +92,22 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
                             {
                                 diff++;
                             }
-                            if(((myPixels[x] & 0x0000ff00) >> 8) <= ((imageAvant[x] & 0x0000ff00) >> 8) -25 || ((myPixels[x] & 0x0000ff00) >> 8) >= ((imageAvant[x] & 0x0000ff00) >> 8) + 25)
-                            {
-                                diff++;
+                            else {
+                                if (((myPixels[x] & 0x0000ff00) >> 8) <= ((imageAvant[x] & 0x0000ff00) >> 8) - 25 || ((myPixels[x] & 0x0000ff00) >> 8) >= ((imageAvant[x] & 0x0000ff00) >> 8) + 25) {
+                                }
+                                else
+                                {
+                                    if((myPixels[x] & 0x0000ff) <= (imageAvant[x] & 0x0000ff) -25 || (myPixels[x] & 0x0000ff) >= (imageAvant[x] & 0x0000ff00) + 25)
+                                    {
+                                        diff++;
+                                    }
+                                }
                             }
-                            if((myPixels[x] & 0x0000ff) <= (imageAvant[x] & 0x0000ff) -25 || (myPixels[x] & 0x0000ff) >= (imageAvant[x] & 0x0000ff00) + 25)
-                            {
-                                diff++;
-                            }
+
                             //Log.d("CameraTest", Integer.toString((myPixels[x] & 0x00ff0000) >> 16));
 
                         }
+                        Log.d("CameraTest", "R:" + Integer.toString((myPixels[45] & 0x00ff0000) >> 16) + " G:" + Integer.toString((myPixels[45] & 0x0000ff00) >> 8) + " B:" + Integer.toString(myPixels[45] & 0x0000ff));
                     }
 
                     if(diff > 2000000){
