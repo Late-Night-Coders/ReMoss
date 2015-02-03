@@ -88,18 +88,27 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
                     long diff = 0;
                     if(imageAvant != null) {
                         for (int x = 0; x < myPixels.length; x++) {
-                            if(((myPixels[x] & 0x00ff0000) >> 16) <= ((imageAvant[x] & 0x00ff0000) >> 16) -25 || ((myPixels[x] & 0x00ff0000) >> 16) >= ((imageAvant[x] & 0x00ff0000) >> 16) + 25)
+                            // Décalage de bits pour trouver les valeurs RGB actuelles
+                            int rActual = (myPixels[x] & 0x00ff0000) >> 16;
+                            int gActual = (myPixels[x] & 0x0000ff00) >> 8;
+                            int bActual = myPixels[x] & 0x0000ff;
+
+                            // Décalage de bits pour trouver les valeurs RGB de l'ancienne image
+                            int rOld = (imageAvant[x] & 0x00ff0000) >> 16;
+                            int gOld = (imageAvant[x] & 0x0000ff00) >> 8;
+                            int bOld = imageAvant[x] & 0x0000ff;
+
+                            if(rActual <= rOld -25 || rActual >= rOld + 25)
                             {
                                 diff++;
                             }
                             else {
-                                if (((myPixels[x] & 0x0000ff00) >> 8) <= ((imageAvant[x] & 0x0000ff00) >> 8) - 25 || ((myPixels[x] & 0x0000ff00) >> 8) >= ((imageAvant[x] & 0x0000ff00) >> 8) + 25) {
+                                if (gActual <= gOld -25 || gActual >= gOld + 25) {
                                     diff++;
                                 }
                                 else
                                 {
-                                    if((myPixels[x] & 0x0000ff) <= (imageAvant[x] & 0x0000ff) -25 || (myPixels[x] & 0x0000ff) >= (imageAvant[x] & 0x0000ff00) + 25)
-                                    {
+                                    if (bActual <= bOld -25 || bActual >= bOld + 25) {
                                         diff++;
                                     }
                                 }
