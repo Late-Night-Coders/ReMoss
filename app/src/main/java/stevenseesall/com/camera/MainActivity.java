@@ -20,7 +20,11 @@ public class MainActivity extends ActionBarActivity {
 
         // Create an instance of Camera
         final Camera camera = getCameraInstance();
-        checkCameraHardware(getApplicationContext());
+        boolean hasCamera = checkCameraHardware(getApplicationContext());
+
+        if (hasCamera == false) {
+            throw new RuntimeException("No camera found on device");
+        }
 
         // Create our Preview view and set it as the content of our activity.
         final CameraPreview preview = new CameraPreview(this, camera);
