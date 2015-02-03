@@ -94,6 +94,7 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
                             }
                             else {
                                 if (((myPixels[x] & 0x0000ff00) >> 8) <= ((imageAvant[x] & 0x0000ff00) >> 8) - 25 || ((myPixels[x] & 0x0000ff00) >> 8) >= ((imageAvant[x] & 0x0000ff00) >> 8) + 25) {
+                                    diff++;
                                 }
                                 else
                                 {
