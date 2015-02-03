@@ -94,12 +94,13 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
                         }
                     }
 
-                    if(diff > 1000000){
+                    if(diff > 2000000){
                         Log.d("CameraTest", "MOUVEMENT");
                         Log.d("CameraTest", Long.toString(diff));
                     }
                     else{
                         Log.d("CameraTest", "ARRET");
+                        Log.d("CameraTest", Long.toString(diff));
                     }
                     imageAvant = myPixels;
                     camera.addCallbackBuffer(data);
@@ -136,8 +137,10 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
                 int g = (y1192 - 833 * v - 400 * u);
                 int b = (y1192 + 2066 * u);
 
-                if (r < 0)
+                if (r < 0) {
                     r = 0;
+                    //Log.d("CameraTest", "R:" + r);
+                }
                 else if (r > 262143)
                     r = 262143;
                 if (g < 0)
