@@ -5,6 +5,9 @@ import android.hardware.Camera;
 import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+import android.widget.NumberPicker;
+import android.widget.SeekBar;
+import android.widget.Toast;
 
 import java.io.IOException;
 import java.util.List;
@@ -15,13 +18,31 @@ import java.util.List;
 
 public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback {
     int Sensibility = 0;
+    int SensibilityValue = 3000;
     private SurfaceHolder mHolder;
     private Camera mCamera;
 
-    public CameraPreview(Context context, Camera camera) {
+    public CameraPreview(final Context context, Camera camera, SeekBar s) {
         super(context);
         mCamera = camera;
 
+        s.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            int progressChanged = 0;
+
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                progressChanged = progress;
+                Sensibility = progress;
+                Log.d("CameraTest", "progress = " + progress);
+            }
+
+            public void onStartTrackingTouch(SeekBar seekBar) {
+                // TODO Auto-generated method stub
+            }
+
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                // TODO Auto-generated method stub
+            }
+        });
         // Install a SurfaceHolder.Callback so we get notified when the
         // underlying surface is created and destroyed.
         mHolder = getHolder();
@@ -116,8 +137,32 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
                         }
                         Log.d("CameraTest", "R:" + Integer.toString((myPixels[45] & 0x00ff0000) >> 16) + " G:" + Integer.toString((myPixels[45] & 0x0000ff00) >> 8) + " B:" + Integer.toString(myPixels[45] & 0x0000ff));
                     }
-
-                    int SensibilityValue = 3000;
+                    //Log.d("CameraTest", Integer.toString(Sensibility));
+                    switch (Sensibility)
+                    {
+                        case 0:
+                            SensibilityValue = 10000;
+                            break;
+                        case 1:
+                            SensibilityValue = 20000;
+                            break;
+                        case 2:
+                            SensibilityValue = 40000;
+                            break;
+                        case 3:
+                            SensibilityValue = 60000;
+                            break;
+                        case 4:
+                            SensibilityValue = 80000;
+                            break;
+                        case 5:
+                            SensibilityValue = 100000;
+                            break;
+                        case 6:
+                            SensibilityValue = 150000;
+                            break;
+                    }
+                    Log.d("CameraTest", Integer.toString(SensibilityValue));
                     if(diff > SensibilityValue){
                         Log.d("CameraTest", "MOUVEMENT");
                         Log.d("CameraTest", Long.toString(diff));

@@ -10,6 +10,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.SeekBar;
 
 public class MainActivity extends ActionBarActivity {
 
@@ -27,7 +28,7 @@ public class MainActivity extends ActionBarActivity {
         }
 
         // Create our Preview view and set it as the content of our activity.
-        final CameraPreview preview = new CameraPreview(this, camera);
+        final CameraPreview preview = new CameraPreview(this, camera, (SeekBar) findViewById(R.id.seekBar));
         final FrameLayout previewFrame = (FrameLayout) findViewById(R.id.camera_preview);
         previewFrame.addView(preview);
 
