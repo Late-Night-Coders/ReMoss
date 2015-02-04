@@ -14,7 +14,7 @@ import java.util.List;
  */
 
 public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback {
-
+    int Sensibility = 0;
     private SurfaceHolder mHolder;
     private Camera mCamera;
 
@@ -113,14 +113,12 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
                                     }
                                 }
                             }
-
-                            //Log.d("CameraTest", Integer.toString((myPixels[x] & 0x00ff0000) >> 16));
-
                         }
                         Log.d("CameraTest", "R:" + Integer.toString((myPixels[45] & 0x00ff0000) >> 16) + " G:" + Integer.toString((myPixels[45] & 0x0000ff00) >> 8) + " B:" + Integer.toString(myPixels[45] & 0x0000ff));
                     }
 
-                    if(diff > 2000000){
+                    int SensibilityValue = 3000;
+                    if(diff > SensibilityValue){
                         Log.d("CameraTest", "MOUVEMENT");
                         Log.d("CameraTest", Long.toString(diff));
                     }
