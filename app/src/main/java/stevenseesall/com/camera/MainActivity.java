@@ -20,11 +20,27 @@ public class MainActivity extends ActionBarActivity {
         setContentView(R.layout.activity_main);
 
         // Create an instance of Camera
-        TaskCamera TC = new TaskCamera((SeekBar) findViewById(R.id.seekBar), (FrameLayout) findViewById(R.id.camera_preview), getApplicationContext());
-        TC.execute();
+        final Camera camera = getCameraInstance();
+        boolean hasCamera = checkCameraHardware(getApplicationContext());
+
+        if (hasCamera == false) {
+            throw new RuntimeException("No camera found on device");
+        }
+
+        // Create our Preview view and set it as the content of our activity.
+        final CameraPreview preview = new CameraPreview(this, camera, (SeekBar) findViewById(R.id.seekBar));
+        final FrameLayout previewFrame = (FrameLayout) findViewById(R.id.camera_preview);
+        previewFrame.addView(preview);
 
         final Button captureButton = (Button) findViewById(R.id.button_capture);
         final PictureCallback pictureCallback = new PictureCallback();
+
+        captureButton.setOnClickListener(new View.OnClickListener() {
+
+            public void onClick(View v) {
+                camera.takePicture(null, null, pictureCallback);
+            }
+        });
     }
 
     @Override
@@ -49,9 +65,26 @@ public class MainActivity extends ActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    private boolean checkCameraHardware(Context context) {
+        if (context.getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA)){
+            return true;
+        } else {
+            return false;
+        }
+    }
 
+    public static Camera getCameraInstance(){
+        Camera camera = null;
 
+        try {
+            camera = Camera.open(); // attempt to get a Camera instance
+        }
+        catch (Exception e){
+            throw new RuntimeException("No camera found on device");
+        }
 
+        return camera; // returns null if camera is unavailable
+    }
 }
 
 
