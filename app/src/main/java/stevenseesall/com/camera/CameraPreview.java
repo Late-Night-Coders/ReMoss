@@ -21,6 +21,7 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
     int SensibilityValue = 3000;
     private SurfaceHolder mHolder;
     private Camera mCamera;
+    boolean Libre = true;
 
     public CameraPreview(final Context context, Camera camera, SeekBar s) {
         super(context);
@@ -32,7 +33,7 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 progressChanged = progress;
                 Sensibility = progress;
-                Log.d("CameraTest", "progress = " + progress);
+                Toast.makeText(context, "Sensibilité: " + progress, Toast.LENGTH_SHORT).show();
             }
 
             public void onStartTrackingTouch(SeekBar seekBar) {
@@ -97,81 +98,90 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
             mCamera.setPreviewCallback(new Camera.PreviewCallback() {
                 int[] imageAvant;
 
-                public void onPreviewFrame(byte[] data, Camera camera) {
-                    int frameHeight = camera.getParameters().getPreviewSize().height;
-                    int frameWidth = camera.getParameters().getPreviewSize().width;
+                public void onPreviewFrame(final byte[] data, Camera camera) {
+                    final int frameHeight = camera.getParameters().getPreviewSize().height;
+                    final int frameWidth = camera.getParameters().getPreviewSize().width;
                     // number of pixels//transforms NV21 pixel data into RGB pixels
-                    int rgb[] = new int[frameWidth * frameHeight];
-                    // convertion
-                    int[] myPixels = decodeYUV420SP(rgb, data, frameWidth, frameHeight);
-
-                    //Log.d("CameraTest",myPixels.toString());
-                    long diff = 0;
-                    if(imageAvant != null) {
-                        for (int x = 0; x < myPixels.length; x++) {
-                            // Décalage de bits pour trouver les valeurs RGB actuelles
-                            int rActual = (myPixels[x] & 0x00ff0000) >> 16;
-                            int gActual = (myPixels[x] & 0x0000ff00) >> 8;
-                            int bActual = myPixels[x] & 0x0000ff;
-
-                            // Décalage de bits pour trouver les valeurs RGB de l'ancienne image
-                            int rOld = (imageAvant[x] & 0x00ff0000) >> 16;
-                            int gOld = (imageAvant[x] & 0x0000ff00) >> 8;
-                            int bOld = imageAvant[x] & 0x0000ff;
-
-                            if(rActual <= rOld -25 || rActual >= rOld + 25)
-                            {
-                                diff++;
-                            }
-                            else {
-                                if (gActual <= gOld -25 || gActual >= gOld + 25) {
-                                    diff++;
-                                }
-                                else
-                                {
-                                    if (bActual <= bOld -25 || bActual >= bOld + 25) {
-                                        diff++;
-                                    }
-                                }
-                            }
-                        }
-                        Log.d("CameraTest", "R:" + Integer.toString((myPixels[45] & 0x00ff0000) >> 16) + " G:" + Integer.toString((myPixels[45] & 0x0000ff00) >> 8) + " B:" + Integer.toString(myPixels[45] & 0x0000ff));
-                    }
-                    //Log.d("CameraTest", Integer.toString(Sensibility));
-                    switch (Sensibility)
+                    if(Libre)
                     {
-                        case 0:
-                            SensibilityValue = 10000;
-                            break;
-                        case 1:
-                            SensibilityValue = 20000;
-                            break;
-                        case 2:
-                            SensibilityValue = 40000;
-                            break;
-                        case 3:
-                            SensibilityValue = 60000;
-                            break;
-                        case 4:
-                            SensibilityValue = 80000;
-                            break;
-                        case 5:
-                            SensibilityValue = 100000;
-                            break;
-                        case 6:
-                            SensibilityValue = 150000;
-                            break;
+                        new Thread(new Runnable() {
+                            public void run() {
+                                Libre = false;
+                                int rgb[] = new int[frameWidth * frameHeight];
+                                // convertion
+                                int[] myPixels = decodeYUV420SP(rgb, data, frameWidth, frameHeight);
+
+                                //Log.d("CameraTest",myPixels.toString());
+                                long diff = 0;
+                                if(imageAvant != null) {
+                                    for (int x = 0; x < myPixels.length; x++) {
+                                        // Décalage de bits pour trouver les valeurs RGB actuelles
+                                        int rActual = (myPixels[x] & 0x00ff0000) >> 16;
+                                        int gActual = (myPixels[x] & 0x0000ff00) >> 8;
+                                        int bActual = myPixels[x] & 0x0000ff;
+
+                                        // Décalage de bits pour trouver les valeurs RGB de l'ancienne image
+                                        int rOld = (imageAvant[x] & 0x00ff0000) >> 16;
+                                        int gOld = (imageAvant[x] & 0x0000ff00) >> 8;
+                                        int bOld = imageAvant[x] & 0x0000ff;
+
+                                        if(rActual <= rOld -25 || rActual >= rOld + 25)
+                                        {
+                                            diff++;
+                                        }
+                                        else {
+                                            if (gActual <= gOld -25 || gActual >= gOld + 25) {
+                                                diff++;
+                                            }
+                                            else
+                                            {
+                                                if (bActual <= bOld -25 || bActual >= bOld + 25) {
+                                                    diff++;
+                                                }
+                                            }
+                                        }
+                                    }
+                                    // Log.d("CameraTest", "R:" + Integer.toString((myPixels[45] & 0x00ff0000) >> 16) + " G:" + Integer.toString((myPixels[45] & 0x0000ff00) >> 8) + " B:" + Integer.toString(myPixels[45] & 0x0000ff));
+                                }
+                                //Log.d("CameraTest", Integer.toString(Sensibility));
+                                switch (Sensibility)
+                                {
+                                    case 0:
+                                        SensibilityValue = 10000;
+                                        break;
+                                    case 1:
+                                        SensibilityValue = 20000;
+                                        break;
+                                    case 2:
+                                        SensibilityValue = 40000;
+                                        break;
+                                    case 3:
+                                        SensibilityValue = 60000;
+                                        break;
+                                    case 4:
+                                        SensibilityValue = 80000;
+                                        break;
+                                    case 5:
+                                        SensibilityValue = 100000;
+                                        break;
+                                    case 6:
+                                        SensibilityValue = 120000;
+                                        break;
+                                }
+                                //Log.d("CameraTest", Integer.toString(SensibilityValue));
+                                if(diff > SensibilityValue){
+                                    Log.d("CameraTest", "MOUVEMENT");
+                                    Log.d("CameraTest", Long.toString(diff));
+                                }
+                                else{
+                                    Log.d("CameraTest", "ARRET");
+                                    Log.d("CameraTest", Long.toString(diff));
+                                }
+                                imageAvant = myPixels;
+                                Libre = true;
+                            }
+                        }).start();
                     }
-                    Log.d("CameraTest", Integer.toString(SensibilityValue));
-                    if(diff > SensibilityValue){
-                        Log.d("CameraTest", "MOUVEMENT");
-                        Log.d("CameraTest", Long.toString(diff));
-                    }
-                    else{
-                        Log.d("CameraTest", "ARRET");
-                        Log.d("CameraTest", Long.toString(diff));
-                    }
-                    imageAvant = myPixels;
                     camera.addCallbackBuffer(data);
                     return;
                 }
