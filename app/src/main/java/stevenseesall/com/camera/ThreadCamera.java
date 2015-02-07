@@ -4,6 +4,9 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.hardware.Camera;
+import android.media.Ringtone;
+import android.media.RingtoneManager;
+import android.net.Uri;
 import android.os.Looper;
 import android.util.Log;
 import android.view.SurfaceHolder;
@@ -30,11 +33,12 @@ public class ThreadCamera extends Thread {
     private SurfaceHolder mHolder;
     boolean Libre = true;
     int[] mImageAvant;
-    int mSkippedFrameHorizontal = 2;
-    int mSkippedFrameVertical = 2;
+    int mSkippedFrameHorizontal = 4;
+    int mSkippedFrameVertical = 4;
     TextView mTextView;
     TextView mMouvementTextView;
     Boolean mMouvement = false;
+    Boolean isAlarmRunning = false;
 
 
     public ThreadCamera(Context context, Activity activity, SeekBar seekBar, FrameLayout frameLayout, TextView textView, TextView textViewMouvement) {
@@ -87,8 +91,6 @@ public class ThreadCamera extends Thread {
         return camera; // returns null if camera is unavailable
 
     }
-
-
 
     private class CameraPreview extends SurfaceView implements SurfaceHolder.Callback {
 
@@ -206,7 +208,6 @@ public class ThreadCamera extends Thread {
             int[] myPixels = decodeYUV420SP(rgb, data, frameWidth,
                     frameHeight, skippedFrameHorizontal, skippedFrameHorizontal);
 
-            //Log.d("CameraTest",myPixels.toString());
             long diff = 0;
             if(mImageAvant != null) {
                 for (int x = 0; x < myPixels.length; x++) {
@@ -261,10 +262,10 @@ public class ThreadCamera extends Thread {
                     sensibilityValue = 75000;
                     break;
             }
-            //Log.d("CameraTest", Integer.toString(SensibilityValue));
+
             if(diff > sensibilityValue){
-                Log.d("CameraTest", "MOUVEMENT");
-                Log.d("CameraTest", Long.toString(diff));
+                //Log.d("CameraTest", "MOUVEMENT");
+                //Log.d("CameraTest", Long.toString(diff));
                 if(!mMouvement)
                 {
                     //Évènement mouvement
@@ -274,12 +275,29 @@ public class ThreadCamera extends Thread {
                             mMouvementTextView.setText("Mouvement!");
                         }
                     });
+
+                    if(!isAlarmRunning) {
+                        new Thread(new Runnable() {
+                            public void run() {
+                                isAlarmRunning = true;
+                                Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_RINGTONE);
+                                Ringtone r = RingtoneManager.getRingtone(mContext, notification);
+                                r.play();
+                                while(r.isPlaying()){
+
+                                }
+                                isAlarmRunning = false;
+                            }
+                        }).start();
+                    }
+
+
                 }
                 mMouvement = true;
             }
             else{
-                Log.d("CameraTest", "ARRET");
-                Log.d("CameraTest", Long.toString(diff));
+                //Log.d("CameraTest", "ARRET");
+                //Log.d("CameraTest", Long.toString(diff));
                 if(mMouvement)
                 {
                     //Évènement Arrêt
