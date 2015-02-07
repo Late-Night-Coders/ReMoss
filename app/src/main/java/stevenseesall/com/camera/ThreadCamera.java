@@ -11,6 +11,7 @@ import android.view.SurfaceView;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.SeekBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.IOException;
@@ -29,17 +30,20 @@ public class ThreadCamera extends Thread {
     private SurfaceHolder mHolder;
     boolean Libre = true;
     int[] mImageAvant;
-    int mSkippedFrameHorizontal = 8;
-    int mSkippedFrameVertical = 8;
-    EditText mEditText;
+    int mSkippedFrameHorizontal = 2;
+    int mSkippedFrameVertical = 2;
+    TextView mTextView;
+    TextView mMouvementTextView;
+    Boolean mMouvement = false;
 
 
-    public ThreadCamera(Context context, Activity activity, SeekBar seekBar, FrameLayout frameLayout, EditText editText) {
+    public ThreadCamera(Context context, Activity activity, SeekBar seekBar, FrameLayout frameLayout, TextView textView, TextView textViewMouvement) {
         mContext = context;
         mActivity = activity;
         mSeekBar = seekBar;
         mFrameLayout = frameLayout;
-        mEditText = editText;
+        mTextView = textView;
+        mMouvementTextView = textViewMouvement;
     }
 
     public void run() {
@@ -97,7 +101,7 @@ public class ThreadCamera extends Thread {
                     mActivity.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            mEditText.setText(Integer.toString(mSensibility));
+                            mTextView.setText(Integer.toString(mSensibility));
                         }
                     });
 
@@ -254,17 +258,39 @@ public class ThreadCamera extends Thread {
                     sensibilityValue = 50000;
                     break;
                 case 6:
-                    sensibilityValue = 750000;
+                    sensibilityValue = 75000;
                     break;
             }
             //Log.d("CameraTest", Integer.toString(SensibilityValue));
             if(diff > sensibilityValue){
                 Log.d("CameraTest", "MOUVEMENT");
                 Log.d("CameraTest", Long.toString(diff));
+                if(!mMouvement)
+                {
+                    //Évènement mouvement
+                    mActivity.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            mMouvementTextView.setText("Mouvement!");
+                        }
+                    });
+                }
+                mMouvement = true;
             }
             else{
                 Log.d("CameraTest", "ARRET");
                 Log.d("CameraTest", Long.toString(diff));
+                if(mMouvement)
+                {
+                    //Évènement Arrêt
+                    mActivity.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            mMouvementTextView.setText("Arrêt!");
+                        }
+                    });
+                }
+                mMouvement = false;
             }
             mImageAvant = myPixels;
         }

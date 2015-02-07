@@ -12,6 +12,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.SeekBar;
+import android.widget.TextView;
 
 public class MainActivity extends ActionBarActivity {
 
@@ -20,7 +21,8 @@ public class MainActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        ThreadCamera TC = new ThreadCamera(getApplicationContext(), this,(SeekBar) findViewById(R.id.seekBar),(FrameLayout) findViewById(R.id.camera_preview), (EditText) findViewById(R.id.editText));
+        ThreadCamera TC = new ThreadCamera(getApplicationContext(), this,(SeekBar) findViewById(R.id.seekBar),
+                (FrameLayout) findViewById(R.id.camera_preview), (TextView) findViewById(R.id.textView), (TextView) findViewById(R.id.textView3));
         TC.start();
 
         // Create an instance of Camera
