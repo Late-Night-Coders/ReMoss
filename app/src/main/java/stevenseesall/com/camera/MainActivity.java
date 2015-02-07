@@ -9,6 +9,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.SeekBar;
 
@@ -19,8 +20,11 @@ public class MainActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        ThreadCamera TC = new ThreadCamera(getApplicationContext(), this,(SeekBar) findViewById(R.id.seekBar),(FrameLayout) findViewById(R.id.camera_preview), (EditText) findViewById(R.id.editText));
+        TC.start();
+
         // Create an instance of Camera
-        final Camera camera = getCameraInstance();
+        /*final Camera camera = getCameraInstance();
         boolean hasCamera = checkCameraHardware(getApplicationContext());
 
         if (hasCamera == false) {
@@ -30,17 +34,7 @@ public class MainActivity extends ActionBarActivity {
         // Create our Preview view and set it as the content of our activity.
         final CameraPreview preview = new CameraPreview(this, camera, (SeekBar) findViewById(R.id.seekBar));
         final FrameLayout previewFrame = (FrameLayout) findViewById(R.id.camera_preview);
-        previewFrame.addView(preview);
-
-        final Button captureButton = (Button) findViewById(R.id.button_capture);
-        final PictureCallback pictureCallback = new PictureCallback();
-
-        captureButton.setOnClickListener(new View.OnClickListener() {
-
-            public void onClick(View v) {
-                camera.takePicture(null, null, pictureCallback);
-            }
-        });
+        previewFrame.addView(preview);*/
     }
 
     @Override
@@ -63,27 +57,6 @@ public class MainActivity extends ActionBarActivity {
         }
 
         return super.onOptionsItemSelected(item);
-    }
-
-    private boolean checkCameraHardware(Context context) {
-        if (context.getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA)){
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    public static Camera getCameraInstance(){
-        Camera camera = null;
-
-        try {
-            camera = Camera.open(); // attempt to get a Camera instance
-        }
-        catch (Exception e){
-            throw new RuntimeException("No camera found on device");
-        }
-
-        return camera; // returns null if camera is unavailable
     }
 }
 
