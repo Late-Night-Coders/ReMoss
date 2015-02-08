@@ -15,8 +15,8 @@
         android:layout_toStartOf="@+id/button_capture"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
-        android:layout_above="@+id/textView3"
-        android:layout_below="@+id/button_capture">
+        android:layout_below="@+id/button_capture"
+        android:layout_above="@+id/toggleButton">
 
     </FrameLayout>
 
@@ -28,8 +28,6 @@
         android:text="Arrêt"
         android:id="@+id/textView3"
         android:layout_gravity="center_horizontal|bottom"
-        android:layout_alignRight="@+id/camera_preview"
-        android:layout_alignEnd="@+id/camera_preview"
         android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true" />
@@ -78,5 +76,14 @@
         android:layout_toEndOf="@+id/button_capture"
         android:layout_alignParentTop="true"
         android:layout_above="@+id/relativeLayout" />
+
+    <ToggleButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/toggleButton"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:checked="false"/>
 
 </RelativeLayout>

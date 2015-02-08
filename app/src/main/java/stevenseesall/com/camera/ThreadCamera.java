@@ -11,11 +11,14 @@ import android.os.Looper;
 import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.SeekBar;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.ToggleButton;
 
 import java.io.IOException;
 import java.util.List;
@@ -39,16 +42,36 @@ public class ThreadCamera extends Thread {
     TextView mMouvementTextView;
     Boolean mMouvement = false;
     Boolean isAlarmRunning = false;
+    ToggleButton mToggleButton;
+    Boolean isAlarmOn = false;
 
 
-    public ThreadCamera(Context context, Activity activity, SeekBar seekBar, FrameLayout frameLayout, TextView textView, TextView textViewMouvement) {
+    public ThreadCamera(final Context context, Activity activity, SeekBar seekBar, FrameLayout frameLayout, TextView textView,
+                        TextView textViewMouvement, ToggleButton toggleButton) {
         mContext = context;
         mActivity = activity;
         mSeekBar = seekBar;
         mFrameLayout = frameLayout;
         mTextView = textView;
         mMouvementTextView = textViewMouvement;
+        mToggleButton = toggleButton;
+
+        toggleButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (buttonView.isChecked()) {
+                    isAlarmOn = true;
+                }
+                else {
+                    isAlarmOn = false;
+                }
+            }
+        });
     }
+
+
+
 
     public void run() {
         boolean hasCamera = checkCameraHardware(mContext);
@@ -276,16 +299,17 @@ public class ThreadCamera extends Thread {
                         }
                     });
 
-                    if(!isAlarmRunning) {
+                    if(!isAlarmRunning && isAlarmOn) {
                         new Thread(new Runnable() {
                             public void run() {
                                 isAlarmRunning = true;
                                 Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_RINGTONE);
                                 Ringtone r = RingtoneManager.getRingtone(mContext, notification);
                                 r.play();
-                                while(r.isPlaying()){
+                                while(r.isPlaying() && isAlarmOn){
 
                                 }
+                                r.stop();
                                 isAlarmRunning = false;
                             }
                         }).start();
@@ -351,3 +375,21 @@ public class ThreadCamera extends Thread {
         }
     }
 }
+
+
+/* Code validation alarme
+
+Uri alert = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM);
+
+if(alert == null){
+    // alert is null, using backup
+    alert = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+
+    // I can't see this ever being null (as always have a default notification)
+    // but just incase
+    if(alert == null) {
+        // alert backup is null, using 2nd backup
+        alert = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_RINGTONE);
+    }
+}
+ */
