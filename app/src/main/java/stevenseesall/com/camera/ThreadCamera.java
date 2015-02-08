@@ -36,8 +36,8 @@ public class ThreadCamera extends Thread {
     private SurfaceHolder mHolder;
     boolean Libre = true;
     int[] mImageAvant;
-    int mSkippedFrameHorizontal = 4;
-    int mSkippedFrameVertical = 4;
+    int mSkippedFrameHorizontal = 2;
+    int mSkippedFrameVertical = 2;
     TextView mTextView;
     TextView mMouvementTextView;
     Boolean mMouvement = false;
@@ -244,17 +244,17 @@ public class ThreadCamera extends Thread {
                     int gOld = (mImageAvant[x] & 0x0000ff00) >> 8;
                     int bOld = mImageAvant[x] & 0x0000ff;
 
-                    if(rActual <= rOld -25 || rActual >= rOld + 25)
+                    if(rActual <= rOld -15 || rActual >= rOld + 15)
                     {
                         diff++;
                     }
                     else {
-                        if (gActual <= gOld -25 || gActual >= gOld + 25) {
+                        if (gActual <= gOld -15 || gActual >= gOld + 15) {
                             diff++;
                         }
                         else
                         {
-                            if (bActual <= bOld -25 || bActual >= bOld + 25) {
+                            if (bActual <= bOld -15 || bActual >= bOld + 15) {
                                 diff++;
                             }
                         }
