@@ -170,15 +170,12 @@ public class ThreadCamera extends Thread {
                 return;
             }
 
-            // stop preview before making changes
             try {
                 mCamera.stopPreview();
             } catch (Exception e) {
-                // ignore: tried to stop a non-existent preview
+
             }
 
-            // set preview size and make any resize, rotate or
-            // reformatting changes here
             Camera.Parameters parameters = mCamera.getParameters();
             List<Camera.Size> sizes = parameters.getSupportedPreviewSizes();
             Camera.Size cameraSize = sizes.get(0);
@@ -304,6 +301,12 @@ public class ThreadCamera extends Thread {
                             public void run() {
                                 isAlarmRunning = true;
                                 Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_RINGTONE);
+                                if(notification != null){
+                                    notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM);
+                                    if(notification != null){
+                                        notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+                                    }
+                                }
                                 Ringtone r = RingtoneManager.getRingtone(mContext, notification);
                                 r.play();
                                 while(r.isPlaying() && isAlarmOn){
@@ -393,3 +396,9 @@ if(alert == null){
     }
 }
  */
+
+/*Camera.Parameters parameters = mCamera.getParameters();
+                                mCamera.stopPreview();
+                                parameters.setFlashMode(Camera.Parameters.FLASH_MODE_ON);
+                                mCamera.setParameters(parameters);
+                                mCamera.startPreview();*/

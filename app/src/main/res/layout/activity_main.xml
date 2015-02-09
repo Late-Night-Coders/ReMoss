@@ -16,13 +16,7 @@
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
         android:layout_above="@+id/toggleButton"
-        android:layout_below="@+id/seekBar"
-
-        android:background="@drawable/buttonshape"
-        android:shadowColor="#030303"
-        android:shadowDx="0"
-        android:shadowDy="0"
-        android:shadowRadius="5">
+        android:layout_below="@+id/seekBar">
     </FrameLayout>
 
 

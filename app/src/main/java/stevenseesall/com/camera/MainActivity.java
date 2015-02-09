@@ -27,19 +27,6 @@ public class MainActivity extends ActionBarActivity {
         ThreadCamera TC = new ThreadCamera(getApplicationContext(), this,(SeekBar) findViewById(R.id.seekBar),
                 (FrameLayout) findViewById(R.id.camera_preview), (TextView) findViewById(R.id.textView), (TextView) findViewById(R.id.textView3), (ToggleButton) findViewById(R.id.toggleButton));
         TC.start();
-
-        // Create an instance of Camera
-        /*final Camera camera = getCameraInstance();
-        boolean hasCamera = checkCameraHardware(getApplicationContext());
-
-        if (hasCamera == false) {
-            throw new RuntimeException("No camera found on device");
-        }
-
-        // Create our Preview view and set it as the content of our activity.
-        final CameraPreview preview = new CameraPreview(this, camera, (SeekBar) findViewById(R.id.seekBar));
-        final FrameLayout previewFrame = (FrameLayout) findViewById(R.id.camera_preview);
-        previewFrame.addView(preview);*/
     }
 
     @Override
