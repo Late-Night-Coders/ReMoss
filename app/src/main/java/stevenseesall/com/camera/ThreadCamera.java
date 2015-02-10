@@ -54,7 +54,7 @@ public class ThreadCamera extends Thread {
     Boolean isAlarmOn = false;
     Boolean sendingData = false;
 
-    String ServerIP = "192.168.1.100";
+    String ServerIP = "10.1.250.100";
     public static final int Port = 666;
 
 
@@ -212,6 +212,29 @@ public class ThreadCamera extends Thread {
                                     Libre = false;
                                     CheckMovement(data, frameWidth, frameHeight,mSkippedFrameHorizontal,
                                             mSkippedFrameVertical, mSensibility);
+                                    if(!sendingData) {
+                                        new Thread(new Runnable() {
+                                            public void run() {
+                                                sendingData = true;
+                                                try {
+                                                    Socket s = new Socket(ServerIP, Port);
+                                                    OutputStream out = s.getOutputStream();
+                                                    DataOutputStream dos = new DataOutputStream(out);
+
+                                                    dos.writeInt(data.length);
+                                                    if (data.length > 0) {
+                                                        dos.write(data, 0, data.length);
+                                                    }
+
+                                                    out.close();
+                                                    s.close();
+                                                } catch (IOException e) {
+                                                    Log.d("CameraTest", e.getMessage());
+                                                }
+                                                sendingData = false;
+                                            }
+                                        }).start();
+                                    }
                                     Libre = true;
                                 }
                             }).start();
@@ -239,33 +262,9 @@ public class ThreadCamera extends Thread {
 
             final int[] myPixels = decodeYUV420SP(rgb, data, frameWidth,
                     frameHeight, skippedFrameHorizontal, skippedFrameHorizontal);
-
-
-            if(!sendingData) {
-                new Thread(new Runnable() {
-                    public void run() {
-                        sendingData = true;
-                        try {
-                            Socket s = new Socket(ServerIP, Port);
-                            OutputStream dOut = new DataOutputStream(s.getOutputStream());
-                            PrintWriter output = new PrintWriter(dOut);
-                            output.println(Arrays.toString(myPixels));
-                            output.flush();
-                            Log.d("CameraTest", "****Envoi du hello****");
-                            BufferedReader input = new BufferedReader(new InputStreamReader(s.getInputStream()));
-                            String st = input.readLine();
-                            dOut.close();
-                            s.close();
-                        } catch (IOException e) {
-                            Log.d("CameraTest", e.getMessage());
-                        }
-                        sendingData = false;
-                    }
-                }).start();
-            }
-
-
-
+            Log.d("CameraTest", Integer.toString(frameWidth));
+            Log.d("CameraTest", Integer.toString(frameHeight));
+            Log.d("CameraTest", "wut");
 
             long diff = 0;
             if(mImageAvant != null) {
