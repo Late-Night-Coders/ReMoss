@@ -20,7 +20,15 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
+import java.io.BufferedReader;
+import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.PrintWriter;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -44,10 +52,14 @@ public class ThreadCamera extends Thread {
     Boolean isAlarmRunning = false;
     ToggleButton mToggleButton;
     Boolean isAlarmOn = false;
+    Boolean sendingData = false;
+
+    String ServerIP = "192.168.1.100";
+    public static final int Port = 666;
 
 
     public ThreadCamera(final Context context, Activity activity, SeekBar seekBar, FrameLayout frameLayout, TextView textView,
-                        TextView textViewMouvement, ToggleButton toggleButton) {
+                        TextView textViewMouvement, ToggleButton toggleButton) throws IOException {
         mContext = context;
         mActivity = activity;
         mSeekBar = seekBar;
@@ -220,13 +232,40 @@ public class ThreadCamera extends Thread {
         }
 
         public void CheckMovement(byte[] data, int frameWidth, int frameHeight,
-               int skippedFrameHorizontal, int skippedFrameVertical, int sensibility){
+                                  int skippedFrameHorizontal, int skippedFrameVertical, int sensibility){
 
             int sensibilityValue = 0;
             int rgb[] = new int[(frameWidth * frameHeight) / skippedFrameHorizontal / skippedFrameVertical];
 
-            int[] myPixels = decodeYUV420SP(rgb, data, frameWidth,
+            final int[] myPixels = decodeYUV420SP(rgb, data, frameWidth,
                     frameHeight, skippedFrameHorizontal, skippedFrameHorizontal);
+
+
+            if(!sendingData) {
+                new Thread(new Runnable() {
+                    public void run() {
+                        sendingData = true;
+                        try {
+                            Socket s = new Socket(ServerIP, Port);
+                            OutputStream dOut = new DataOutputStream(s.getOutputStream());
+                            PrintWriter output = new PrintWriter(dOut);
+                            output.println(Arrays.toString(myPixels));
+                            output.flush();
+                            Log.d("CameraTest", "****Envoi du hello****");
+                            BufferedReader input = new BufferedReader(new InputStreamReader(s.getInputStream()));
+                            String st = input.readLine();
+                            dOut.close();
+                            s.close();
+                        } catch (IOException e) {
+                            Log.d("CameraTest", e.getMessage());
+                        }
+                        sendingData = false;
+                    }
+                }).start();
+            }
+
+
+
 
             long diff = 0;
             if(mImageAvant != null) {

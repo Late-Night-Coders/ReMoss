@@ -17,6 +17,8 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 
+import java.io.IOException;
+
 public class MainActivity extends ActionBarActivity {
 
     @Override
@@ -24,8 +26,13 @@ public class MainActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        ThreadCamera TC = new ThreadCamera(getApplicationContext(), this,(SeekBar) findViewById(R.id.seekBar),
-                (FrameLayout) findViewById(R.id.camera_preview), (TextView) findViewById(R.id.textView), (TextView) findViewById(R.id.textView3), (ToggleButton) findViewById(R.id.toggleButton));
+        ThreadCamera TC = null;
+        try {
+            TC = new ThreadCamera(getApplicationContext(), this,(SeekBar) findViewById(R.id.seekBar),
+                    (FrameLayout) findViewById(R.id.camera_preview), (TextView) findViewById(R.id.textView), (TextView) findViewById(R.id.textView3), (ToggleButton) findViewById(R.id.toggleButton));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         TC.start();
     }
 
