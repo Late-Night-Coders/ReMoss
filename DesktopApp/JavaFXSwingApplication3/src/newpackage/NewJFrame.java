@@ -23,6 +23,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.concurrent.ExecutorService;
@@ -125,12 +127,22 @@ public class NewJFrame extends javax.swing.JFrame {
             @Override
             public void run() {
                 try {
-                    ServerSocket serverSocket = new ServerSocket(666);
+                    byte[] receiveData = new byte[21600];
+                    DatagramSocket serverSocket = new DatagramSocket(666);
                     System.out.println("Waiting for clients to connect...");
                     while (true) {
-                        Socket clientSocket = serverSocket.accept();
-                        clientProcessingPool
-                                .submit(new ClientTask(clientSocket));
+                        DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
+                        serverSocket.receive(receivePacket);
+                        System.out.println("RECEIVED: " + receivePacket);
+                        int rgb[] = new int[21600];
+                        int[] image = decodeYUV420SP(rgb, receivePacket.getData(), 160, 90);
+                        System.out.println("Decode Complet");
+                        Image img = getImageFromArrayMEM(image,160,90);
+
+
+                        System.out.println("getImageFromArray done");
+                        NewJFrame.this.jLabel1.setIcon(new ImageIcon(img));
+                        System.out.println("Image Créée");
                     }
                 } catch (IOException e) {
                     System.err.println("Unable to process client request");
@@ -141,6 +153,40 @@ public class NewJFrame extends javax.swing.JFrame {
         Thread serverThread = new Thread(serverTask);
         serverThread.start();
     }
+    public int[] decodeYUV420SP(int[] rgb, byte[] yuv420sp, int width, int height) {
+            final int frameSize = width * height;
+
+            for (int j = 0, yp = 0; j < height; j++) {
+                    int uvp = frameSize + (j >> 1) * width, u = 0, v = 0;
+                    for (int i = 0; i < width; i++, yp++) {
+                            int y = (0xff & ((int) yuv420sp[yp])) - 16;
+                            if (y < 0) y = 0;
+                            if ((i & 1) == 0) {
+                                    v = (0xff & yuv420sp[uvp++]) - 128;
+                                    u = (0xff & yuv420sp[uvp++]) - 128;
+                            }
+
+                            int y1192 = 1192 * y;
+                            int r = (y1192 + 1634 * v);
+                            int g = (y1192 - 833 * v - 400 * u);
+                            int b = (y1192 + 2066 * u);
+
+                            if (r < 0) r = 0; else if (r > 262143) r = 262143;
+                            if (g < 0) g = 0; else if (g > 262143) g = 262143;
+                            if (b < 0) b = 0; else if (b > 262143) b = 262143;
+
+                            rgb[yp] = 0xff000000 | ((r << 6) & 0xff0000) | ((g >> 2) & 0xff00) | ((b >> 10) & 0xff);
+                    }
+            }
+            return rgb;
+        }
+    
+    public Image getImageFromArrayMEM(int[] pixels, int width, int height) {
+            MemoryImageSource mis = new MemoryImageSource(width, height, pixels, 0, width);
+            Toolkit tk = Toolkit.getDefaultToolkit();
+            return tk.createImage(mis);
+        }
+    
     
     private class ClientTask implements Runnable {
         private final Socket clientSocket;
@@ -156,10 +202,10 @@ public class NewJFrame extends javax.swing.JFrame {
             /* Get Data From Client */
                 byte[] byteArr = readBytes(clientSocket);
                 System.out.println("Bytes reçus");
-                int rgb[] = new int[1920*1080];
-                int[] image = decodeYUV420SP(rgb, byteArr, 1920, 1080);
+                int rgb[] = new int[259200];
+                int[] image = decodeYUV420SP(rgb, byteArr, 480, 270);
                 System.out.println("Decode Complet");
-                Image img = getImageFromArrayMEM(image,1920,1080);
+                Image img = getImageFromArrayMEM(image,480,540);
                 
                
                 System.out.println("getImageFromArray done");
@@ -190,33 +236,7 @@ public class NewJFrame extends javax.swing.JFrame {
             return data;
         }
         
-        public int[] decodeYUV420SP(int[] rgb, byte[] yuv420sp, int width, int height) {
-            final int frameSize = width * height;
-
-            for (int j = 0, yp = 0; j < height; j++) {
-                    int uvp = frameSize + (j >> 1) * width, u = 0, v = 0;
-                    for (int i = 0; i < width; i++, yp++) {
-                            int y = (0xff & ((int) yuv420sp[yp])) - 16;
-                            if (y < 0) y = 0;
-                            if ((i & 1) == 0) {
-                                    v = (0xff & yuv420sp[uvp++]) - 128;
-                                    u = (0xff & yuv420sp[uvp++]) - 128;
-                            }
-
-                            int y1192 = 1192 * y;
-                            int r = (y1192 + 1634 * v);
-                            int g = (y1192 - 833 * v - 400 * u);
-                            int b = (y1192 + 2066 * u);
-
-                            if (r < 0) r = 0; else if (r > 262143) r = 262143;
-                            if (g < 0) g = 0; else if (g > 262143) g = 262143;
-                            if (b < 0) b = 0; else if (b > 262143) b = 262143;
-
-                            rgb[yp] = 0xff000000 | ((r << 6) & 0xff0000) | ((g >> 2) & 0xff00) | ((b >> 10) & 0xff);
-                    }
-            }
-            return rgb;
-        }
+        
     }
 
 }
