@@ -262,9 +262,6 @@ public class ThreadCamera extends Thread {
 
             final int[] myPixels = decodeYUV420SP(rgb, data, frameWidth,
                     frameHeight, skippedFrameHorizontal, skippedFrameHorizontal);
-            Log.d("CameraTest", Integer.toString(frameWidth));
-            Log.d("CameraTest", Integer.toString(frameHeight));
-            Log.d("CameraTest", "wut");
 
             long diff = 0;
             if(mImageAvant != null) {
