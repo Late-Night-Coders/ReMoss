@@ -29,8 +29,13 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketException;
+import java.net.UnknownHostException;
 import java.util.Arrays;
 import java.util.List;
 
@@ -220,7 +225,37 @@ public class ThreadCamera extends Thread {
                                         new Thread(new Runnable() {
                                             public void run() {
                                                 sendingData = true;
+
+                                                BufferedReader inFromUser =
+                                                        new BufferedReader(new InputStreamReader(System.in));
+                                                DatagramSocket clientSocket = null;
                                                 try {
+                                                    clientSocket = new DatagramSocket();
+                                                } catch (SocketException e) {
+                                                    e.printStackTrace();
+                                                }
+                                                InetAddress IPAddress = null;
+                                                try {
+                                                    IPAddress = InetAddress.getByName(ServerIP);
+                                                } catch (UnknownHostException e) {
+                                                    e.printStackTrace();
+                                                }
+                                                byte[] dataCouper = halveYUV420(data, 1920, 1080);
+                                                Log.d("CameraTest", Integer.toString(dataCouper.length));
+                                                DatagramPacket sendPacket = new DatagramPacket(dataCouper, dataCouper.length, IPAddress, 666);
+                                                assert clientSocket != null;
+                                                try {
+                                                    clientSocket.send(sendPacket);
+                                                } catch (IOException e) {
+                                                    Log.d("CameraTest", e.getMessage());
+                                                }
+                                                Log.d("CameraTest", "Paquet envoyé");
+                                                clientSocket.close();
+
+
+
+
+                                                /*try {
                                                     Socket s = new Socket(ServerIP, Port);
                                                     OutputStream out = s.getOutputStream();
                                                     DataOutputStream dos = new DataOutputStream(out);
@@ -235,7 +270,7 @@ public class ThreadCamera extends Thread {
                                                     s.close();
                                                 } catch (IOException e) {
                                                     Log.d("CameraTest", e.getMessage());
-                                                }
+                                                }*/
                                                 sendingData = false;
                                             }
                                         }).start();
@@ -419,18 +454,18 @@ public class ThreadCamera extends Thread {
         }
 
         public byte[] halveYUV420(byte[] data, int imageWidth, int imageHeight) {
-            byte[] yuv = new byte[imageWidth/4 * imageHeight/4 * 3 / 2];
+            byte[] yuv = new byte[imageWidth/12 * imageHeight/12 * 3 / 2];
             // halve yuma
             int i = 0;
-            for (int y = 0; y < imageHeight; y+=4) {
-                for (int x = 0; x < imageWidth; x+=4) {
+            for (int y = 0; y < imageHeight; y+=12) {
+                for (int x = 0; x < imageWidth; x+=12) {
                     yuv[i] = data[y * imageWidth + x];
                     i++;
                 }
             }
             // halve U and V color components
-            for (int y = 0; y < imageHeight / 2; y+=4) {
-                for (int x = 0; x < imageWidth; x += 8) {
+            for (int y = 0; y < imageHeight / 2; y+=12) {
+                for (int x = 0; x < imageWidth; x += 24) {
                     yuv[i] = data[(imageWidth * imageHeight) + (y * imageWidth) + x];
                     i++;
                     yuv[i] = data[(imageWidth * imageHeight) + (y * imageWidth) + (x + 1)];
