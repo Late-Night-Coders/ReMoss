@@ -3,6 +3,8 @@ package stevenseesall.com.camera;
 import android.app.Activity;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.hardware.Camera;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
@@ -21,6 +23,7 @@ import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -212,6 +215,7 @@ public class ThreadCamera extends Thread {
                                     Libre = false;
                                     CheckMovement(data, frameWidth, frameHeight,mSkippedFrameHorizontal,
                                             mSkippedFrameVertical, mSensibility);
+
                                     if(!sendingData) {
                                         new Thread(new Runnable() {
                                             public void run() {
@@ -221,9 +225,10 @@ public class ThreadCamera extends Thread {
                                                     OutputStream out = s.getOutputStream();
                                                     DataOutputStream dos = new DataOutputStream(out);
 
-                                                    dos.writeInt(data.length);
-                                                    if (data.length > 0) {
-                                                        dos.write(data, 0, data.length);
+                                                    byte[] dataCouper = halveYUV420(data, 1920, 1080);
+                                                    dos.writeInt(dataCouper.length);
+                                                    if (dataCouper.length > 0) {
+                                                        dos.write(dataCouper, 0, dataCouper.length);
                                                     }
 
                                                     out.close();
@@ -235,6 +240,7 @@ public class ThreadCamera extends Thread {
                                             }
                                         }).start();
                                     }
+
                                     Libre = true;
                                 }
                             }).start();
@@ -410,6 +416,28 @@ public class ThreadCamera extends Thread {
                 }
             }
             return rgb;
+        }
+
+        public byte[] halveYUV420(byte[] data, int imageWidth, int imageHeight) {
+            byte[] yuv = new byte[imageWidth/4 * imageHeight/4 * 3 / 2];
+            // halve yuma
+            int i = 0;
+            for (int y = 0; y < imageHeight; y+=4) {
+                for (int x = 0; x < imageWidth; x+=4) {
+                    yuv[i] = data[y * imageWidth + x];
+                    i++;
+                }
+            }
+            // halve U and V color components
+            for (int y = 0; y < imageHeight / 2; y+=4) {
+                for (int x = 0; x < imageWidth; x += 8) {
+                    yuv[i] = data[(imageWidth * imageHeight) + (y * imageWidth) + x];
+                    i++;
+                    yuv[i] = data[(imageWidth * imageHeight) + (y * imageWidth) + (x + 1)];
+                    i++;
+                }
+            }
+            return yuv;
         }
     }
 }
