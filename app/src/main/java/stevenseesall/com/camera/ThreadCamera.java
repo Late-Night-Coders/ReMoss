@@ -52,19 +52,13 @@ public class ThreadCamera extends Thread {
     private SurfaceHolder mHolder;
     boolean Libre = true;
     int[] mImageAvant;
-    int mSkippedFrameHorizontal = 2;
-    int mSkippedFrameVertical = 2;
     TextView mTextView;
     TextView mMouvementTextView;
-    Boolean mMouvement = false;
-    Boolean isAlarmRunning = false;
     ToggleButton mToggleButton;
     Boolean isAlarmOn = false;
-    Boolean sendingData = false;
-
     String ServerIP = "192.168.1.100";
-    public static final int Port = 666;
-
+    int mSkippedFrameHorizontal = 3;
+    int mSkippedFrameVertical = 3;
 
     public ThreadCamera(final Context context, Activity activity, SeekBar seekBar, FrameLayout frameLayout, TextView textView,
                         TextView textViewMouvement, ToggleButton toggleButton) throws IOException {
@@ -82,15 +76,12 @@ public class ThreadCamera extends Thread {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (buttonView.isChecked()) {
                     isAlarmOn = true;
-                }
-                else {
+                } else {
                     isAlarmOn = false;
                 }
             }
         });
     }
-
-
 
 
     public void run() {
@@ -115,19 +106,18 @@ public class ThreadCamera extends Thread {
     }
 
     private boolean checkCameraHardware(Context context) {
-        if (context.getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA)){
+        if (context.getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA)) {
             return true;
         } else {
             return false;
         }
     }
 
-    public static Camera getCameraInstance(){
+    public static Camera getCameraInstance() {
         Camera camera;
         try {
             camera = Camera.open(); // attempt to get a Camera instance
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             throw new RuntimeException("No camera found on device");
         }
 
@@ -181,6 +171,11 @@ public class ThreadCamera extends Thread {
         }
 
         @Override
+        public void surfaceDestroyed(SurfaceHolder holder) {
+
+        }
+
+        @Override
         public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
             // If your preview can change or rotate, take care of those events here.
             // Make sure to stop the preview before resizing or reformatting it.
@@ -216,160 +211,35 @@ public class ThreadCamera extends Thread {
 
                         (new Thread(new ThreadSendUDPFeed(data, ServerIP))).start();
 
-                        if(Libre) {
-                            new Thread(new Runnable() {
-                                public void run() {
-                                    Libre = false;
-                                    CheckMovement(data, frameWidth, frameHeight,mSkippedFrameHorizontal,
-                                            mSkippedFrameVertical, mSensibility);
+                        if (Libre) {
+                            int rgb[] = new int[(frameWidth * frameHeight) / mSkippedFrameHorizontal / mSkippedFrameVertical];
+                            int[] image = decodeYUV420SP(rgb, data, frameWidth, frameHeight, mSkippedFrameHorizontal, mSkippedFrameVertical);
+                            if (mImageAvant == null) {
+                                mImageAvant = image;
+                            }
 
-
-
-                                    Libre = true;
-                                }
-                            }).start();
+                            Libre = false;
+                            ThreadCheckMovement checkMovement = new ThreadCheckMovement(image, frameWidth, frameHeight, mSkippedFrameHorizontal, mSkippedFrameVertical,
+                                    mSensibility, mImageAvant, mActivity, mMouvementTextView, mToggleButton, mContext, isAlarmOn);
+                            (new Thread(checkMovement)).start();
+                            mImageAvant = checkMovement.getmImage();
+                            Libre = true;
                         }
                     }
                 });
                 mCamera.startPreview();
 
             } catch (Exception e) {
-                Log.d("Error" ,"Error starting camera preview: " + e.getMessage());
+                Log.d("Error", "Error starting camera preview: " + e.getMessage());
             }
 
-        }
-
-        @Override
-        public void surfaceDestroyed(SurfaceHolder holder) {
-
-        }
-
-        public void CheckMovement(byte[] data, int frameWidth, int frameHeight,
-                                  int skippedFrameHorizontal, int skippedFrameVertical, int sensibility){
-
-            int sensibilityValue = 0;
-            int rgb[] = new int[(frameWidth * frameHeight) / skippedFrameHorizontal / skippedFrameVertical];
-
-            final int[] myPixels = decodeYUV420SP(rgb, data, frameWidth,
-                    frameHeight, skippedFrameHorizontal, skippedFrameHorizontal);
-
-            long diff = 0;
-            if(mImageAvant != null) {
-                for (int x = 0; x < myPixels.length; x++) {
-                    // Décalage de bits pour trouver les valeurs RGB actuelles
-                    int rActual = (myPixels[x] & 0x00ff0000) >> 16;
-                    int gActual = (myPixels[x] & 0x0000ff00) >> 8;
-                    int bActual = myPixels[x] & 0x0000ff;
-
-                    // Décalage de bits pour trouver les valeurs RGB de l'ancienne image
-                    int rOld = (mImageAvant[x] & 0x00ff0000) >> 16;
-                    int gOld = (mImageAvant[x] & 0x0000ff00) >> 8;
-                    int bOld = mImageAvant[x] & 0x0000ff;
-
-                    if(rActual <= rOld -15 || rActual >= rOld + 15)
-                    {
-                        diff++;
-                    }
-                    else {
-                        if (gActual <= gOld -15 || gActual >= gOld + 15) {
-                            diff++;
-                        }
-                        else
-                        {
-                            if (bActual <= bOld -15 || bActual >= bOld + 15) {
-                                diff++;
-                            }
-                        }
-                    }
-                }
-            }
-            switch (sensibility)
-            {
-                case 0:
-                    sensibilityValue = 5000;
-                    break;
-                case 1:
-                    sensibilityValue = 10000;
-                    break;
-                case 2:
-                    sensibilityValue = 20000;
-                    break;
-                case 3:
-                    sensibilityValue = 30000;
-                    break;
-                case 4:
-                    sensibilityValue = 40000;
-                    break;
-                case 5:
-                    sensibilityValue = 50000;
-                    break;
-                case 6:
-                    sensibilityValue = 75000;
-                    break;
-            }
-
-            if(diff > sensibilityValue){
-                //Log.d("CameraTest", "MOUVEMENT");
-                //Log.d("CameraTest", Long.toString(diff));
-                if(!mMouvement)
-                {
-                    //Évènement mouvement
-                    mActivity.runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            mMouvementTextView.setText("Mouvement!");
-                        }
-                    });
-
-                    if(!isAlarmRunning && isAlarmOn) {
-                        new Thread(new Runnable() {
-                            public void run() {
-                                isAlarmRunning = true;
-                                Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_RINGTONE);
-                                if(notification != null){
-                                    notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM);
-                                    if(notification != null){
-                                        notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-                                    }
-                                }
-                                Ringtone r = RingtoneManager.getRingtone(mContext, notification);
-                                r.play();
-                                while(r.isPlaying() && isAlarmOn){
-
-                                }
-                                r.stop();
-                                isAlarmRunning = false;
-                            }
-                        }).start();
-                    }
-
-
-                }
-                mMouvement = true;
-            }
-            else{
-                //Log.d("CameraTest", "ARRET");
-                //Log.d("CameraTest", Long.toString(diff));
-                if(mMouvement)
-                {
-                    //Évènement Arrêt
-                    mActivity.runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            mMouvementTextView.setText("Arrêt!");
-                        }
-                    });
-                }
-                mMouvement = false;
-            }
-            mImageAvant = myPixels;
         }
 
         int[] decodeYUV420SP(int[] rgb, byte[] yuv420sp, int width, int height, int skippedFrameHorizontal, int skippedFrameVertical) {
             final int frameSize = (width * height / skippedFrameHorizontal) / skippedFrameVertical;
-            for (int j = 0, yp = 0; j < height; j+=skippedFrameHorizontal) {
+            for (int j = 0, yp = 0; j < height; j += skippedFrameHorizontal) {
                 int uvp = frameSize + (j >> 1) * width, u = 0, v = 0;
-                for (int i = 0; i < width; i+=skippedFrameVertical, yp++) {
+                for (int i = 0; i < width; i += skippedFrameVertical, yp++) {
                     int y = (0xff & ((int) yuv420sp[yp])) - 16;
                     if (y < 0)
                         y = 0;
@@ -385,8 +255,7 @@ public class ThreadCamera extends Thread {
 
                     if (r < 0) {
                         r = 0;
-                    }
-                    else if (r > 262143)
+                    } else if (r > 262143)
                         r = 262143;
                     if (g < 0)
                         g = 0;
@@ -403,27 +272,3 @@ public class ThreadCamera extends Thread {
         }
     }
 }
-
-
-/* Code validation alarme
-
-Uri alert = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM);
-
-if(alert == null){
-    // alert is null, using backup
-    alert = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-
-    // I can't see this ever being null (as always have a default notification)
-    // but just incase
-    if(alert == null) {
-        // alert backup is null, using 2nd backup
-        alert = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_RINGTONE);
-    }
-}
- */
-
-/*Camera.Parameters parameters = mCamera.getParameters();
-                                mCamera.stopPreview();
-                                parameters.setFlashMode(Camera.Parameters.FLASH_MODE_ON);
-                                mCamera.setParameters(parameters);
-                                mCamera.startPreview();*/

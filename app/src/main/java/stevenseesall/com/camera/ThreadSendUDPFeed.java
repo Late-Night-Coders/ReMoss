@@ -17,6 +17,7 @@ import java.net.UnknownHostException;
 public class ThreadSendUDPFeed implements Runnable {
     String mServerIP;
     byte[] mData;
+    public static final int mPort = 666;
 
     public ThreadSendUDPFeed(byte[] data, String serverIP){
         mServerIP = serverIP;
@@ -39,7 +40,7 @@ public class ThreadSendUDPFeed implements Runnable {
             e.printStackTrace();
         }
         byte[] dataCouper = halveYUV420(mData, 1920, 1080, 12);
-        DatagramPacket sendPacket = new DatagramPacket(dataCouper, dataCouper.length, IPAddress, 666);
+        DatagramPacket sendPacket = new DatagramPacket(dataCouper, dataCouper.length, IPAddress, mPort);
         assert clientSocket != null;
         try {
             clientSocket.send(sendPacket);
