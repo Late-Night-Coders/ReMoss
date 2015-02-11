@@ -17,11 +17,16 @@ import java.net.UnknownHostException;
 public class ThreadSendUDPFeed implements Runnable {
     String mServerIP;
     byte[] mData;
-    public static final int mPort = 666;
+    int mPort;
+    int mWidth;
+    int mHeight;
 
-    public ThreadSendUDPFeed(byte[] data, String serverIP){
+    public ThreadSendUDPFeed(byte[] data, String serverIP, int port, int height, int width){
         mServerIP = serverIP;
         mData = data;
+        mPort = port;
+        mWidth = width;
+        mHeight = height;
     }
 
     public void run(){
@@ -39,7 +44,7 @@ public class ThreadSendUDPFeed implements Runnable {
         } catch (UnknownHostException e) {
             e.printStackTrace();
         }
-        byte[] dataCouper = halveYUV420(mData, 1920, 1080, 12);
+        byte[] dataCouper = halveYUV420(mData, mWidth, mHeight, 12);
         DatagramPacket sendPacket = new DatagramPacket(dataCouper, dataCouper.length, IPAddress, mPort);
         assert clientSocket != null;
         try {

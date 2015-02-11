@@ -209,7 +209,7 @@ public class ThreadCamera extends Thread {
                         final int frameHeight = camera.getParameters().getPreviewSize().height;
                         final int frameWidth = camera.getParameters().getPreviewSize().width;
 
-                        (new Thread(new ThreadSendUDPFeed(data, ServerIP))).start();
+                        (new Thread(new ThreadSendUDPFeed(data, ServerIP, 666, frameHeight, frameWidth))).start();
 
                         if (Libre) {
                             int rgb[] = new int[(frameWidth * frameHeight) / mSkippedFrameHorizontal / mSkippedFrameVertical];
