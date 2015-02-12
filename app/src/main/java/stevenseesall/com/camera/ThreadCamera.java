@@ -59,6 +59,7 @@ public class ThreadCamera extends Thread {
     String ServerIP = "192.168.1.100";
     int mSkippedFrameHorizontal = 3;
     int mSkippedFrameVertical = 3;
+    Boolean mSendingData = false;
 
     public ThreadCamera(final Context context, Activity activity, SeekBar seekBar, FrameLayout frameLayout, TextView textView,
                         TextView textViewMouvement, ToggleButton toggleButton) throws IOException {
@@ -209,7 +210,24 @@ public class ThreadCamera extends Thread {
                         final int frameHeight = camera.getParameters().getPreviewSize().height;
                         final int frameWidth = camera.getParameters().getPreviewSize().width;
 
-                        (new Thread(new ThreadSendUDPFeed(data, ServerIP, 666, frameHeight, frameWidth))).start();
+                        (new Thread() {
+                            public void run() {
+                                if(!mSendingData){
+                                    byte[] dataCouper = halveYUV420(data, frameWidth, frameHeight, 12);
+                                    mSendingData = true;
+                                    ThreadSendUDPFeed TUDP = new ThreadSendUDPFeed(dataCouper, ServerIP, 666);
+                                    TUDP.send();
+                                    ThreadSendUDPFeed TUDP2 = new ThreadSendUDPFeed(dataCouper, ServerIP, 667);
+                                    TUDP2.send();
+                                    ThreadSendUDPFeed TUDP3 = new ThreadSendUDPFeed(dataCouper, ServerIP, 668);
+                                    TUDP3.send();
+                                    ThreadSendUDPFeed TUDP4 = new ThreadSendUDPFeed(dataCouper, ServerIP, 669);
+                                    TUDP4.send();
+                                    mSendingData = false;
+                                }
+                            }
+                        }).start();
+
 
                         if (Libre) {
                             int rgb[] = new int[(frameWidth * frameHeight) / mSkippedFrameHorizontal / mSkippedFrameVertical];
@@ -269,6 +287,28 @@ public class ThreadCamera extends Thread {
                 }
             }
             return rgb;
+        }
+
+        public byte[] halveYUV420(byte[] data, int imageWidth, int imageHeight, int decrementor) {
+            byte[] yuv = new byte[imageWidth/decrementor * imageHeight/decrementor * 3 / 2];
+            // halve yuma
+            int i = 0;
+            for (int y = 0; y < imageHeight; y+=decrementor) {
+                for (int x = 0; x < imageWidth; x+=decrementor) {
+                    yuv[i] = data[y * imageWidth + x];
+                    i++;
+                }
+            }
+            // halve U and V color components
+            for (int y = 0; y < imageHeight / 2; y+=decrementor) {
+                for (int x = 0; x < imageWidth; x += (decrementor * 2)) {
+                    yuv[i] = data[(imageWidth * imageHeight) + (y * imageWidth) + x];
+                    i++;
+                    yuv[i] = data[(imageWidth * imageHeight) + (y * imageWidth) + (x + 1)];
+                    i++;
+                }
+            }
+            return yuv;
         }
     }
 }

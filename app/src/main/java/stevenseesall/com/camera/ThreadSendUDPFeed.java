@@ -14,22 +14,18 @@ import java.net.UnknownHostException;
 /**
  * Created by Fred on 2/10/2015.
  */
-public class ThreadSendUDPFeed implements Runnable {
+public class ThreadSendUDPFeed {
     String mServerIP;
     byte[] mData;
     int mPort;
-    int mWidth;
-    int mHeight;
 
-    public ThreadSendUDPFeed(byte[] data, String serverIP, int port, int height, int width){
+    public ThreadSendUDPFeed(byte[] data, String serverIP, int port){
         mServerIP = serverIP;
         mData = data;
         mPort = port;
-        mWidth = width;
-        mHeight = height;
     }
 
-    public void run(){
+    public void send(){
         BufferedReader inFromUser =
                 new BufferedReader(new InputStreamReader(System.in));
         DatagramSocket clientSocket = null;
@@ -44,8 +40,8 @@ public class ThreadSendUDPFeed implements Runnable {
         } catch (UnknownHostException e) {
             e.printStackTrace();
         }
-        byte[] dataCouper = halveYUV420(mData, mWidth, mHeight, 12);
-        DatagramPacket sendPacket = new DatagramPacket(dataCouper, dataCouper.length, IPAddress, mPort);
+
+        DatagramPacket sendPacket = new DatagramPacket(mData, mData.length, IPAddress, mPort);
         assert clientSocket != null;
         try {
             clientSocket.send(sendPacket);
@@ -55,26 +51,6 @@ public class ThreadSendUDPFeed implements Runnable {
         clientSocket.close();
     }
 
-    public byte[] halveYUV420(byte[] data, int imageWidth, int imageHeight, int decrementor) {
-        byte[] yuv = new byte[imageWidth/decrementor * imageHeight/decrementor * 3 / 2];
-        // halve yuma
-        int i = 0;
-        for (int y = 0; y < imageHeight; y+=decrementor) {
-            for (int x = 0; x < imageWidth; x+=decrementor) {
-                yuv[i] = data[y * imageWidth + x];
-                i++;
-            }
-        }
-        // halve U and V color components
-        for (int y = 0; y < imageHeight / 2; y+=decrementor) {
-            for (int x = 0; x < imageWidth; x += (decrementor * 2)) {
-                yuv[i] = data[(imageWidth * imageHeight) + (y * imageWidth) + x];
-                i++;
-                yuv[i] = data[(imageWidth * imageHeight) + (y * imageWidth) + (x + 1)];
-                i++;
-            }
-        }
-        return yuv;
-    }
+
 
 }

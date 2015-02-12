@@ -61,22 +61,46 @@ public class NewJFrame extends javax.swing.JFrame {
     private void initComponents() {
 
         jLabel1 = new javax.swing.JLabel();
+        jLabel2 = new javax.swing.JLabel();
+        jLabel3 = new javax.swing.JLabel();
+        jLabel4 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
         jLabel1.setText("jLabel1");
 
+        jLabel2.setText("jLabel2");
+
+        jLabel3.setText("jLabel3");
+
+        jLabel4.setText("jLabel4");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+            .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, 1078, Short.MAX_VALUE))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                    .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, 433, Short.MAX_VALUE)
+                    .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, 431, Short.MAX_VALUE)
+                    .addComponent(jLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(204, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jLabel1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 624, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, 252, Short.MAX_VALUE)
+                    .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(18, 18, 18)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, 240, Short.MAX_VALUE)
+                    .addComponent(jLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(0, 114, Short.MAX_VALUE))
         );
 
         pack();
@@ -119,68 +143,17 @@ public class NewJFrame extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
     // End of variables declaration//GEN-END:variables
  public void startServer() {
         final ExecutorService clientProcessingPool = Executors
                 .newFixedThreadPool(10);
-
-        Runnable serverTask = new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    byte[] receiveData = new byte[21600];
-                    DatagramSocket serverSocket = new DatagramSocket(666);
-                    System.out.println("En attente de paquets UDP...");
-                    while (true) {
-                        DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
-                        serverSocket.receive(receivePacket);
-                        System.out.println("Paquets reçu!!!");
-                        int rgb[] = new int[21600];
-                        int[] image = decodeYUV420SP(rgb, receivePacket.getData(), 160, 90);
-                        Image img = getImageFromArrayMEM(image,160,90);
-                        NewJFrame.this.jLabel1.setIcon(new ImageIcon(img));
-                    }
-                } catch (IOException e) {
-                    System.err.println("Unable to process client request");
-                    e.printStackTrace();
-                }
-            }
-        };
-        Thread serverThread = new Thread(serverTask);
-        serverThread.start();
+        (new Thread(new UDPThread(NewJFrame.this.jLabel1, 666))).start();
+        (new Thread(new UDPThread(NewJFrame.this.jLabel2, 667))).start();
+        (new Thread(new UDPThread(NewJFrame.this.jLabel3, 668))).start();
+        (new Thread(new UDPThread(NewJFrame.this.jLabel4, 669))).start();
     }
- 
-    public int[] decodeYUV420SP(int[] rgb, byte[] yuv420sp, int width, int height) {
-        final int frameSize = width * height;
 
-        for (int j = 0, yp = 0; j < height; j++) {
-                int uvp = frameSize + (j >> 1) * width, u = 0, v = 0;
-                for (int i = 0; i < width; i++, yp++) {
-                        int y = (0xff & ((int) yuv420sp[yp])) - 16;
-                        if (y < 0) y = 0;
-                        if ((i & 1) == 0) {
-                                v = (0xff & yuv420sp[uvp++]) - 128;
-                                u = (0xff & yuv420sp[uvp++]) - 128;
-                        }
-
-                        int y1192 = 1192 * y;
-                        int r = (y1192 + 1634 * v);
-                        int g = (y1192 - 833 * v - 400 * u);
-                        int b = (y1192 + 2066 * u);
-
-                        if (r < 0) r = 0; else if (r > 262143) r = 262143;
-                        if (g < 0) g = 0; else if (g > 262143) g = 262143;
-                        if (b < 0) b = 0; else if (b > 262143) b = 262143;
-
-                        rgb[yp] = 0xff000000 | ((r << 6) & 0xff0000) | ((g >> 2) & 0xff00) | ((b >> 10) & 0xff);
-                }
-        }
-        return rgb;
-    }
-    
-    public Image getImageFromArrayMEM(int[] pixels, int width, int height) {
-        MemoryImageSource mis = new MemoryImageSource(width, height, pixels, 0, width);
-        Toolkit tk = Toolkit.getDefaultToolkit();
-        return tk.createImage(mis);
-    }
 }
