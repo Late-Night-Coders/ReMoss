@@ -56,10 +56,11 @@ public class ThreadCamera extends Thread {
     TextView mMouvementTextView;
     ToggleButton mToggleButton;
     Boolean isAlarmOn = false;
-    String ServerIP = "10.1.250.100";
+    String ServerIP = "192.168.1.100";
     int mSkippedFrameHorizontal = 3;
     int mSkippedFrameVertical = 3;
     Boolean mSendingData = false;
+    Boolean mSendingDataTCP = false;
 
     public ThreadCamera(final Context context, Activity activity, SeekBar seekBar, FrameLayout frameLayout, TextView textView,
                         TextView textViewMouvement, ToggleButton toggleButton) throws IOException {
@@ -210,12 +211,15 @@ public class ThreadCamera extends Thread {
                         final int frameHeight = camera.getParameters().getPreviewSize().height;
                         final int frameWidth = camera.getParameters().getPreviewSize().width;
 
+                        final byte[] dataCouper = halveYUV420(data, frameWidth, frameHeight, 12);
+                        final byte[] dataCouperTCP = halveYUV420(data, frameWidth, frameHeight, 4);
+
                         (new Thread() {
                             public void run() {
                                 if(!mSendingData){
-                                    byte[] dataCouper = halveYUV420(data, frameWidth, frameHeight, 6);
                                     mSendingData = true;
-                                    ThreadSendTCPFeed TCP = new ThreadSendTCPFeed(dataCouper, ServerIP, 666);
+                                    ThreadSendTCPFeed TCP = new ThreadSendTCPFeed(dataCouperTCP, ServerIP, 666);
+
                                     try {
                                         TCP.send();
                                     } catch (IOException e) {
@@ -225,8 +229,22 @@ public class ThreadCamera extends Thread {
                                 }
                             }
                         }).start();
+                        (new Thread() {
+                            public void run() {
+                                if(!mSendingDataTCP) {
+                                    mSendingDataTCP = true;
+                                    ThreadSendUDPFeed UDP = new ThreadSendUDPFeed(dataCouper, ServerIP, 667);
+                                    try {
+                                        UDP.send();
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
+                                    }
+                                    mSendingDataTCP = false;
+                                }
+                            }
+                        }).start();
 
-
+/*
                         if (Libre) {
                             int rgb[] = new int[(frameWidth * frameHeight) / mSkippedFrameHorizontal / mSkippedFrameVertical];
                             int[] image = decodeYUV420SP(rgb, data, frameWidth, frameHeight, mSkippedFrameHorizontal, mSkippedFrameVertical);
@@ -240,7 +258,7 @@ public class ThreadCamera extends Thread {
                             (new Thread(checkMovement)).start();
                             mImageAvant = checkMovement.getmImage();
                             Libre = true;
-                        }
+                        }*/
                     }
                 });
                 mCamera.startPreview();

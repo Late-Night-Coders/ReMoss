@@ -43,13 +43,13 @@ public class TCPThread implements Runnable{
             System.out.println("En attente de paquets TCP...");
             
             while (true) {
-                        final Socket clientSocket = serverSocket.accept();
                         System.out.println("accepté");
+                        final Socket clientSocket = serverSocket.accept();
                         try{
                             byte[] byteArr = readBytes(clientSocket);
-                            int rgb[] = new int[57600];
-                            int[] image = decodeYUV420SP(rgb, byteArr, 320, 180);
-                            Image img = getImageFromArrayMEM(image,320,180);
+                            int rgb[] = new int[194400];
+                            int[] image = decodeYUV420SP(rgb, byteArr, 480, 270);
+                            Image img = getImageFromArrayMEM(image,480,270);
                             mJLabel.setIcon(new ImageIcon(img));
                             clientSocket.close();
                         }
@@ -103,8 +103,9 @@ public class TCPThread implements Runnable{
             InputStream in = socket.getInputStream();
             DataInputStream dis = new DataInputStream(in);
             
-            byte[] data = new byte[57600];
+            byte[] data = new byte[194400];
             dis.readFully(data);
+            System.out.println(data.length);
             return data;
         }
 }
