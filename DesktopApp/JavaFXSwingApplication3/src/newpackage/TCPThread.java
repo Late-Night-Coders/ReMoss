@@ -103,7 +103,7 @@ public class TCPThread implements Runnable{
             InputStream in = socket.getInputStream();
             DataInputStream dis = new DataInputStream(in);
             
-            byte[] data = new byte[21600];
+            byte[] data = new byte[57600];
             dis.readFully(data);
             return data;
         }
