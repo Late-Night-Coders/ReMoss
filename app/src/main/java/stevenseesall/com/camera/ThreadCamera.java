@@ -56,7 +56,7 @@ public class ThreadCamera extends Thread {
     TextView mMouvementTextView;
     ToggleButton mToggleButton;
     Boolean isAlarmOn = false;
-    String ServerIP = "192.168.1.100";
+    String ServerIP = "10.1.250.100";
     int mSkippedFrameHorizontal = 3;
     int mSkippedFrameVertical = 3;
     Boolean mSendingData = false;
@@ -213,16 +213,14 @@ public class ThreadCamera extends Thread {
                         (new Thread() {
                             public void run() {
                                 if(!mSendingData){
-                                    byte[] dataCouper = halveYUV420(data, frameWidth, frameHeight, 12);
+                                    byte[] dataCouper = halveYUV420(data, frameWidth, frameHeight, 6);
                                     mSendingData = true;
-                                    ThreadSendUDPFeed TUDP = new ThreadSendUDPFeed(dataCouper, ServerIP, 666);
-                                    TUDP.send();
-                                    ThreadSendUDPFeed TUDP2 = new ThreadSendUDPFeed(dataCouper, ServerIP, 667);
-                                    TUDP2.send();
-                                    ThreadSendUDPFeed TUDP3 = new ThreadSendUDPFeed(dataCouper, ServerIP, 668);
-                                    TUDP3.send();
-                                    ThreadSendUDPFeed TUDP4 = new ThreadSendUDPFeed(dataCouper, ServerIP, 669);
-                                    TUDP4.send();
+                                    ThreadSendTCPFeed TCP = new ThreadSendTCPFeed(dataCouper, ServerIP, 666);
+                                    try {
+                                        TCP.send();
+                                    } catch (IOException e) {
+                                        e.printStackTrace();
+                                    }
                                     mSendingData = false;
                                 }
                             }

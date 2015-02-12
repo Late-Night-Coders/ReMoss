@@ -150,10 +150,10 @@ public class NewJFrame extends javax.swing.JFrame {
  public void startServer() {
         final ExecutorService clientProcessingPool = Executors
                 .newFixedThreadPool(10);
-        (new Thread(new UDPThread(NewJFrame.this.jLabel1, 666))).start();
-        (new Thread(new UDPThread(NewJFrame.this.jLabel2, 667))).start();
-        (new Thread(new UDPThread(NewJFrame.this.jLabel3, 668))).start();
-        (new Thread(new UDPThread(NewJFrame.this.jLabel4, 669))).start();
+        (new Thread(new TCPThread(NewJFrame.this.jLabel1, 666))).start();
+        //(new Thread(new UDPThread(NewJFrame.this.jLabel2, 667))).start();
+        /*(new Thread(new UDPThread(NewJFrame.this.jLabel3, 668))).start();
+        (new Thread(new UDPThread(NewJFrame.this.jLabel4, 669))).start();*/
     }
 
 }

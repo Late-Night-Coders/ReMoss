@@ -26,8 +26,6 @@ public class ThreadSendUDPFeed {
     }
 
     public void send(){
-        BufferedReader inFromUser =
-                new BufferedReader(new InputStreamReader(System.in));
         DatagramSocket clientSocket = null;
         try {
             clientSocket = new DatagramSocket();
@@ -50,7 +48,4 @@ public class ThreadSendUDPFeed {
         }
         clientSocket.close();
     }
-
-
-
 }
