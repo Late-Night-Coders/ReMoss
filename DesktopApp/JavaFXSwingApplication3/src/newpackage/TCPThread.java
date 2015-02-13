@@ -50,7 +50,6 @@ public class TCPThread implements Runnable{
             System.out.println("En attente de paquets TCP...");
             
             while (true) {
-                        System.out.println("accepté");
                         final Socket clientSocket = serverSocket.accept();
                         try{
                             byte[] byteArr = readBytes(clientSocket);
@@ -122,7 +121,6 @@ public class TCPThread implements Runnable{
             
             byte[] data = new byte[194400];
             dis.readFully(data);
-            System.out.println(data.length);
             return data;
     }
     
