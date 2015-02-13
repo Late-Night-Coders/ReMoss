@@ -64,10 +64,6 @@ public class TCPThread implements Runnable{
                                 Image img = getImageFromArrayMEM(image,480,270);
                                 mJLabel.setIcon(new ImageIcon(img));
                             }
-                            
-                            
-                            
-                            
                         }
                         catch(IOException e){
                             System.out.println(e);

@@ -5,13 +5,21 @@
  */
 package newpackage;
 
+import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.Toolkit;
+import java.awt.image.BufferedImage;
 import java.awt.image.MemoryImageSource;
+import java.io.DataInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
+import java.net.Socket;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import javax.swing.ImageIcon;
+import javax.swing.JCheckBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 
@@ -21,11 +29,19 @@ import javax.swing.JLabel;
  */
 public class UDPThread implements Runnable{
     JLabel mJLabel;
+    JLabel mJLabel2;
+    JCheckBox mJCheckBox;
     int mPort;
+    int[] mImageAvant;
+
+     final ExecutorService clientProcessingPool = Executors
+                .newFixedThreadPool(10);
     
-    public UDPThread(JLabel jLabel, int port){
+    public UDPThread(JLabel jLabel, JLabel jLabel2, JCheckBox jCheckBox, int port){
         mJLabel = jLabel;
         mPort = port;
+        mJLabel2 = jLabel2;
+        mJCheckBox = jCheckBox;
     }
     
     @Override
@@ -37,11 +53,19 @@ public class UDPThread implements Runnable{
             while (true) {
                 DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
                 serverSocket.receive(receivePacket);
-                System.out.println("Paquets reçu!!!");
                 int rgb[] = new int[21600];
                 int[] image = decodeYUV420SP(rgb, receivePacket.getData(), 160, 90);
-                Image img = getImageFromArrayMEM(image,160,90);
-                mJLabel.setIcon(new ImageIcon(img));
+                
+                if(mJCheckBox.isSelected()){
+                    (new Thread(new UDPThread.CheckMovement(image, mImageAvant))).start();
+                    mImageAvant = image;
+                }
+                else{
+                    Image img = getImageFromArrayMEM(image,160,90);
+                    BufferedImage image2 = toBufferedImage(img); // transform it 
+                    Image newimg = image2.getScaledInstance(640, 360,  java.awt.Image.SCALE_SMOOTH);
+                    mJLabel.setIcon(new ImageIcon(newimg));
+                }
             }
         } catch (IOException e) {
             System.err.println("Unable to process client request");
@@ -82,5 +106,77 @@ public class UDPThread implements Runnable{
         MemoryImageSource mis = new MemoryImageSource(width, height, pixels, 0, width);
         Toolkit tk = Toolkit.getDefaultToolkit();
         return tk.createImage(mis);
+    }
+    
+    public byte[] readBytes(Socket socket) throws IOException {
+            InputStream in = socket.getInputStream();
+            DataInputStream dis = new DataInputStream(in);
+            
+            byte[] data = new byte[21600];
+            dis.readFully(data);
+            return data;
+    }
+    
+    public static BufferedImage toBufferedImage(Image img)
+    {
+        BufferedImage bimage = new BufferedImage(img.getWidth(null), img.getHeight(null), BufferedImage.TYPE_INT_RGB);
+        Graphics2D bGr = bimage.createGraphics();
+        bGr.drawImage(img, 0, 0, null);
+        bGr.dispose();
+        return bimage;
+    }
+    
+    private class CheckMovement implements Runnable{
+     int[] mImageAvant;
+     int[] mImageActual;
+     int mDiff = 0;
+     
+     public CheckMovement(int[] imageAvant, int[] imageActual){
+         mImageAvant = imageAvant;
+         mImageActual = imageActual;
+     }
+     
+     public void run(){
+         
+            if(mImageAvant != null) {
+                for (int x = 0; x < mImageActual.length; x++) {
+                    // Décalage de bits pour trouver les valeurs RGB actuelles
+                    int rActual = (mImageActual[x] & 0x00ff0000) >> 16;
+                    int gActual = (mImageActual[x] & 0x0000ff00) >> 8;
+                    int bActual = mImageActual[x] & 0x0000ff;
+
+                    // Décalage de bits pour trouver les valeurs RGB de l'ancienne image
+                    int rOld = (mImageAvant[x] & 0x00ff0000) >> 16;
+                    int gOld = (mImageAvant[x] & 0x0000ff00) >> 8;
+                    int bOld = mImageAvant[x] & 0x0000ff;
+
+                    if(rActual <= rOld -15 || rActual >= rOld + 15)
+                    {
+                        mDiff++;
+                        mImageActual[x] = 0xffff0000;
+                    }
+                    else {
+                        if (gActual <= gOld -15 || gActual >= gOld + 15) {
+                            mDiff++;
+                            mImageActual[x] = 0xffff0000;
+                        }
+                        else
+                        {
+                            if (bActual <= bOld -15 || bActual >= bOld + 15) {
+                                mDiff++;
+                                mImageActual[x] = 0xffff0000;
+                            }
+                        }
+                    }
+                }
+                mJLabel2.setText("Différence: " + mDiff);
+                Image img = getImageFromArrayMEM(mImageActual,160,90);
+                BufferedImage image2 = toBufferedImage(img); // transform it 
+                Image newimg = image2.getScaledInstance(640, 360,  java.awt.Image.SCALE_SMOOTH);
+                mJLabel.setIcon(new ImageIcon(newimg));
+            }
+        }
+     
+     
     }
 }

@@ -23,8 +23,11 @@ import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
@@ -38,6 +41,7 @@ import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.zip.GZIPOutputStream;
 
 /**
  * Created by Fred on 2/7/2015.
@@ -213,35 +217,46 @@ public class ThreadCamera extends Thread {
 
                         if(!mSendingData){
                             mSendingData = true;
-                            final byte[] dataCouper = halveYUV420(data, frameWidth, frameHeight, 4);
                             (new Thread() {
                                 public void run() {
-                                    ThreadSendTCPFeed TCP = new ThreadSendTCPFeed(dataCouper, ServerIP, 666);
+                                    /*ThreadSendTCPFeed TCP = new ThreadSendTCPFeed(dataCouper, ServerIP, 666);
                                     try {
                                         TCP.send();
+                                        Thread.sleep(100);
                                     } catch (IOException e) {
                                         e.printStackTrace();
+                                    } catch (InterruptedException e) {
+                                        e.printStackTrace();
                                     }
+                                    mSendingData = false;*/
+                                    final byte[] dataCouper = halveYUV420(data, frameWidth, frameHeight, 12);
+
+                                    ThreadSendUDPFeed UDP = null;
+                                        //UDP = new ThreadSendUDPFeed(packRaw(dataCouper), ServerIP, 666);
+                                    UDP = new ThreadSendUDPFeed(dataCouper, ServerIP, 666);
+                                    UDP.send();
                                     mSendingData = false;
                                 }
                             }).start();
-
-                    }
-
+                        }
 /*
-                        if (Libre) {
-                            int rgb[] = new int[(frameWidth * frameHeight) / mSkippedFrameHorizontal / mSkippedFrameVertical];
-                            int[] image = decodeYUV420SP(rgb, data, frameWidth, frameHeight, mSkippedFrameHorizontal, mSkippedFrameVertical);
-                            if (mImageAvant == null) {
-                                mImageAvant = image;
-                            }
 
-                            Libre = false;
-                            ThreadCheckMovement checkMovement = new ThreadCheckMovement(image, frameWidth, frameHeight, mSkippedFrameHorizontal, mSkippedFrameVertical,
-                                    mSensibility, mImageAvant, mActivity, mMouvementTextView, mToggleButton, mContext, isAlarmOn);
-                            (new Thread(checkMovement)).start();
-                            mImageAvant = checkMovement.getmImage();
-                            Libre = true;
+                        if (Libre) {
+                            (new Thread() {
+                                public void run() {
+                                Libre = false;
+                                int rgb[] = new int[(frameWidth * frameHeight) / mSkippedFrameHorizontal / mSkippedFrameVertical];
+                                int[] image = decodeYUV420SP(rgb, data, frameWidth, frameHeight, mSkippedFrameHorizontal, mSkippedFrameVertical);
+                                if (mImageAvant == null) {
+                                    mImageAvant = image;
+                                }
+                                ThreadCheckMovement checkMovement = new ThreadCheckMovement(image, frameWidth, frameHeight, mSkippedFrameHorizontal, mSkippedFrameVertical,
+                                        mSensibility, mImageAvant, mActivity, mMouvementTextView, mToggleButton, mContext, isAlarmOn);
+                                (new Thread(checkMovement)).start();
+                                mImageAvant = checkMovement.getmImage();
+                                Libre = true;
+                                }
+                            }).start();
                         }*/
                     }
                 });
@@ -309,6 +324,16 @@ public class ThreadCamera extends Thread {
                 }
             }
             return yuv;
+        }
+
+        byte[] packRaw(byte[] b) throws IOException {
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+
+            GZIPOutputStream zos = new GZIPOutputStream(baos);
+            zos.write(b);
+            zos.close();
+            Log.d("CameraTest", Integer.toString(baos.toByteArray().length));
+            return baos.toByteArray();
         }
     }
 }

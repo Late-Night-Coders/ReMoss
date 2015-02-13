@@ -1,10 +1,14 @@
 package stevenseesall.com.camera;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.util.Log;
 
 import java.io.BufferedReader;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
@@ -26,6 +30,10 @@ public class ThreadSendUDPFeed {
     }
 
     public void send(){
+        //Bitmap image = BitmapFactory.decodeByteArray(mData, 0, mData.length);
+        //image.compress(Bitmap.CompressFormat.JPEG, 10);
+        //OutputStream fOut = new FileOutputStream(externalStorageFile);
+
         DatagramSocket clientSocket = null;
         try {
             clientSocket = new DatagramSocket();
