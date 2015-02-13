@@ -27,13 +27,17 @@ import javax.swing.JLabel;
  */
 public class TCPThread implements Runnable{
     JLabel mJLabel;
+    JLabel mJLabel2;
     int mPort;
+    int[] mImageAvant;
+
      final ExecutorService clientProcessingPool = Executors
                 .newFixedThreadPool(10);
     
-    public TCPThread(JLabel jLabel, int port){
+    public TCPThread(JLabel jLabel, JLabel jLabel2, int port){
         mJLabel = jLabel;
         mPort = port;
+        mJLabel2 = jLabel2;
     }
     
     @Override
@@ -52,6 +56,8 @@ public class TCPThread implements Runnable{
                             Image img = getImageFromArrayMEM(image,480,270);
                             mJLabel.setIcon(new ImageIcon(img));
                             clientSocket.close();
+                            (new Thread(new CheckMovement(image, mImageAvant))).start();
+                            mImageAvant = image;
                         }
                         catch(IOException e){
                             System.out.println(e);
@@ -107,5 +113,52 @@ public class TCPThread implements Runnable{
             dis.readFully(data);
             System.out.println(data.length);
             return data;
+    }
+    
+    private class CheckMovement implements Runnable{
+     int[] mImageAvant;
+     int[] mImageActual;
+     int mDiff = 0;
+     
+     public CheckMovement(int[] imageAvant, int[] imageActual){
+         mImageAvant = imageAvant;
+         mImageActual = imageActual;
+     }
+     
+     public void run(){
+         
+            if(mImageAvant != null) {
+                for (int x = 0; x < mImageActual.length; x++) {
+                    // Décalage de bits pour trouver les valeurs RGB actuelles
+                    int rActual = (mImageActual[x] & 0x00ff0000) >> 16;
+                    int gActual = (mImageActual[x] & 0x0000ff00) >> 8;
+                    int bActual = mImageActual[x] & 0x0000ff;
+
+                    // Décalage de bits pour trouver les valeurs RGB de l'ancienne image
+                    int rOld = (mImageAvant[x] & 0x00ff0000) >> 16;
+                    int gOld = (mImageAvant[x] & 0x0000ff00) >> 8;
+                    int bOld = mImageAvant[x] & 0x0000ff;
+
+                    if(rActual <= rOld -15 || rActual >= rOld + 15)
+                    {
+                        mDiff++;
+                    }
+                    else {
+                        if (gActual <= gOld -15 || gActual >= gOld + 15) {
+                            mDiff++;
+                        }
+                        else
+                        {
+                            if (bActual <= bOld -15 || bActual >= bOld + 15) {
+                                mDiff++;
+                            }
+                        }
+                    }
+                }
+                mJLabel2.setText("Différence: " + mDiff);
+            }
         }
+    }
 }
+
+

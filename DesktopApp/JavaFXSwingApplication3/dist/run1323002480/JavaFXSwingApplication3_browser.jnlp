@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<jnlp spec="1.0" xmlns:jfx="http://javafx.com" href="JavaFXSwingApplication3.jnlp">
+<jnlp spec="1.0" xmlns:jfx="http://javafx.com" href="JavaFXSwingApplication3_browser.jnlp">
   <information>
     <title>JavaFXSwingApplication3</title>
     <vendor>Administrateur</vendor>
@@ -11,12 +11,12 @@
   </resources>
   <resources>
     <j2se version="1.6+" href="http://java.sun.com/products/autodl/j2se"/>
-    <jar href="JavaFXSwingApplication3.jar" size="25741" download="eager" />
+    <jar href="JavaFXSwingApplication3.jar" size="28116" download="eager" />
   </resources>
 <security>
   <all-permissions/>
 </security>
-  <application-desc main-class="newpackage.NewJFrame"  name="JavaFXSwingApplication3" >
-  </application-desc>
+  <applet-desc  width="800" height="600" main-class="newpackage.NewJFrame"  name="JavaFXSwingApplication3" >
+  </applet-desc>
   <update check="always"/>
 </jnlp>
