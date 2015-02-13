@@ -19,6 +19,7 @@ import java.net.Socket;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import javax.swing.ImageIcon;
+import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 
 /**
@@ -28,16 +29,18 @@ import javax.swing.JLabel;
 public class TCPThread implements Runnable{
     JLabel mJLabel;
     JLabel mJLabel2;
+    JCheckBox mJCheckBox;
     int mPort;
     int[] mImageAvant;
 
      final ExecutorService clientProcessingPool = Executors
                 .newFixedThreadPool(10);
     
-    public TCPThread(JLabel jLabel, JLabel jLabel2, int port){
+    public TCPThread(JLabel jLabel, JLabel jLabel2, JCheckBox jCheckBox, int port){
         mJLabel = jLabel;
         mPort = port;
         mJLabel2 = jLabel2;
+        mJCheckBox = jCheckBox;
     }
     
     @Override
@@ -51,13 +54,21 @@ public class TCPThread implements Runnable{
                         final Socket clientSocket = serverSocket.accept();
                         try{
                             byte[] byteArr = readBytes(clientSocket);
+                            clientSocket.close();
                             int rgb[] = new int[194400];
                             int[] image = decodeYUV420SP(rgb, byteArr, 480, 270);
-                            Image img = getImageFromArrayMEM(image,480,270);
-                            mJLabel.setIcon(new ImageIcon(img));
-                            clientSocket.close();
-                            (new Thread(new CheckMovement(image, mImageAvant))).start();
-                            mImageAvant = image;
+                            if(mJCheckBox.isSelected()){
+                                (new Thread(new CheckMovement(image, mImageAvant))).start();
+                                mImageAvant = image;
+                            }
+                            else{
+                                Image img = getImageFromArrayMEM(image,480,270);
+                                mJLabel.setIcon(new ImageIcon(img));
+                            }
+                            
+                            
+                            
+                            
                         }
                         catch(IOException e){
                             System.out.println(e);
@@ -128,7 +139,7 @@ public class TCPThread implements Runnable{
      public void run(){
          
             if(mImageAvant != null) {
-                for (int x = 0; x < mImageActual.length; x++) {
+                for (int x = 0; x < mImageActual.length; x+=2) {
                     // Décalage de bits pour trouver les valeurs RGB actuelles
                     int rActual = (mImageActual[x] & 0x00ff0000) >> 16;
                     int gActual = (mImageActual[x] & 0x0000ff00) >> 8;
@@ -142,20 +153,25 @@ public class TCPThread implements Runnable{
                     if(rActual <= rOld -15 || rActual >= rOld + 15)
                     {
                         mDiff++;
+                        mImageActual[x] = 0xffff0000;
                     }
                     else {
                         if (gActual <= gOld -15 || gActual >= gOld + 15) {
                             mDiff++;
+                            mImageActual[x] = 0xffff0000;
                         }
                         else
                         {
                             if (bActual <= bOld -15 || bActual >= bOld + 15) {
                                 mDiff++;
+                                mImageActual[x] = 0xffff0000;
                             }
                         }
                     }
                 }
                 mJLabel2.setText("Différence: " + mDiff);
+                Image img = getImageFromArrayMEM(mImageActual,480,270);
+                mJLabel.setIcon(new ImageIcon(img));
             }
         }
     }
