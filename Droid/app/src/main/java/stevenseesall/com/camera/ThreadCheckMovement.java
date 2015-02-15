@@ -5,49 +5,31 @@ import android.content.Context;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
-import android.util.Log;
 import android.widget.TextView;
-import android.widget.ToggleButton;
 
-/**
- * Created by Fred on 2/10/2015.
- */
 public class ThreadCheckMovement implements Runnable {
     int[] mImage;
     int[] mImageAvant;
-    int mFrameWidth;
-    int mFrameHeight;
-    int mSkippedFrameHorizontal;
-    int mSkippedFrameVertical;
     int mSensibility;
     Activity mActivity;
     TextView mMouvementTextView;
     Boolean isAlarmOn;
     Boolean isAlarmRunning = false;
-
-    ToggleButton mToggleButton;
     Context mContext;
 
-    public ThreadCheckMovement(int[] image, int frameWidth, int frameHeight, int skippedFrameHorizontal, int skippedFrameVertical,
-                               int sensibility, int[] imageAvant, Activity activity, TextView mouvementTextView, ToggleButton toggleButton,
-                               Context context, Boolean isalarmOn)
+    public int[] getmImage(){
+        return mImage;
+    }
+
+    public ThreadCheckMovement(int[] image, int frameWidth, int frameHeight, int sensibility, int[] imageAvant, Activity activity, TextView mouvementTextView, Context context, Boolean isalarmOn)
     {
         mImage = image;
-        mFrameWidth = frameWidth;
-        mFrameHeight = frameHeight;
-        mSkippedFrameHorizontal = skippedFrameHorizontal;
-        mSkippedFrameVertical = skippedFrameVertical;
         mSensibility = sensibility;
         mImageAvant = imageAvant;
         mActivity = activity;
         mMouvementTextView = mouvementTextView;
-        mToggleButton = toggleButton;
         mContext = context;
         isAlarmOn = isalarmOn;
-    }
-
-    public int[] getmImage(){
-        return mImage;
     }
 
     public void run(){
@@ -56,12 +38,10 @@ public class ThreadCheckMovement implements Runnable {
         long diff = 0;
         if(mImageAvant != null) {
             for (int x = 0; x < mImage.length; x++) {
-                // Décalage de bits pour trouver les valeurs RGB actuelles
                 int rActual = (mImage[x] & 0x00ff0000) >> 16;
                 int gActual = (mImage[x] & 0x0000ff00) >> 8;
                 int bActual = mImage[x] & 0x0000ff;
 
-                // Décalage de bits pour trouver les valeurs RGB de l'ancienne image
                 int rOld = (mImageAvant[x] & 0x00ff0000) >> 16;
                 int gOld = (mImageAvant[x] & 0x0000ff00) >> 8;
                 int bOld = mImageAvant[x] & 0x0000ff;
@@ -124,6 +104,7 @@ public class ThreadCheckMovement implements Runnable {
                 mMouvementTextView.setText("Mouvement!");
             }
         });
+
         if(!isAlarmRunning && isAlarmOn) {
             new Thread(new Runnable() {
                 public void run() {
