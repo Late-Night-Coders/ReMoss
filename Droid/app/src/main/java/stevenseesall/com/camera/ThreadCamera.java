@@ -203,8 +203,6 @@ public class ThreadCamera extends Thread {
             Camera.Size cameraSize = sizes.get(0);
             parameters.setPreviewSize(cameraSize.width, cameraSize.height);
             parameters.setRotation(90);
-            parameters.setPreviewFrameRate(8);
-
             mCamera.setDisplayOrientation(90);
             mCamera.setParameters(parameters);
 
@@ -217,16 +215,8 @@ public class ThreadCamera extends Thread {
                         final int frameWidth = camera.getParameters().getPreviewSize().width;
 
                         if(!ScreenSizeSent){
-                            (new Thread() {
-                                public void run() {
-                                    SendScreenSizeTCP scr = new SendScreenSizeTCP(frameHeight, frameWidth, ServerIP, 666);
-                                    try {
-                                        scr.send();
-                                    } catch (IOException e) {
-                                        Log.d("CameraTest", e.getMessage());
-                                    }
-                                }
-                            }).start();
+                            new Thread(new SendScreenSizeTCP(frameHeight, frameWidth, ServerIP, 666)).start();
+                            ScreenSizeSent = true;
                         }
 
 
@@ -235,17 +225,16 @@ public class ThreadCamera extends Thread {
                             (new Thread() {
                                 public void run() {
                                     final byte[] dataCouper = halveYUV420(data, frameWidth, frameHeight, 6);
-                                    byte[] compressedData = new byte[100000];
                                     try {
-                                        compressedData = compress(dataCouper);
+                                        byte[] compressedData = compress(dataCouper);
+                                        ThreadSendUDPFeed UDP = new ThreadSendUDPFeed(compressedData, ServerIP, 666);
+                                        UDP.send();
                                     } catch (IOException e) {
                                         e.printStackTrace();
                                     }
-                                    ThreadSendUDPFeed UDP = null;
-                                        //UDP = new ThreadSendUDPFeed(packRaw(dataCouper), ServerIP, 666);
-                                    UDP = new ThreadSendUDPFeed(compressedData, ServerIP, 666);
-                                    UDP.send();
-                                    mSendingData = false;
+                                    finally{
+                                        mSendingData = false;
+                                    }
                                 }
                             }).start();
                         }
@@ -354,30 +343,6 @@ public class ThreadCamera extends Thread {
             deflater.end();
 
             return output;
-        }
-    }
-
-    private class SendScreenSizeTCP {
-        String mServerIP;
-        int mHeight = 0;
-        int mWidth = 0;
-        int mPort;
-
-        public SendScreenSizeTCP(int height, int width, String serverIP, int port){
-            mServerIP = serverIP;
-            mHeight = height;
-            mWidth = width;
-            mPort = port;
-        }
-
-        public void send() throws IOException {
-            Socket clientSocket = new Socket(mServerIP, mPort);
-            DataOutputStream dOut = new DataOutputStream(clientSocket.getOutputStream());
-            dOut.writeInt(mHeight);
-            dOut.writeInt(mWidth);
-            dOut.close();
-            clientSocket.close();
-            ScreenSizeSent = true;
         }
     }
 }
