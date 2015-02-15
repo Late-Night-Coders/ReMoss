@@ -10,6 +10,7 @@ import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.image.BufferedImage;
 import java.awt.image.MemoryImageSource;
+import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -18,6 +19,10 @@ import java.net.DatagramSocket;
 import java.net.Socket;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.zip.DataFormatException;
+import java.util.zip.Inflater;
 import javax.swing.ImageIcon;
 import javax.swing.JCheckBox;
 import javax.swing.JFrame;
@@ -35,7 +40,7 @@ public class UDPThread implements Runnable{
     int[] mImageAvant;
     int mHeight;
     int mWidth;
-    int decrementor = 12;
+    int decrementor = 6;
 
      final ExecutorService clientProcessingPool = Executors
                 .newFixedThreadPool(10);
@@ -52,14 +57,14 @@ public class UDPThread implements Runnable{
     @Override
     public void run() {
         try {
-            byte[] receiveData = new byte[21600];
+            byte[] receiveData = new byte[100000];
             DatagramSocket serverSocket = new DatagramSocket(mPort);
             System.out.println("En attente de paquets UDP...");
             while (true) {
                 DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
                 serverSocket.receive(receivePacket);
                 int rgb[] = new int[receiveData.length];
-                int[] image = decodeYUV420SP(rgb, receivePacket.getData(), mWidth / decrementor, mHeight / decrementor);
+                int[] image = decodeYUV420SP(rgb, decompress(receivePacket.getData()), mWidth / decrementor, mHeight / decrementor);
                 
                 if(mJCheckBox.isSelected()){
                     (new Thread(new UDPThread.CheckMovement(image, mImageAvant))).start();
@@ -68,13 +73,15 @@ public class UDPThread implements Runnable{
                 else{
                     Image img = getImageFromArrayMEM(image,mWidth / decrementor, mHeight / decrementor);
                     BufferedImage image2 = toBufferedImage(img); // transform it 
-                    Image newimg = image2.getScaledInstance(mWidth / decrementor * 4, mHeight / decrementor * 4,  java.awt.Image.SCALE_SMOOTH);
+                    Image newimg = image2.getScaledInstance(640, 360,  java.awt.Image.SCALE_SMOOTH);
                     mJLabel.setIcon(new ImageIcon(newimg));
                 }
             }
         } catch (IOException e) {
             System.err.println("Unable to process client request");
             e.printStackTrace();
+        } catch (DataFormatException ex) {
+            Logger.getLogger(UDPThread.class.getName()).log(Level.SEVERE, null, ex);
         }
         
     }
@@ -131,6 +138,23 @@ public class UDPThread implements Runnable{
         return bimage;
     }
     
+    public static byte[] decompress(byte[] data) throws IOException, DataFormatException {  
+        Inflater inflater = new Inflater();   
+        inflater.setInput(data);  
+
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream(data.length);  
+        byte[] buffer = new byte[21600];  
+        while (!inflater.finished()) {  
+         int count = inflater.inflate(buffer);  
+         outputStream.write(buffer, 0, count);  
+        }  
+        outputStream.close();  
+        byte[] output = outputStream.toByteArray();  
+
+        inflater.end();
+        return output;  
+       }  
+    
     private class CheckMovement implements Runnable{
      int[] mImageAvant;
      int[] mImageActual;
@@ -175,7 +199,7 @@ public class UDPThread implements Runnable{
                     }
                 }
                 mJLabel2.setText("Différence: " + mDiff);
-                Image img = getImageFromArrayMEM(mImageActual,160,90);
+                Image img = getImageFromArrayMEM(mImageActual,mWidth / decrementor, mHeight / decrementor);
                 BufferedImage image2 = toBufferedImage(img); // transform it 
                 Image newimg = image2.getScaledInstance(640, 360,  java.awt.Image.SCALE_SMOOTH);
                 mJLabel.setIcon(new ImageIcon(newimg));

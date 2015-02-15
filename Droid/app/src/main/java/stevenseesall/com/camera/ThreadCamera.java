@@ -41,6 +41,7 @@ import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.zip.Deflater;
 import java.util.zip.GZIPOutputStream;
 
 /**
@@ -228,25 +229,21 @@ public class ThreadCamera extends Thread {
                             }).start();
                         }
 
+
                         if(!mSendingData && ScreenSizeSent){
                             mSendingData = true;
                             (new Thread() {
                                 public void run() {
-                                    /*ThreadSendTCPFeed TCP = new ThreadSendTCPFeed(dataCouper, ServerIP, 666);
+                                    final byte[] dataCouper = halveYUV420(data, frameWidth, frameHeight, 6);
+                                    byte[] compressedData = new byte[100000];
                                     try {
-                                        TCP.send();
-                                        Thread.sleep(100);
+                                        compressedData = compress(dataCouper);
                                     } catch (IOException e) {
                                         e.printStackTrace();
-                                    } catch (InterruptedException e) {
-                                        e.printStackTrace();
                                     }
-                                    mSendingData = false;*/
-                                    final byte[] dataCouper = halveYUV420(data, frameWidth, frameHeight, 12);
-
                                     ThreadSendUDPFeed UDP = null;
                                         //UDP = new ThreadSendUDPFeed(packRaw(dataCouper), ServerIP, 666);
-                                    UDP = new ThreadSendUDPFeed(dataCouper, ServerIP, 666);
+                                    UDP = new ThreadSendUDPFeed(compressedData, ServerIP, 666);
                                     UDP.send();
                                     mSendingData = false;
                                 }
@@ -339,14 +336,24 @@ public class ThreadCamera extends Thread {
             return yuv;
         }
 
-        byte[] packRaw(byte[] b) throws IOException {
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        public byte[] compress(byte[] data) throws IOException {
+            Deflater deflater = new Deflater();
+            deflater.setInput(data);
 
-            GZIPOutputStream zos = new GZIPOutputStream(baos);
-            zos.write(b);
-            zos.close();
-            Log.d("CameraTest", Integer.toString(baos.toByteArray().length));
-            return baos.toByteArray();
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream(data.length);
+
+            deflater.finish();
+            byte[] buffer = new byte[25000];
+            while (!deflater.finished()) {
+                int count = deflater.deflate(buffer); // returns the generated code... index
+                outputStream.write(buffer, 0, count);
+            }
+            outputStream.close();
+            byte[] output = outputStream.toByteArray();
+
+            deflater.end();
+
+            return output;
         }
     }
 
