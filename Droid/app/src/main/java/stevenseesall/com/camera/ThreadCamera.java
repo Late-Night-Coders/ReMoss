@@ -60,10 +60,11 @@ public class ThreadCamera extends Thread {
     TextView mMouvementTextView;
     ToggleButton mToggleButton;
     Boolean isAlarmOn = false;
-    String ServerIP = "10.1.153.114";
+    String ServerIP = "192.168.1.100";
     int mSkippedFrameHorizontal = 3;
     int mSkippedFrameVertical = 3;
     Boolean mSendingData = false;
+    Boolean ScreenSizeSent = false;
 
     public ThreadCamera(final Context context, Activity activity, SeekBar seekBar, FrameLayout frameLayout, TextView textView,
                         TextView textViewMouvement, ToggleButton toggleButton) throws IOException {
@@ -214,8 +215,20 @@ public class ThreadCamera extends Thread {
                         final int frameHeight = camera.getParameters().getPreviewSize().height;
                         final int frameWidth = camera.getParameters().getPreviewSize().width;
 
+                        if(!ScreenSizeSent){
+                            (new Thread() {
+                                public void run() {
+                                    SendScreenSizeTCP scr = new SendScreenSizeTCP(frameHeight, frameWidth, ServerIP, 666);
+                                    try {
+                                        scr.send();
+                                    } catch (IOException e) {
+                                        Log.d("CameraTest", e.getMessage());
+                                    }
+                                }
+                            }).start();
+                        }
 
-                        if(!mSendingData){
+                        if(!mSendingData && ScreenSizeSent){
                             mSendingData = true;
                             (new Thread() {
                                 public void run() {
@@ -334,6 +347,30 @@ public class ThreadCamera extends Thread {
             zos.close();
             Log.d("CameraTest", Integer.toString(baos.toByteArray().length));
             return baos.toByteArray();
+        }
+    }
+
+    private class SendScreenSizeTCP {
+        String mServerIP;
+        int mHeight = 0;
+        int mWidth = 0;
+        int mPort;
+
+        public SendScreenSizeTCP(int height, int width, String serverIP, int port){
+            mServerIP = serverIP;
+            mHeight = height;
+            mWidth = width;
+            mPort = port;
+        }
+
+        public void send() throws IOException {
+            Socket clientSocket = new Socket(mServerIP, mPort);
+            DataOutputStream dOut = new DataOutputStream(clientSocket.getOutputStream());
+            dOut.writeInt(mHeight);
+            dOut.writeInt(mWidth);
+            dOut.close();
+            clientSocket.close();
+            ScreenSizeSent = true;
         }
     }
 }

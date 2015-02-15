@@ -33,15 +33,20 @@ public class UDPThread implements Runnable{
     JCheckBox mJCheckBox;
     int mPort;
     int[] mImageAvant;
+    int mHeight;
+    int mWidth;
+    int decrementor = 12;
 
      final ExecutorService clientProcessingPool = Executors
                 .newFixedThreadPool(10);
     
-    public UDPThread(JLabel jLabel, JLabel jLabel2, JCheckBox jCheckBox, int port){
+    public UDPThread(JLabel jLabel, JLabel jLabel2, JCheckBox jCheckBox, int port, int height, int width){
         mJLabel = jLabel;
         mPort = port;
         mJLabel2 = jLabel2;
         mJCheckBox = jCheckBox;
+        mHeight = height;
+        mWidth = width;
     }
     
     @Override
@@ -53,17 +58,17 @@ public class UDPThread implements Runnable{
             while (true) {
                 DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
                 serverSocket.receive(receivePacket);
-                int rgb[] = new int[21600];
-                int[] image = decodeYUV420SP(rgb, receivePacket.getData(), 160, 90);
+                int rgb[] = new int[receiveData.length];
+                int[] image = decodeYUV420SP(rgb, receivePacket.getData(), mWidth / decrementor, mHeight / decrementor);
                 
                 if(mJCheckBox.isSelected()){
                     (new Thread(new UDPThread.CheckMovement(image, mImageAvant))).start();
                     mImageAvant = image;
                 }
                 else{
-                    Image img = getImageFromArrayMEM(image,160,90);
+                    Image img = getImageFromArrayMEM(image,mWidth / decrementor, mHeight / decrementor);
                     BufferedImage image2 = toBufferedImage(img); // transform it 
-                    Image newimg = image2.getScaledInstance(640, 360,  java.awt.Image.SCALE_SMOOTH);
+                    Image newimg = image2.getScaledInstance(mWidth / decrementor * 4, mHeight / decrementor * 4,  java.awt.Image.SCALE_SMOOTH);
                     mJLabel.setIcon(new ImageIcon(newimg));
                 }
             }

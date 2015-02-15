@@ -17,7 +17,9 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 
+import java.io.DataOutputStream;
 import java.io.IOException;
+import java.net.Socket;
 
 public class MainActivity extends ActionBarActivity {
 
@@ -57,8 +59,6 @@ public class MainActivity extends ActionBarActivity {
 
         return super.onOptionsItemSelected(item);
     }
-
-
 }
 
 

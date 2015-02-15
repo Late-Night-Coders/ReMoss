@@ -184,8 +184,7 @@ public class NewJFrame extends javax.swing.JFrame {
  public void startServer() {
         final ExecutorService clientProcessingPool = Executors
                 .newFixedThreadPool(10);
-        //(new Thread(new TCPThread(NewJFrame.this.jLabel1, NewJFrame.this.jLabel2, NewJFrame.this.jCheckBox1, 666))).start();
-        (new Thread(new UDPThread(NewJFrame.this.jLabel1, NewJFrame.this.jLabel2, NewJFrame.this.jCheckBox1, 666))).start();
+        (new Thread(new TCPThread(NewJFrame.this.jLabel1, NewJFrame.this.jLabel2, NewJFrame.this.jCheckBox1, 666))).start();
     }
  
     public static BufferedImage toBufferedImage(Image img)
