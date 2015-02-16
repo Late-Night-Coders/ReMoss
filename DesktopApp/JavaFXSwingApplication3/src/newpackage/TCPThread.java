@@ -32,6 +32,8 @@ public class TCPThread implements Runnable{
     JCheckBox mJCheckBox;
     int mPort;
     int[] mImageAvant;
+    int mHeight;
+    int mWidth;
 
      final ExecutorService clientProcessingPool = Executors
                 .newFixedThreadPool(10);
@@ -48,28 +50,18 @@ public class TCPThread implements Runnable{
         try {
             ServerSocket serverSocket = new ServerSocket(mPort);
             System.out.println("En attente de paquets TCP...");
-            
-            while (true) {
-                        final Socket clientSocket = serverSocket.accept();
-                        try{
-                            byte[] byteArr = readBytes(clientSocket);
-                            clientSocket.close();
-                            int rgb[] = new int[194400];
-                            int[] image = decodeYUV420SP(rgb, byteArr, 480, 270);
-                            if(mJCheckBox.isSelected()){
-                                (new Thread(new CheckMovement(image, mImageAvant))).start();
-                                mImageAvant = image;
-                            }
-                            else{
-                                Image img = getImageFromArrayMEM(image,480,270);
-                                mJLabel.setIcon(new ImageIcon(img));
-                            }
-                        }
-                        catch(IOException e){
-                            System.out.println(e);
-                        }
-                        
-            }               
+
+            final Socket clientSocket = serverSocket.accept();
+            try{
+                readBytes(clientSocket);
+                System.out.println("h = " + mWidth);
+                System.out.println("w = " + mHeight);
+                (new Thread(new UDPThread(mJLabel, mJLabel2, mJCheckBox, mPort, mHeight, mWidth))).start();
+                clientSocket.close();
+            }
+            catch(IOException e){
+                System.out.println(e);
+            }           
         } catch (IOException e) {
             System.err.println("Unable to process client request");
             e.printStackTrace();
@@ -111,13 +103,12 @@ public class TCPThread implements Runnable{
         return tk.createImage(mis);
     }
     
-    public byte[] readBytes(Socket socket) throws IOException {
+    public void readBytes(Socket socket) throws IOException {
             InputStream in = socket.getInputStream();
             DataInputStream dis = new DataInputStream(in);
             
-            byte[] data = new byte[194400];
-            dis.readFully(data);
-            return data;
+            mHeight = dis.readInt();
+            mWidth = dis.readInt();
     }
     
     private class CheckMovement implements Runnable{
