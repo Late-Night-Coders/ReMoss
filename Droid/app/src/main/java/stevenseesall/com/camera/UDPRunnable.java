@@ -22,11 +22,12 @@ public class UDPRunnable extends Thread {
     Activity mActivity;
     FrameLayout mFrameLayout;
     private SurfaceHolder mHolder;
-    String ServerIP = "192.168.1.100";
+    String ServerIP = "";
     Boolean mSendingData = false;
     Boolean ScreenSizeSent = false;
 
-    public UDPRunnable(final Context context, Activity activity, FrameLayout frameLayout){
+    public UDPRunnable(final Context context, Activity activity, FrameLayout frameLayout, String ip){
+        ServerIP = ip;
         mContext = context;
         mActivity = activity;
         mFrameLayout = frameLayout;
