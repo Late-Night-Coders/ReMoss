@@ -7,7 +7,7 @@ import android.media.RingtoneManager;
 import android.net.Uri;
 import android.widget.TextView;
 
-public class ThreadCheckMovement implements Runnable {
+public class CheckMovementRunnable implements Runnable {
     int[] mImage;
     int[] mImageAvant;
     int mSensibility;
@@ -21,7 +21,7 @@ public class ThreadCheckMovement implements Runnable {
         return mImage;
     }
 
-    public ThreadCheckMovement(int[] image, int frameWidth, int frameHeight, int sensibility, int[] imageAvant, Activity activity, TextView mouvementTextView, Context context, Boolean isalarmOn)
+    public CheckMovementRunnable(int[] image, int frameWidth, int frameHeight, int sensibility, int[] imageAvant, Activity activity, TextView mouvementTextView, Context context, Boolean isalarmOn)
     {
         mImage = image;
         mSensibility = sensibility;
@@ -109,11 +109,11 @@ public class ThreadCheckMovement implements Runnable {
             new Thread(new Runnable() {
                 public void run() {
                     isAlarmRunning = true;
-                    Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_RINGTONE);
+                    Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
                     if(notification != null){
                         notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM);
                         if(notification != null){
-                            notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+                            notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_RINGTONE);
                         }
                     }
                     Ringtone r = RingtoneManager.getRingtone(mContext, notification);

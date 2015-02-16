@@ -6,7 +6,6 @@ import android.hardware.Camera;
 import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
-import android.widget.FrameLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.ToggleButton;
@@ -107,11 +106,8 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
 
     @Override
     public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
-        // If your preview can change or rotate, take care of those events here.
-        // Make sure to stop the preview before resizing or reformatting it.
 
         if (mHolder.getSurface() == null) {
-            // preview surface does not exist
             return;
         }
 
@@ -147,7 +143,7 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
                                     if (mImageAvant == null) {
                                         mImageAvant = image;
                                     }
-                                    ThreadCheckMovement checkMovement = new ThreadCheckMovement(image, frameWidth, frameHeight,
+                                    CheckMovementRunnable checkMovement = new CheckMovementRunnable(image, frameWidth, frameHeight,
                                             mSensibility, mImageAvant, mActivity, mMouvementTextView, mContext, isAlarmOn);
                                     (new Thread(checkMovement)).start();
                                     mImageAvant = checkMovement.getmImage();

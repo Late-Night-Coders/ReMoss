@@ -55,8 +55,8 @@ public class MainActivity extends ActionBarActivity {
         @Override
         public void onClick(View v) {
             setContentView(R.layout.udpcamera);
-            CameraUDPRunnable cameraUDPRunnable = new CameraUDPRunnable(getApplicationContext(), mActivity, (FrameLayout) findViewById(R.id.camera_preview));
-            cameraUDPRunnable.start();
+            UDPRunnable UDPRunnable = new UDPRunnable(getApplicationContext(), mActivity, (FrameLayout) findViewById(R.id.camera_preview));
+            UDPRunnable.start();
         }
     }
 
@@ -72,9 +72,9 @@ public class MainActivity extends ActionBarActivity {
         @Override
         public void onClick(View v) {
             setContentView(R.layout.stand_alone);
-            CameraStandAloneRunnable TC = null;
+            StandAloneRunnable TC = null;
             try {
-                TC = new CameraStandAloneRunnable(getApplicationContext(), mActivity, (SeekBar) findViewById(R.id.seekBar),
+                TC = new StandAloneRunnable(getApplicationContext(), mActivity, (SeekBar) findViewById(R.id.seekBar),
                         (FrameLayout) findViewById(R.id.camera_preview), (TextView) findViewById(R.id.textView), (TextView) findViewById(R.id.textView3), (ToggleButton) findViewById(R.id.toggleButton));
             } catch (IOException e) {
                 e.printStackTrace();

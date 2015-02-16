@@ -16,7 +16,7 @@ import java.util.zip.Deflater;
 /**
  * Created by Fred on 2/14/2015.
  */
-public class CameraUDPRunnable extends Thread {
+public class UDPRunnable extends Thread {
     Context mContext;
     Camera mCamera;
     Activity mActivity;
@@ -26,7 +26,7 @@ public class CameraUDPRunnable extends Thread {
     Boolean mSendingData = false;
     Boolean ScreenSizeSent = false;
 
-    public CameraUDPRunnable(final Context context, Activity activity, FrameLayout frameLayout){
+    public UDPRunnable(final Context context, Activity activity, FrameLayout frameLayout){
         mContext = context;
         mActivity = activity;
         mFrameLayout = frameLayout;

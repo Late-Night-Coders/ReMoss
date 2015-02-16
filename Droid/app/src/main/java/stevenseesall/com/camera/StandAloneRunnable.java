@@ -16,25 +16,20 @@ import java.io.IOException;
 /**
  * Created by Fred on 2/7/2015.
  */
-public class CameraStandAloneRunnable extends Thread {
+public class StandAloneRunnable extends Thread {
     Context mContext;
     Camera mCamera;
     Activity mActivity;
     SeekBar mSeekBar;
     FrameLayout mFrameLayout;
-    int mSensibility = 0;
-    private SurfaceHolder mHolder;
-    boolean Libre = true;
     int[] mImageAvant;
     TextView mTextView;
     TextView mMouvementTextView;
     ToggleButton mToggleButton;
     Boolean isAlarmOn = false;
-    int mRationCheckedPixelHor = 3;
-    int mRationCheckedPixelVer = 3;
     
-    public CameraStandAloneRunnable(final Context context, Activity activity, SeekBar seekBar, FrameLayout frameLayout, TextView textView,
-                                    TextView textViewMouvement, ToggleButton toggleButton) throws IOException {
+    public StandAloneRunnable(final Context context, Activity activity, SeekBar seekBar, FrameLayout frameLayout, TextView textView,
+                              TextView textViewMouvement, ToggleButton toggleButton) throws IOException {
         mContext = context;
         mActivity = activity;
         mSeekBar = seekBar;
