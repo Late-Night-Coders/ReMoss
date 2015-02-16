@@ -1,14 +1,11 @@
 package stevenseesall.com.camera;
 
 import android.app.Activity;
-import android.content.DialogInterface;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
-import android.view.Menu;
-import android.view.MenuItem;
+import android.util.Log;
 import android.view.View;
-import android.widget.Button;
+import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -25,6 +22,35 @@ public class MainActivity extends ActionBarActivity{
         findViewById(R.id.btn_StandAlone).setOnClickListener(new StandAlone_OnClickListener(this));
     }
 
+    private class Connection_OnClickListener implements View.OnClickListener {
+
+        Activity mActivity;
+        EditText mServerIPField = (EditText)findViewById(R.id.txtIp);
+        FrameLayout mCameraPreview;
+
+        public Connection_OnClickListener(Activity activity) {
+            mActivity = activity;
+        }
+
+        @Override
+        public void onClick(View v) {
+            setContentView(R.layout.remote_mode);
+            mCameraPreview = (FrameLayout)findViewById(R.id.camera_preview);
+
+            String serverIp = mServerIPField.getText().toString();
+            Log.d("DEBUG", serverIp);
+            Log.d("DEBUG", Boolean.toString(mActivity==null));
+            Log.d("DEBUG", Boolean.toString(getApplicationContext()==null));
+            UDPRunnable udpRunnable = new UDPRunnable(
+                    getApplicationContext(),
+                    mActivity,
+                    mCameraPreview,
+                    serverIp
+            );
+            udpRunnable.start();
+        }
+    }
+
     private class PC_OnClickListener implements View.OnClickListener {
 
         Activity mActivity;
@@ -36,6 +62,7 @@ public class MainActivity extends ActionBarActivity{
         @Override
         public void onClick(View v) {
             setContentView(R.layout.login);
+            findViewById(R.id.btn_Connect).setOnClickListener(new Connection_OnClickListener(mActivity));
         }
     }
 

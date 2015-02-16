@@ -35,16 +35,17 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
     int mRationCheckedPixelHor = 3;
     int mRationCheckedPixelVer = 3;
     Boolean IsStandAlone = false;
-    String ServerIP = "192.168.1.100";
+    String mServerIP;
     Boolean mSendingData = false;
     Boolean ScreenSizeSent = false;
 
-    public CameraPreview(final Context context, Camera camera) {
+    public CameraPreview(final Context context, Camera camera, String mServerIP) {
         super(context);
         mHolder = getHolder();
         mHolder.addCallback(this);
         mHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
         mCamera = camera;
+        this.mServerIP = mServerIP;
     }
 
     public CameraPreview(final Context context, Camera camera, Activity activity, SeekBar seekBar,
@@ -154,7 +155,7 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
                     }
                     else{
                         if(!ScreenSizeSent){
-                            new Thread(new SendScreenSizeTCP(frameHeight, frameWidth, ServerIP, 666)).start();
+                            new Thread(new SendScreenSizeTCP(frameHeight, frameWidth, mServerIP, 666)).start();
                             ScreenSizeSent = true;
                         }
 
@@ -165,7 +166,7 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
                                     final byte[] dataCouper = halveYUV420(data, frameWidth, frameHeight, 6);
                                     try {
                                         byte[] compressedData = compress(dataCouper);
-                                        ThreadSendUDPFeed UDP = new ThreadSendUDPFeed(compressedData, ServerIP, 666);
+                                        ThreadSendUDPFeed UDP = new ThreadSendUDPFeed(compressedData, mServerIP, 666);
                                         UDP.send();
                                     } catch (IOException e) {
                                         e.printStackTrace();

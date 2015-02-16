@@ -33,11 +33,10 @@ public class UDPRunnable extends Thread {
         mFrameLayout = frameLayout;
     }
 
-
     public void run() {
         mCamera = getCameraInstance();
         Looper.prepare();
-        final CameraPreview preview = new CameraPreview(mContext, mCamera);
+        final CameraPreview preview = new CameraPreview(mContext, mCamera, ServerIP);
         final FrameLayout previewFrame = mFrameLayout;
 
         mActivity.runOnUiThread(new Runnable() {
