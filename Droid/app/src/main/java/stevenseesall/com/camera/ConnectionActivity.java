@@ -22,7 +22,6 @@ public class ConnectionActivity extends ActionBarActivity {
         setContentView(R.layout.activity_connection);
         findViewById(R.id.btn_Connect).setOnClickListener(new Connection_OnClickListener(this));
         txtIp = (TextView)findViewById(R.id.txtIp);
-        noCamera = (TextView)findViewById(R.id.txtNoCam);
     }
 
     private class Connection_OnClickListener implements View.OnClickListener {
@@ -36,7 +35,7 @@ public class ConnectionActivity extends ActionBarActivity {
         @Override
         public void onClick(View v) {
             setContentView(R.layout.remote_mode);
-            UDPRunnable UDPRunnable = new UDPRunnable(getApplicationContext(), mActivity, (FrameLayout) findViewById(R.id.camera_preview), (String)txtIp.getText(), (String)noCamera.getText());
+            UDPRunnable UDPRunnable = new UDPRunnable(getApplicationContext(), mActivity, (FrameLayout) findViewById(R.id.camera_preview), (String)txtIp.getText());
             UDPRunnable.start();
         }
     }

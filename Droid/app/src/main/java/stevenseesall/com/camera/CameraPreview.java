@@ -38,29 +38,18 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
     String mServerIP;
     String mNoCam;
     int mNoPort;
+    boolean mGettingPort = false;
 
     Boolean mSendingData = false;
     Boolean ScreenSizeSent = false;
 
-    public CameraPreview(final Context context, Camera camera, String mServerIP, String noCam) {
+    public CameraPreview(final Context context, Camera camera, String mServerIP) {
         super(context);
         mHolder = getHolder();
         mHolder.addCallback(this);
         mHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
         mCamera = camera;
         this.mServerIP = mServerIP;
-        mNoCam = noCam;
-
-        switch(mNoCam){
-            case "1": mNoPort = 40000;
-            break;
-            case "2": mNoPort = 40001;
-                break;
-            case "3": mNoPort = 40001;
-                break;
-            default: mNoPort = 40003;
-                break;
-        }
     }
 
     public CameraPreview(final Context context, Camera camera, Activity activity, SeekBar seekBar,
@@ -169,9 +158,17 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
                         }
                     }
                     else{
-                        if(!ScreenSizeSent){
-                            new Thread(new SendScreenSizeTCP(frameHeight, frameWidth, mServerIP, mNoPort)).start();
-                            ScreenSizeSent = true;
+                        if(!ScreenSizeSent && !mGettingPort){
+                            (new Thread() {
+                                public void run() {
+                                    mGettingPort = true;
+                                    SendScreenSizeTCP TCP = new SendScreenSizeTCP(frameHeight, frameWidth, mServerIP);
+                                    TCP.GetCam();
+                                    mNoPort = TCP.mPort;
+                                    ScreenSizeSent = true;
+                                }
+                            }).start();
+
                         }
 
                         if(!mSendingData && ScreenSizeSent){

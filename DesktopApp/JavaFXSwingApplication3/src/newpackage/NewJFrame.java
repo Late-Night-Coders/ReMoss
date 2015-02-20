@@ -10,8 +10,13 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.ServerSocket;
+import java.net.Socket;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.logging.Level;
@@ -26,7 +31,11 @@ import javax.swing.filechooser.FileNameExtensionFilter;
  * @author Administrateur
  */
 public class NewJFrame extends javax.swing.JFrame {
-
+    boolean isCam1Used = false; 
+    boolean isCam2Used = false;
+    boolean isCam3Used = false;
+    boolean isCam4Used = false;
+    
     /**
      * Creates new form NewJFrame
      */
@@ -189,6 +198,7 @@ public class NewJFrame extends javax.swing.JFrame {
  public void startServer() {
         final ExecutorService clientProcessingPool = Executors
                 .newFixedThreadPool(10);
+        (new Thread(new AssignCamera())).start();
         (new Thread(new TCPThread(NewJFrame.this.jLabel1, NewJFrame.this.jLabel2, NewJFrame.this.jCheckBox1, 40000))).start();
         (new Thread(new TCPThread(NewJFrame.this.jLabel3, NewJFrame.this.jLabel2, NewJFrame.this.jCheckBox1, 40001))).start();
         (new Thread(new TCPThread(NewJFrame.this.jLabel4, NewJFrame.this.jLabel2, NewJFrame.this.jCheckBox1, 40002))).start();
@@ -203,5 +213,68 @@ public class NewJFrame extends javax.swing.JFrame {
         bGr.dispose();
         return bimage;
     }
+    
+    private class AssignCamera implements Runnable {
+        @Override 
+        public void run(){
+            ServerSocket serverSocket;
+            try {
+                while(true){
+                    serverSocket = new ServerSocket(44444);
+                    System.out.println("En attente de paquets pour assignation Caméra...");
+                    final Socket clientSocket = serverSocket.accept();
+                    System.out.println("Pacquet accepté");
+                    try{
+                        readStr(clientSocket);
+                        clientSocket.close();
+                        serverSocket.close();
+                    }
+                    catch(IOException e){
+                        System.out.println(e);          
+                    }
+                }
+            }
+            catch(Exception e){
+                
+            }
+        }
+        
+        public void readStr(Socket socket) throws IOException {
+            InputStream in = socket.getInputStream();
+            DataInputStream dis = new DataInputStream(in);
+            
+            String check = dis.readLine();
+            System.out.println("check: " + check);
+            if(check != null){
+                Socket AskSocket = new Socket(check, 44444);
+                DataOutputStream AskSocketout = new DataOutputStream(AskSocket.getOutputStream());
+                
+                if(!isCam1Used){
+                    isCam1Used = true;
+                    AskSocketout.writeInt(40000);
+                }
+                else
+                    if(!isCam2Used){
+                        isCam2Used = true;
+                        AskSocketout.writeInt(40001);
+                    }
+                    else
+                        if(!isCam3Used){
+                            isCam3Used = true;
+                            AskSocketout.writeInt(40002);
+                        }
+                        else
+                            if(!isCam4Used){
+                                isCam4Used = true;
+                                AskSocketout.writeInt(40003);
+                            }
+                
+                AskSocketout.close();
+                AskSocket.close();
+            }
+        }
+    }
  
 }
+
+
