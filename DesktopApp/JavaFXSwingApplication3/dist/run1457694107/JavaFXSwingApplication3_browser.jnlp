@@ -11,7 +11,7 @@
   </resources>
   <resources>
     <j2se version="1.6+" href="http://java.sun.com/products/autodl/j2se"/>
-    <jar href="JavaFXSwingApplication3.jar" size="74021" download="eager" />
+    <jar href="JavaFXSwingApplication3.jar" size="73976" download="eager" />
   </resources>
 <security>
   <all-permissions/>
