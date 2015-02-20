@@ -52,13 +52,13 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
         mNoCam = noCam;
 
         switch(mNoCam){
-            case "1": mNoPort = 666;
+            case "1": mNoPort = 40000;
             break;
-            case "2": mNoPort = 667;
+            case "2": mNoPort = 40001;
                 break;
-            case "3": mNoPort = 668;
+            case "3": mNoPort = 40001;
                 break;
-            default: mNoPort = 669;
+            default: mNoPort = 40003;
                 break;
         }
     }

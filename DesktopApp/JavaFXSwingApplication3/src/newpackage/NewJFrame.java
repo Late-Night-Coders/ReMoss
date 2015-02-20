@@ -6,6 +6,7 @@
 
 package newpackage;
 
+import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
@@ -13,6 +14,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
@@ -27,7 +30,9 @@ public class NewJFrame extends javax.swing.JFrame {
     /**
      * Creates new form NewJFrame
      */
-    public NewJFrame() {
+    public NewJFrame() throws IOException {
+        Image i = ImageIO.read(getClass().getResource("/newpackage/Camera.png"));
+        setIconImage(i);
         initComponents();
         startServer();
     }
@@ -67,12 +72,6 @@ public class NewJFrame extends javax.swing.JFrame {
             }
         });
 
-        jLabel3.setText("jLabel3");
-
-        jLabel4.setText("jLabel4");
-
-        jLabel5.setText("jLabel5");
-
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -84,8 +83,8 @@ public class NewJFrame extends javax.swing.JFrame {
                     .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, 634, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, 646, Short.MAX_VALUE)
-                    .addComponent(jLabel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(jLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jLabel5, javax.swing.GroupLayout.DEFAULT_SIZE, 646, Short.MAX_VALUE))
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jCheckBox1)
@@ -103,8 +102,8 @@ public class NewJFrame extends javax.swing.JFrame {
                             .addComponent(jLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, 395, Short.MAX_VALUE)
-                            .addComponent(jLabel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                            .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jLabel5, javax.swing.GroupLayout.DEFAULT_SIZE, 395, Short.MAX_VALUE)))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(289, 289, 289)
                         .addComponent(jLabel2)
@@ -169,7 +168,11 @@ public class NewJFrame extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new NewJFrame().setVisible(true);
+                try {
+                    new NewJFrame().setVisible(true);
+                } catch (IOException ex) {
+                    Logger.getLogger(NewJFrame.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
         });
     }
@@ -186,10 +189,10 @@ public class NewJFrame extends javax.swing.JFrame {
  public void startServer() {
         final ExecutorService clientProcessingPool = Executors
                 .newFixedThreadPool(10);
-        (new Thread(new TCPThread(NewJFrame.this.jLabel1, NewJFrame.this.jLabel2, NewJFrame.this.jCheckBox1, 666))).start();
-        (new Thread(new TCPThread(NewJFrame.this.jLabel3, NewJFrame.this.jLabel2, NewJFrame.this.jCheckBox1, 667))).start();
-        (new Thread(new TCPThread(NewJFrame.this.jLabel4, NewJFrame.this.jLabel2, NewJFrame.this.jCheckBox1, 668))).start();
-        (new Thread(new TCPThread(NewJFrame.this.jLabel5, NewJFrame.this.jLabel2, NewJFrame.this.jCheckBox1, 669))).start();
+        (new Thread(new TCPThread(NewJFrame.this.jLabel1, NewJFrame.this.jLabel2, NewJFrame.this.jCheckBox1, 40000))).start();
+        (new Thread(new TCPThread(NewJFrame.this.jLabel3, NewJFrame.this.jLabel2, NewJFrame.this.jCheckBox1, 40001))).start();
+        (new Thread(new TCPThread(NewJFrame.this.jLabel4, NewJFrame.this.jLabel2, NewJFrame.this.jCheckBox1, 40002))).start();
+        (new Thread(new TCPThread(NewJFrame.this.jLabel5, NewJFrame.this.jLabel2, NewJFrame.this.jCheckBox1, 40003))).start();
     }
  
     public static BufferedImage toBufferedImage(Image img)
