@@ -56,6 +56,7 @@ public class TCPThread implements Runnable{
                 readBytes(clientSocket);
                 System.out.println("h = " + mWidth);
                 System.out.println("w = " + mHeight);
+                System.out.println("port = " + mPort);
                 (new Thread(new UDPThread(mJLabel, mJLabel2, mJCheckBox, mPort, mHeight, mWidth))).start();
                 clientSocket.close();
             }
