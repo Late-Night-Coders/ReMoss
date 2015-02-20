@@ -25,7 +25,6 @@ import java.util.zip.DataFormatException;
 import java.util.zip.Inflater;
 import javax.swing.ImageIcon;
 import javax.swing.JCheckBox;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 
 /**
