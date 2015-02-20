@@ -36,16 +36,31 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
     int mRationCheckedPixelVer = 3;
     Boolean IsStandAlone = false;
     String mServerIP;
+    String mNoCam;
+    int mNoPort;
+
     Boolean mSendingData = false;
     Boolean ScreenSizeSent = false;
 
-    public CameraPreview(final Context context, Camera camera, String mServerIP) {
+    public CameraPreview(final Context context, Camera camera, String mServerIP, String noCam) {
         super(context);
         mHolder = getHolder();
         mHolder.addCallback(this);
         mHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
         mCamera = camera;
         this.mServerIP = mServerIP;
+        mNoCam = noCam;
+
+        switch(mNoCam){
+            case "1": mNoPort = 666;
+            break;
+            case "2": mNoPort = 667;
+                break;
+            case "3": mNoPort = 668;
+                break;
+            default: mNoPort = 669;
+                break;
+        }
     }
 
     public CameraPreview(final Context context, Camera camera, Activity activity, SeekBar seekBar,
@@ -155,7 +170,7 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
                     }
                     else{
                         if(!ScreenSizeSent){
-                            new Thread(new SendScreenSizeTCP(frameHeight, frameWidth, mServerIP, 666)).start();
+                            new Thread(new SendScreenSizeTCP(frameHeight, frameWidth, mServerIP, mNoPort)).start();
                             ScreenSizeSent = true;
                         }
 

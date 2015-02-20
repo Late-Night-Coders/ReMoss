@@ -25,18 +25,20 @@ public class UDPRunnable extends Thread {
     String ServerIP = "";
     Boolean mSendingData = false;
     Boolean ScreenSizeSent = false;
+    String mNoCam;
 
-    public UDPRunnable(final Context context, Activity activity, FrameLayout frameLayout, String ip){
+    public UDPRunnable(final Context context, Activity activity, FrameLayout frameLayout, String ip, String noCam){
         ServerIP = ip;
         mContext = context;
         mActivity = activity;
         mFrameLayout = frameLayout;
+        mNoCam = noCam;
     }
 
     public void run() {
         mCamera = getCameraInstance();
         Looper.prepare();
-        final CameraPreview preview = new CameraPreview(mContext, mCamera, ServerIP);
+        final CameraPreview preview = new CameraPreview(mContext, mCamera, ServerIP, mNoCam);
         final FrameLayout previewFrame = mFrameLayout;
 
         mActivity.runOnUiThread(new Runnable() {

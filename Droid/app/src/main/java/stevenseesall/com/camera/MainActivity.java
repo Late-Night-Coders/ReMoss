@@ -26,6 +26,7 @@ public class MainActivity extends ActionBarActivity{
 
         Activity mActivity;
         EditText mServerIPField = (EditText)findViewById(R.id.txtIp);
+        EditText mNoCamField = (EditText)findViewById(R.id.txtNoCam);
         FrameLayout mCameraPreview;
 
         public Connection_OnClickListener(Activity activity) {
@@ -38,6 +39,7 @@ public class MainActivity extends ActionBarActivity{
             mCameraPreview = (FrameLayout)findViewById(R.id.camera_preview);
 
             String serverIp = mServerIPField.getText().toString();
+            String noCam = mNoCamField.getText().toString();
             Log.d("DEBUG", serverIp);
             Log.d("DEBUG", Boolean.toString(mActivity==null));
             Log.d("DEBUG", Boolean.toString(getApplicationContext()==null));
@@ -45,7 +47,8 @@ public class MainActivity extends ActionBarActivity{
                     getApplicationContext(),
                     mActivity,
                     mCameraPreview,
-                    serverIp
+                    serverIp,
+                    noCam
             );
             udpRunnable.start();
         }
