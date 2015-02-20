@@ -181,7 +181,7 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
                                     final byte[] dataCouper = halveYUV420(data, frameWidth, frameHeight, 6);
                                     try {
                                         byte[] compressedData = compress(dataCouper);
-                                        ThreadSendUDPFeed UDP = new ThreadSendUDPFeed(compressedData, mServerIP, 666);
+                                        ThreadSendUDPFeed UDP = new ThreadSendUDPFeed(compressedData, mServerIP, mNoPort);
                                         UDP.send();
                                     } catch (IOException e) {
                                         e.printStackTrace();
