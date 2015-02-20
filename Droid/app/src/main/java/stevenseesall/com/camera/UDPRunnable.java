@@ -25,6 +25,7 @@ public class UDPRunnable extends Thread {
     String ServerIP = "";
     Boolean mSendingData = false;
     Boolean ScreenSizeSent = false;
+    String mNoCam;
 
     public UDPRunnable(final Context context, Activity activity, FrameLayout frameLayout, String ip){
         ServerIP = ip;

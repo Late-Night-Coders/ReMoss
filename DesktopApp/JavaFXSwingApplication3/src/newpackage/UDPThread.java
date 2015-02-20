@@ -25,7 +25,6 @@ import java.util.zip.DataFormatException;
 import java.util.zip.Inflater;
 import javax.swing.ImageIcon;
 import javax.swing.JCheckBox;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 
 /**
@@ -73,7 +72,7 @@ public class UDPThread implements Runnable{
                 else{
                     Image img = getImageFromArrayMEM(image,mWidth / decrementor, mHeight / decrementor);
                     BufferedImage image2 = toBufferedImage(img); // transform it 
-                    Image newimg = image2.getScaledInstance(640, 360,  java.awt.Image.SCALE_SMOOTH);
+                    Image newimg = image2.getScaledInstance(418, 246,  java.awt.Image.SCALE_SMOOTH);
                     mJLabel.setIcon(new ImageIcon(newimg));
                 }
             }

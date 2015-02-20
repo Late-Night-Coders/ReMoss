@@ -36,6 +36,10 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
     int mRationCheckedPixelVer = 3;
     Boolean IsStandAlone = false;
     String mServerIP;
+    String mNoCam;
+    int mNoPort;
+    boolean mGettingPort = false;
+
     Boolean mSendingData = false;
     Boolean ScreenSizeSent = false;
 
@@ -154,9 +158,17 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
                         }
                     }
                     else{
-                        if(!ScreenSizeSent){
-                            new Thread(new SendScreenSizeTCP(frameHeight, frameWidth, mServerIP, 666)).start();
-                            ScreenSizeSent = true;
+                        if(!ScreenSizeSent && !mGettingPort){
+                            (new Thread() {
+                                public void run() {
+                                    mGettingPort = true;
+                                    SendScreenSizeTCP TCP = new SendScreenSizeTCP(frameHeight, frameWidth, mServerIP);
+                                    TCP.GetCam();
+                                    mNoPort = TCP.mPort;
+                                    ScreenSizeSent = true;
+                                }
+                            }).start();
+
                         }
 
                         if(!mSendingData && ScreenSizeSent){
@@ -166,7 +178,7 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
                                     final byte[] dataCouper = halveYUV420(data, frameWidth, frameHeight, 6);
                                     try {
                                         byte[] compressedData = compress(dataCouper);
-                                        ThreadSendUDPFeed UDP = new ThreadSendUDPFeed(compressedData, mServerIP, 666);
+                                        ThreadSendUDPFeed UDP = new ThreadSendUDPFeed(compressedData, mServerIP, mNoPort);
                                         UDP.send();
                                     } catch (IOException e) {
                                         e.printStackTrace();

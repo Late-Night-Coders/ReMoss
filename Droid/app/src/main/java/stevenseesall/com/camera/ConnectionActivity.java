@@ -14,6 +14,7 @@ import stevenseesall.com.camera.R;
 public class ConnectionActivity extends ActionBarActivity {
 
     TextView txtIp;
+    TextView noCamera;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
