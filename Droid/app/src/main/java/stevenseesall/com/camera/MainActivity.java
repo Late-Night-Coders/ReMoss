@@ -38,9 +38,7 @@ public class MainActivity extends ActionBarActivity{
             mCameraPreview = (FrameLayout)findViewById(R.id.camera_preview);
 
             String serverIp = mServerIPField.getText().toString();
-            Log.d("DEBUG", serverIp);
-            Log.d("DEBUG", Boolean.toString(mActivity==null));
-            Log.d("DEBUG", Boolean.toString(getApplicationContext()==null));
+            serverIp = IPAddressCipher.decryptIPAddress(serverIp);
             UDPRunnable udpRunnable = new UDPRunnable(
                     getApplicationContext(),
                     mActivity,
