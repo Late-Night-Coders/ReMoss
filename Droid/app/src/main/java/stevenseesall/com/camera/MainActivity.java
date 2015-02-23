@@ -1,6 +1,9 @@
 package stevenseesall.com.camera;
 
 import android.app.Activity;
+import android.content.Context;
+import android.net.DhcpInfo;
+import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
@@ -33,11 +36,15 @@ public class MainActivity extends ActionBarActivity{
         @Override
         public void onClick(View v) {
             setContentView(R.layout.remote_mode);
+            Context context = getApplicationContext();
             String encryptedAddress = mServerEditText.getText().toString();
-            String decryptedAddress = IPAddressCipher.decryptIPAddress(encryptedAddress);
+
+            IPAddressCipher ipCipher = new IPAddressCipher(context);
+            String decryptedAddress = ipCipher.decryptIPAddress(encryptedAddress);
+
             mCameraPreview = (FrameLayout)findViewById(R.id.camera_preview);
             UDPRunnable udpRunnable = new UDPRunnable(
-                    getApplicationContext(),
+                    context,
                     mActivity,
                     mCameraPreview,
                     decryptedAddress

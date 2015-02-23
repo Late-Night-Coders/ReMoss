@@ -1,8 +1,5 @@
 package stevenseesall.com.camera;
 
-/**
- * Created by Administrateur on 2015-02-20.
- */
 import java.io.*;
 import java.net.*;
 import java.util.*;
