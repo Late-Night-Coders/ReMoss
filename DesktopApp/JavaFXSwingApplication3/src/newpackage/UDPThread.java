@@ -19,6 +19,7 @@ import java.awt.image.BufferedImage;
 import java.awt.image.MemoryImageSource;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.DatagramPacket;
@@ -33,9 +34,13 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.zip.DataFormatException;
 import java.util.zip.Inflater;
+import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JCheckBox;
+import javax.swing.JFileChooser;
 import javax.swing.JLabel;
+import javax.swing.filechooser.FileNameExtensionFilter;
+import static newpackage.NewJFrame.toBufferedImage;
 
 /**
  *
@@ -53,11 +58,13 @@ public class UDPThread implements Runnable{
     int mNoCam;
     JLabel mMainCam;
     JLabel mMainCamNumber;
+    boolean isSavingFile = false;
+    JCheckBox mSaveOnMov;
 
     final ExecutorService clientProcessingPool = Executors
                 .newFixedThreadPool(10);
     
-    public UDPThread(JLabel jLabel, JLabel jLabel2, JCheckBox jCheckBox, int port, int height, int width, JLabel mainCamera, JLabel mainCameraNumber, int noCam){
+    public UDPThread(JLabel jLabel, JLabel jLabel2, JCheckBox jCheckBox, int port, int height, int width, JLabel mainCamera, JLabel mainCameraNumber, int noCam, JCheckBox saveOnMov){
         mJLabel = jLabel;
         mPort = port;
         mJLabel2 = jLabel2;
@@ -67,6 +74,7 @@ public class UDPThread implements Runnable{
         mMainCam = mainCamera;
         mMainCamNumber = mainCameraNumber;
         mNoCam = noCam;
+        mSaveOnMov = saveOnMov;
     }
     
     @Override
@@ -81,8 +89,16 @@ public class UDPThread implements Runnable{
                 int rgb[] = new int[receiveData.length];
                 int[] image = decodeYUV420SP(rgb, decompress(receivePacket.getData()), mWidth / decrementor, mHeight / decrementor);
                 
-                if(mJCheckBox.isSelected()){
-                    (new Thread(new UDPThread.CheckMovement(image, mImageAvant))).start();
+                if(mSaveOnMov.isSelected() || mJCheckBox.isSelected()){
+                    boolean showMov = false;
+                    boolean saveOnMov = false;
+                    if(mJCheckBox.isSelected()){
+                        showMov = true;
+                    }
+                    if(mSaveOnMov.isSelected()){
+                        saveOnMov = true;
+                    }
+                    (new Thread(new UDPThread.CheckMovement(image, mImageAvant, showMov, saveOnMov))).start();
                     mImageAvant = image;
                 }
                 else{
@@ -95,27 +111,13 @@ public class UDPThread implements Runnable{
                         Dimension dPrim = mMainCam.getSize();
                         Image primImage = image2.getScaledInstance(dPrim.width, dPrim.height,  java.awt.Image.SCALE_SMOOTH);
                         BufferedImage imagePrim = toBufferedImage(primImage); 
-                        //Watermark
-                        Graphics2D g2d = (Graphics2D) imagePrim.getGraphics();
-                        AlphaComposite alphaChannel = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1f);
-                        g2d.setComposite(alphaChannel); 
-                        g2d.setColor(Color.RED); 
-                        g2d.setFont(new Font("Arial", Font.BOLD, 24)); 
-                        FontMetrics fontMetrics = g2d.getFontMetrics(); 
-                        Rectangle2D rect = fontMetrics.getStringBounds("gdwa", g2d); 
-                        int centerX = (imagePrim.getWidth() - (int) rect.getWidth()) - 200; 
-                        int centerY = imagePrim.getHeight() - 30; 
-                        DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
-                        Date date = new Date();
-                        g2d.drawString(dateFormat.format(date), centerX, centerY);
-                        g2d.dispose();
+                        PrintWatermark(imagePrim);
                         mMainCam.setIcon(new ImageIcon(imagePrim));
                     }
                 }
             }
         } catch (IOException e) {
             System.err.println("Unable to process client request");
-            e.printStackTrace();
         } catch (DataFormatException ex) {
             Logger.getLogger(UDPThread.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -165,6 +167,23 @@ public class UDPThread implements Runnable{
             return data;
     }
     
+    public void PrintWatermark(BufferedImage imagePrim) {
+        //Watermark
+        Graphics2D g2d = (Graphics2D) imagePrim.getGraphics();
+        AlphaComposite alphaChannel = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1f);
+        g2d.setComposite(alphaChannel); 
+        g2d.setColor(Color.RED); 
+        g2d.setFont(new Font("Arial", Font.BOLD, 24)); 
+        FontMetrics fontMetrics = g2d.getFontMetrics(); 
+        Rectangle2D rect = fontMetrics.getStringBounds("gdwa", g2d); 
+        int centerX = (imagePrim.getWidth() - (int) rect.getWidth()) - 200; 
+        int centerY = imagePrim.getHeight() - 30; 
+        DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+        Date date = new Date();
+        g2d.drawString(dateFormat.format(date), centerX, centerY);
+        g2d.dispose();
+    }   
+    
     public static BufferedImage toBufferedImage(Image img)
     {
         BufferedImage bimage = new BufferedImage(img.getWidth(null), img.getHeight(null), BufferedImage.TYPE_INT_RGB);
@@ -195,10 +214,15 @@ public class UDPThread implements Runnable{
      int[] mImageAvant;
      int[] mImageActual;
      int mDiff = 0;
+     boolean mShowMov = false;
+     boolean mSaveOnMov = false;
      
-     public CheckMovement(int[] imageAvant, int[] imageActual){
+     
+     public CheckMovement(int[] imageAvant, int[] imageActual, boolean showMov, boolean saveOnMov){
          mImageAvant = imageAvant;
          mImageActual = imageActual;
+         mShowMov = showMov;
+         mSaveOnMov = saveOnMov;
      }
      
      public void run(){
@@ -218,22 +242,31 @@ public class UDPThread implements Runnable{
                     if(rActual <= rOld -15 || rActual >= rOld + 15)
                     {
                         mDiff++;
-                        mImageActual[x] = 0xffff0000;
+                        if(mShowMov){
+                            mImageActual[x] = 0xffff0000;
+                        }
+                        
                     }
                     else {
                         if (gActual <= gOld -15 || gActual >= gOld + 15) {
                             mDiff++;
+                            if(mShowMov){
                             mImageActual[x] = 0xffff0000;
+                            }
                         }
                         else
                         {
                             if (bActual <= bOld -15 || bActual >= bOld + 15) {
                                 mDiff++;
-                                mImageActual[x] = 0xffff0000;
+                                if(mShowMov){
+                                    mImageActual[x] = 0xffff0000;
+                                }
                             }
                         }
                     }
                 }
+                long pourcentDiff = (long)mDiff / (long)(mWidth * mHeight / decrementor);
+                System.out.println(Double.toString(mDiff / (mWidth / decrementor * mHeight / decrementor)));
                 mJLabel2.setText("Différence: " + mDiff);
                 Image img = getImageFromArrayMEM(mImageActual,mWidth / decrementor, mHeight / decrementor);
                 BufferedImage image2 = toBufferedImage(img); // transform it 
@@ -243,11 +276,41 @@ public class UDPThread implements Runnable{
                 if(mMainCamNumber.getText().equals(Integer.toString(mNoCam))){
                     Dimension dPrim = mMainCam.getSize();
                     Image primImage = image2.getScaledInstance(dPrim.width, dPrim.height,  java.awt.Image.SCALE_SMOOTH);
-                    mMainCam.setIcon(new ImageIcon(primImage));
+                    BufferedImage imagePrim = toBufferedImage(primImage); 
+                    PrintWatermark(imagePrim);
+                    mMainCam.setIcon(new ImageIcon(imagePrim));
+                }
+                if(mDiff > 10000 && mSaveOnMov){
+                    BufferedImage bi = toBufferedImage(((ImageIcon)(mMainCam.getIcon())).getImage());
+                    saveImageToDisk(bi, mMainCamNumber.getText());
                 }
             }
         }
      
-     
+        private void saveImageToDisk(final BufferedImage bi, final String CameraMaison){
+            (new Thread() {
+                public void run() {
+                    isSavingFile = true;
+                    DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH_mm_ss");
+                    Date date = new Date();
+                    String sysdrive = System.getenv("SystemDrive");
+                    File outputfile = new File("C://" + dateFormat.format(date)+"-Camera "+ CameraMaison + ".jpg");
+                    outputfile.renameTo(outputfile);
+                    try {
+                        ImageIO.write(bi, "jpg", outputfile);
+                    } catch (IOException ex) {
+                        System.out.println("Erreur");
+                    }
+                    finally{
+                        try {
+                            Thread.sleep(10000);
+                        } catch (InterruptedException ex) {
+                            Logger.getLogger(UDPThread.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                        isSavingFile = false;
+                    }
+                }
+            }).start();
+        }    
     }
 }

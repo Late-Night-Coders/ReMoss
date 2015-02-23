@@ -37,11 +37,12 @@ public class TCPThread implements Runnable{
     int mHeight;
     int mWidth;
     int mNoCam;
+    JCheckBox mSaveOnMov;
 
      final ExecutorService clientProcessingPool = Executors
                 .newFixedThreadPool(10);
     
-    public TCPThread(JLabel jLabel, JLabel jLabel2, JCheckBox jCheckBox, int port, JLabel mainCamera, JLabel mainCameraNumber, int noCam){
+    public TCPThread(JLabel jLabel, JLabel jLabel2, JCheckBox jCheckBox, int port, JLabel mainCamera, JLabel mainCameraNumber, int noCam, JCheckBox saveOnMov){
         mJLabel = jLabel;
         mPort = port;
         mJLabel2 = jLabel2;
@@ -49,6 +50,7 @@ public class TCPThread implements Runnable{
         mMainCam = mainCamera;
         mMainCamNumber = mainCameraNumber;
         mNoCam = noCam;
+        mSaveOnMov = saveOnMov;
     }
     
     @Override
@@ -63,7 +65,7 @@ public class TCPThread implements Runnable{
                 System.out.println("h = " + mWidth);
                 System.out.println("w = " + mHeight);
                 System.out.println("port = " + mPort);
-                (new Thread(new UDPThread(mJLabel, mJLabel2, mJCheckBox, mPort, mHeight, mWidth, mMainCam, mMainCamNumber, mNoCam))).start();
+                (new Thread(new UDPThread(mJLabel, mJLabel2, mJCheckBox, mPort, mHeight, mWidth, mMainCam, mMainCamNumber, mNoCam, mSaveOnMov))).start();
                 clientSocket.close();
             }
             catch(IOException e){

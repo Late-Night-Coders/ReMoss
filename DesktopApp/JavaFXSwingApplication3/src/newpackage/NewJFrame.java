@@ -42,6 +42,7 @@ public class NewJFrame extends javax.swing.JFrame {
     boolean isCam5Used = false;
     boolean isCam6Used = false;
     boolean isShuffle = false;
+    boolean isSaveOnMov = false;
     Thread mShuffleThread = new Thread();
     
     TCPThread Cam1;
@@ -52,7 +53,7 @@ public class NewJFrame extends javax.swing.JFrame {
     TCPThread Cam6;
     
     /**
-     * Creates new form NewJFrame
+     * Creates new form NewJFrame   
      */
     public NewJFrame() throws IOException {
         Image i = ImageIO.read(getClass().getResource("/newpackage/Camera.png"));
@@ -94,6 +95,18 @@ public class NewJFrame extends javax.swing.JFrame {
                 }
             }
       });
+        
+        NewJFrame.this.chk_SaveMovement.addItemListener(new ItemListener() {
+            @Override
+            public void itemStateChanged(ItemEvent e) {
+                if(!isSaveOnMov){
+                    isSaveOnMov = true;
+                }
+                else{
+                    isSaveOnMov = false;
+                }
+            }
+        });
     }
 
     /**
@@ -128,6 +141,8 @@ public class NewJFrame extends javax.swing.JFrame {
         chkAutoShuffle = new javax.swing.JCheckBox();
         spnShuffle = new javax.swing.JSpinner();
         jLabel3 = new javax.swing.JLabel();
+        chk_SaveMovement = new javax.swing.JCheckBox();
+        jLabel4 = new javax.swing.JLabel();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         jMenu2 = new javax.swing.JMenu();
@@ -143,16 +158,16 @@ public class NewJFrame extends javax.swing.JFrame {
             }
         });
 
-        jLabel2.setText("Différence: 0");
+        jLabel2.setText("Difference: 0");
 
-        jCheckBox1.setText("Afficher les différences");
+        jCheckBox1.setText("Show differences");
         jCheckBox1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jCheckBox1ActionPerformed(evt);
             }
         });
 
-        jButton1.setLabel("Prendre une photo");
+        jButton1.setText("Take a Picture");
         jButton1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton1ActionPerformed(evt);
@@ -211,7 +226,7 @@ public class NewJFrame extends javax.swing.JFrame {
 
         jLabel13.setText("Caméra #6");
 
-        jLabel14.setText("Chaîne de connexion");
+        jLabel14.setText("Connexion string");
 
         lblAddress.setText("j");
 
@@ -227,6 +242,10 @@ public class NewJFrame extends javax.swing.JFrame {
         spnShuffle.setModel(new javax.swing.SpinnerNumberModel(1, 1, 15, 1));
 
         jLabel3.setText("seconds");
+
+        chk_SaveMovement.setText("Save pictures when movement detected");
+
+        jLabel4.setText("%");
 
         jMenu1.setText("File");
         jMenuBar1.add(jMenu1);
@@ -272,21 +291,26 @@ public class NewJFrame extends javax.swing.JFrame {
                             .addComponent(Camera5, javax.swing.GroupLayout.PREFERRED_SIZE, 213, javax.swing.GroupLayout.PREFERRED_SIZE))))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                        .addComponent(jCheckBox1)
-                        .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 137, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(jLabel14, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(lblAddress, javax.swing.GroupLayout.PREFERRED_SIZE, 158, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(Camera6, javax.swing.GroupLayout.PREFERRED_SIZE, 213, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel13)
+                    .addComponent(chk_SaveMovement)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                        .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jLabel14, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(lblAddress, javax.swing.GroupLayout.PREFERRED_SIZE, 158, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(chkAutoShuffle)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(spnShuffle, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jLabel3)))
-                .addContainerGap(27, Short.MAX_VALUE))
+                        .addComponent(jLabel3))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                            .addComponent(jLabel2, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jCheckBox1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jLabel4)))
+                .addContainerGap(68, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -318,13 +342,19 @@ public class NewJFrame extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(Camera6, javax.swing.GroupLayout.PREFERRED_SIZE, 117, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel2)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(MainCameraNumber)
-                        .addComponent(jLabel1)))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(MainCameraNumber)
+                    .addComponent(jLabel1))
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 10, Short.MAX_VALUE)
+                        .addComponent(MainCamera, javax.swing.GroupLayout.PREFERRED_SIZE, 521, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addContainerGap(25, Short.MAX_VALUE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(114, 114, 114)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel2)
+                            .addComponent(jLabel4))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jCheckBox1)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
@@ -332,17 +362,15 @@ public class NewJFrame extends javax.swing.JFrame {
                             .addComponent(chkAutoShuffle)
                             .addComponent(spnShuffle, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jLabel3))
-                        .addGap(30, 30, 30)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(chk_SaveMovement)
+                        .addGap(41, 41, 41)
                         .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 78, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
                         .addComponent(jLabel14)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(lblAddress)
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 10, Short.MAX_VALUE)
-                        .addComponent(MainCamera, javax.swing.GroupLayout.PREFERRED_SIZE, 521, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addContainerGap(25, Short.MAX_VALUE))))
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
         );
 
         pack();
@@ -355,18 +383,7 @@ public class NewJFrame extends javax.swing.JFrame {
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
         BufferedImage bi = toBufferedImage(((ImageIcon)(NewJFrame.this.MainCamera.getIcon())).getImage());
-        JFileChooser fileChooser = new JFileChooser();
-        FileNameExtensionFilter filter = new FileNameExtensionFilter("Image Files", "jpg", "jpeg");
-        fileChooser.setFileFilter(filter);
-        if (fileChooser.showSaveDialog(NewJFrame.this) == JFileChooser.APPROVE_OPTION) {
-            File outputfile = new File(fileChooser.getSelectedFile()+".jpg");
-            outputfile.renameTo(outputfile);
-            try {
-                ImageIO.write(bi, "jpg", outputfile);
-            } catch (IOException ex) {
-                System.out.println("Erreur");
-            }
-        }
+        saveImageToDisk(bi);
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void Camera1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_Camera1MouseClicked
@@ -442,6 +459,7 @@ public class NewJFrame extends javax.swing.JFrame {
     private javax.swing.JLabel MainCamera;
     private javax.swing.JLabel MainCameraNumber;
     private javax.swing.JCheckBox chkAutoShuffle;
+    private javax.swing.JCheckBox chk_SaveMovement;
     private javax.swing.JButton jButton1;
     private javax.swing.JCheckBox jCheckBox1;
     private javax.swing.JLabel jLabel1;
@@ -452,6 +470,7 @@ public class NewJFrame extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel14;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
     private javax.swing.JMenu jMenu1;
@@ -465,12 +484,12 @@ public class NewJFrame extends javax.swing.JFrame {
                 .newFixedThreadPool(10);
         (new Thread(new AssignCamera())).start();
         //MainCamera
-        Cam1 = new TCPThread(NewJFrame.this.Camera1, NewJFrame.this.jLabel2, NewJFrame.this.jCheckBox1, 40000, NewJFrame.this.MainCamera, NewJFrame.this.MainCameraNumber, 1);
-        Cam2 = new TCPThread(NewJFrame.this.Camera2, NewJFrame.this.jLabel2, NewJFrame.this.jCheckBox1, 40001, NewJFrame.this.MainCamera, NewJFrame.this.MainCameraNumber, 2);
-        Cam3 = new TCPThread(NewJFrame.this.Camera3, NewJFrame.this.jLabel2, NewJFrame.this.jCheckBox1, 40002, NewJFrame.this.MainCamera, NewJFrame.this.MainCameraNumber, 3);
-        Cam4 = new TCPThread(NewJFrame.this.Camera4, NewJFrame.this.jLabel2, NewJFrame.this.jCheckBox1, 40003, NewJFrame.this.MainCamera, NewJFrame.this.MainCameraNumber, 4);
-        Cam5 = new TCPThread(NewJFrame.this.Camera5, NewJFrame.this.jLabel2, NewJFrame.this.jCheckBox1, 40004, NewJFrame.this.MainCamera, NewJFrame.this.MainCameraNumber, 5);
-        Cam6 = new TCPThread(NewJFrame.this.Camera6, NewJFrame.this.jLabel2, NewJFrame.this.jCheckBox1, 40005, NewJFrame.this.MainCamera, NewJFrame.this.MainCameraNumber, 6);
+        Cam1 = new TCPThread(NewJFrame.this.Camera1, NewJFrame.this.jLabel2, NewJFrame.this.jCheckBox1, 40000, NewJFrame.this.MainCamera, NewJFrame.this.MainCameraNumber, 1, chk_SaveMovement);
+        Cam2 = new TCPThread(NewJFrame.this.Camera2, NewJFrame.this.jLabel2, NewJFrame.this.jCheckBox1, 40001, NewJFrame.this.MainCamera, NewJFrame.this.MainCameraNumber, 2, chk_SaveMovement);
+        Cam3 = new TCPThread(NewJFrame.this.Camera3, NewJFrame.this.jLabel2, NewJFrame.this.jCheckBox1, 40002, NewJFrame.this.MainCamera, NewJFrame.this.MainCameraNumber, 3, chk_SaveMovement);
+        Cam4 = new TCPThread(NewJFrame.this.Camera4, NewJFrame.this.jLabel2, NewJFrame.this.jCheckBox1, 40003, NewJFrame.this.MainCamera, NewJFrame.this.MainCameraNumber, 4, chk_SaveMovement);
+        Cam5 = new TCPThread(NewJFrame.this.Camera5, NewJFrame.this.jLabel2, NewJFrame.this.jCheckBox1, 40004, NewJFrame.this.MainCamera, NewJFrame.this.MainCameraNumber, 5, chk_SaveMovement);
+        Cam6 = new TCPThread(NewJFrame.this.Camera6, NewJFrame.this.jLabel2, NewJFrame.this.jCheckBox1, 40005, NewJFrame.this.MainCamera, NewJFrame.this.MainCameraNumber, 6, chk_SaveMovement);
         (new Thread(Cam1)).start();
         (new Thread(Cam2)).start();
         (new Thread(Cam3)).start();
@@ -486,6 +505,21 @@ public class NewJFrame extends javax.swing.JFrame {
         bGr.drawImage(img, 0, 0, null);
         bGr.dispose();
         return bimage;
+    }
+    
+    private void saveImageToDisk(BufferedImage bi){
+        JFileChooser fileChooser = new JFileChooser();
+        FileNameExtensionFilter filter = new FileNameExtensionFilter("Image Files", "jpg", "jpeg");
+        fileChooser.setFileFilter(filter);
+        if (fileChooser.showSaveDialog(NewJFrame.this) == JFileChooser.APPROVE_OPTION) {
+            File outputfile = new File(fileChooser.getSelectedFile()+".jpg");
+            outputfile.renameTo(outputfile);
+            try {
+                ImageIO.write(bi, "jpg", outputfile);
+            } catch (IOException ex) {
+                System.out.println("Erreur");
+            }
+        }
     }
     
     private class AssignCamera implements Runnable {
