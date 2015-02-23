@@ -39,6 +39,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JCheckBox;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
+import javax.swing.JSpinner;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import static newpackage.NewJFrame.toBufferedImage;
 
@@ -60,11 +61,13 @@ public class UDPThread implements Runnable{
     JLabel mMainCamNumber;
     boolean isSavingFile = false;
     JCheckBox mSaveOnMov;
+    JSpinner mJSpinner;
 
     final ExecutorService clientProcessingPool = Executors
                 .newFixedThreadPool(10);
     
-    public UDPThread(JLabel jLabel, JLabel jLabel2, JCheckBox jCheckBox, int port, int height, int width, JLabel mainCamera, JLabel mainCameraNumber, int noCam, JCheckBox saveOnMov){
+    public UDPThread(JLabel jLabel, JLabel jLabel2, JCheckBox jCheckBox, int port, int height, int width, JLabel mainCamera, 
+            JLabel mainCameraNumber, int noCam, JCheckBox saveOnMov, JSpinner jspinner){
         mJLabel = jLabel;
         mPort = port;
         mJLabel2 = jLabel2;
@@ -75,6 +78,7 @@ public class UDPThread implements Runnable{
         mMainCamNumber = mainCameraNumber;
         mNoCam = noCam;
         mSaveOnMov = saveOnMov;
+        mJSpinner = jspinner;
     }
     
     @Override
@@ -283,7 +287,8 @@ public class UDPThread implements Runnable{
                     PrintWatermark(imagePrim);
                     mMainCam.setIcon(new ImageIcon(imagePrim));
                 }
-                if(mDiff > 10000 && mSaveOnMov){
+                
+                if(pourcentDiff > (int)mJSpinner.getValue() && mSaveOnMov){
                     BufferedImage bi = toBufferedImage(((ImageIcon)(mMainCam.getIcon())).getImage());
                     saveImageToDisk(bi, mMainCamNumber.getText());
                 }

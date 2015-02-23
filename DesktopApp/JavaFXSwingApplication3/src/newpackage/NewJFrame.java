@@ -143,6 +143,8 @@ public class NewJFrame extends javax.swing.JFrame {
         jLabel3 = new javax.swing.JLabel();
         chk_SaveMovement = new javax.swing.JCheckBox();
         jLabel4 = new javax.swing.JLabel();
+        spn_trigger = new javax.swing.JSpinner();
+        jLabel5 = new javax.swing.JLabel();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         jMenu2 = new javax.swing.JMenu();
@@ -243,9 +245,13 @@ public class NewJFrame extends javax.swing.JFrame {
 
         jLabel3.setText("seconds");
 
-        chk_SaveMovement.setText("Save pictures when movement detected");
+        chk_SaveMovement.setText("Save pictures when ");
 
         jLabel4.setText("%");
+
+        spn_trigger.setModel(new javax.swing.SpinnerNumberModel(10, 10, 100, 5));
+
+        jLabel5.setText("% movement detected");
 
         jMenu1.setText("File");
         jMenuBar1.add(jMenu1);
@@ -291,26 +297,31 @@ public class NewJFrame extends javax.swing.JFrame {
                             .addComponent(Camera5, javax.swing.GroupLayout.PREFERRED_SIZE, 213, javax.swing.GroupLayout.PREFERRED_SIZE))))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(Camera6, javax.swing.GroupLayout.PREFERRED_SIZE, 213, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel13)
-                    .addComponent(chk_SaveMovement)
                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                         .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(jLabel14, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(lblAddress, javax.swing.GroupLayout.PREFERRED_SIZE, 158, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(chkAutoShuffle)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(spnShuffle, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jLabel3))
-                    .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                             .addComponent(jLabel2, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(jCheckBox1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jLabel4)))
-                .addContainerGap(68, Short.MAX_VALUE))
+                        .addComponent(jLabel4))
+                    .addComponent(Camera6, javax.swing.GroupLayout.PREFERRED_SIZE, 213, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(chk_SaveMovement)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(spn_trigger, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jLabel5))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(chkAutoShuffle)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(spnShuffle, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jLabel3)))
+                .addContainerGap(37, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -363,7 +374,10 @@ public class NewJFrame extends javax.swing.JFrame {
                             .addComponent(spnShuffle, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jLabel3))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(chk_SaveMovement)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(chk_SaveMovement)
+                            .addComponent(jLabel5)
+                            .addComponent(spn_trigger, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(41, 41, 41)
                         .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 78, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
@@ -471,6 +485,7 @@ public class NewJFrame extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
     private javax.swing.JMenu jMenu1;
@@ -478,18 +493,19 @@ public class NewJFrame extends javax.swing.JFrame {
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JLabel lblAddress;
     private javax.swing.JSpinner spnShuffle;
+    private javax.swing.JSpinner spn_trigger;
     // End of variables declaration//GEN-END:variables
  public void startServer() {
         final ExecutorService clientProcessingPool = Executors
                 .newFixedThreadPool(10);
         (new Thread(new AssignCamera())).start();
         //MainCamera
-        Cam1 = new TCPThread(NewJFrame.this.Camera1, NewJFrame.this.jLabel2, NewJFrame.this.jCheckBox1, 40000, NewJFrame.this.MainCamera, NewJFrame.this.MainCameraNumber, 1, chk_SaveMovement);
-        Cam2 = new TCPThread(NewJFrame.this.Camera2, NewJFrame.this.jLabel2, NewJFrame.this.jCheckBox1, 40001, NewJFrame.this.MainCamera, NewJFrame.this.MainCameraNumber, 2, chk_SaveMovement);
-        Cam3 = new TCPThread(NewJFrame.this.Camera3, NewJFrame.this.jLabel2, NewJFrame.this.jCheckBox1, 40002, NewJFrame.this.MainCamera, NewJFrame.this.MainCameraNumber, 3, chk_SaveMovement);
-        Cam4 = new TCPThread(NewJFrame.this.Camera4, NewJFrame.this.jLabel2, NewJFrame.this.jCheckBox1, 40003, NewJFrame.this.MainCamera, NewJFrame.this.MainCameraNumber, 4, chk_SaveMovement);
-        Cam5 = new TCPThread(NewJFrame.this.Camera5, NewJFrame.this.jLabel2, NewJFrame.this.jCheckBox1, 40004, NewJFrame.this.MainCamera, NewJFrame.this.MainCameraNumber, 5, chk_SaveMovement);
-        Cam6 = new TCPThread(NewJFrame.this.Camera6, NewJFrame.this.jLabel2, NewJFrame.this.jCheckBox1, 40005, NewJFrame.this.MainCamera, NewJFrame.this.MainCameraNumber, 6, chk_SaveMovement);
+        Cam1 = new TCPThread(NewJFrame.this.Camera1, NewJFrame.this.jLabel2, NewJFrame.this.jCheckBox1, 40000, NewJFrame.this.MainCamera, NewJFrame.this.MainCameraNumber, 1, chk_SaveMovement, NewJFrame.this.spn_trigger);
+        Cam2 = new TCPThread(NewJFrame.this.Camera2, NewJFrame.this.jLabel2, NewJFrame.this.jCheckBox1, 40001, NewJFrame.this.MainCamera, NewJFrame.this.MainCameraNumber, 2, chk_SaveMovement, NewJFrame.this.spn_trigger);
+        Cam3 = new TCPThread(NewJFrame.this.Camera3, NewJFrame.this.jLabel2, NewJFrame.this.jCheckBox1, 40002, NewJFrame.this.MainCamera, NewJFrame.this.MainCameraNumber, 3, chk_SaveMovement, NewJFrame.this.spn_trigger);
+        Cam4 = new TCPThread(NewJFrame.this.Camera4, NewJFrame.this.jLabel2, NewJFrame.this.jCheckBox1, 40003, NewJFrame.this.MainCamera, NewJFrame.this.MainCameraNumber, 4, chk_SaveMovement, NewJFrame.this.spn_trigger);
+        Cam5 = new TCPThread(NewJFrame.this.Camera5, NewJFrame.this.jLabel2, NewJFrame.this.jCheckBox1, 40004, NewJFrame.this.MainCamera, NewJFrame.this.MainCameraNumber, 5, chk_SaveMovement, NewJFrame.this.spn_trigger);
+        Cam6 = new TCPThread(NewJFrame.this.Camera6, NewJFrame.this.jLabel2, NewJFrame.this.jCheckBox1, 40005, NewJFrame.this.MainCamera, NewJFrame.this.MainCameraNumber, 6, chk_SaveMovement, NewJFrame.this.spn_trigger);
         (new Thread(Cam1)).start();
         (new Thread(Cam2)).start();
         (new Thread(Cam3)).start();

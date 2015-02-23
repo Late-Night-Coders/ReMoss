@@ -21,6 +21,7 @@ import java.util.concurrent.Executors;
 import javax.swing.ImageIcon;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
+import javax.swing.JSpinner;
 
 /**
  *
@@ -38,11 +39,12 @@ public class TCPThread implements Runnable{
     int mWidth;
     int mNoCam;
     JCheckBox mSaveOnMov;
+    JSpinner mJSpinner;
 
      final ExecutorService clientProcessingPool = Executors
                 .newFixedThreadPool(10);
     
-    public TCPThread(JLabel jLabel, JLabel jLabel2, JCheckBox jCheckBox, int port, JLabel mainCamera, JLabel mainCameraNumber, int noCam, JCheckBox saveOnMov){
+    public TCPThread(JLabel jLabel, JLabel jLabel2, JCheckBox jCheckBox, int port, JLabel mainCamera, JLabel mainCameraNumber, int noCam, JCheckBox saveOnMov, JSpinner jspinner){
         mJLabel = jLabel;
         mPort = port;
         mJLabel2 = jLabel2;
@@ -51,6 +53,7 @@ public class TCPThread implements Runnable{
         mMainCamNumber = mainCameraNumber;
         mNoCam = noCam;
         mSaveOnMov = saveOnMov;
+        mJSpinner = jspinner;
     }
     
     @Override
@@ -65,7 +68,7 @@ public class TCPThread implements Runnable{
                 System.out.println("h = " + mWidth);
                 System.out.println("w = " + mHeight);
                 System.out.println("port = " + mPort);
-                (new Thread(new UDPThread(mJLabel, mJLabel2, mJCheckBox, mPort, mHeight, mWidth, mMainCam, mMainCamNumber, mNoCam, mSaveOnMov))).start();
+                (new Thread(new UDPThread(mJLabel, mJLabel2, mJCheckBox, mPort, mHeight, mWidth, mMainCam, mMainCamNumber, mNoCam, mSaveOnMov, mJSpinner))).start();
                 clientSocket.close();
             }
             catch(IOException e){
