@@ -5,9 +5,16 @@
  */
 package newpackage;
 
+import java.awt.AlphaComposite;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.FontMetrics;
 import java.awt.Graphics2D;
 import java.awt.Image;
+import static java.awt.SystemColor.text;
 import java.awt.Toolkit;
+import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.MemoryImageSource;
 import java.io.ByteArrayOutputStream;
@@ -17,6 +24,9 @@ import java.io.InputStream;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.Socket;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.logging.Level;
@@ -40,17 +50,23 @@ public class UDPThread implements Runnable{
     int mHeight;
     int mWidth;
     int decrementor = 6;
+    int mNoCam;
+    JLabel mMainCam;
+    JLabel mMainCamNumber;
 
-     final ExecutorService clientProcessingPool = Executors
+    final ExecutorService clientProcessingPool = Executors
                 .newFixedThreadPool(10);
     
-    public UDPThread(JLabel jLabel, JLabel jLabel2, JCheckBox jCheckBox, int port, int height, int width){
+    public UDPThread(JLabel jLabel, JLabel jLabel2, JCheckBox jCheckBox, int port, int height, int width, JLabel mainCamera, JLabel mainCameraNumber, int noCam){
         mJLabel = jLabel;
         mPort = port;
         mJLabel2 = jLabel2;
         mJCheckBox = jCheckBox;
         mHeight = height;
         mWidth = width;
+        mMainCam = mainCamera;
+        mMainCamNumber = mainCameraNumber;
+        mNoCam = noCam;
     }
     
     @Override
@@ -71,9 +87,30 @@ public class UDPThread implements Runnable{
                 }
                 else{
                     Image img = getImageFromArrayMEM(image,mWidth / decrementor, mHeight / decrementor);
-                    BufferedImage image2 = toBufferedImage(img); // transform it 
-                    Image newimg = image2.getScaledInstance(418, 246,  java.awt.Image.SCALE_SMOOTH);
+                    BufferedImage image2 = toBufferedImage(img); 
+                    Dimension d = mJLabel.getSize();
+                    Image newimg = image2.getScaledInstance(d.width, d.height,  java.awt.Image.SCALE_SMOOTH);                   
                     mJLabel.setIcon(new ImageIcon(newimg));
+                    if(mMainCamNumber.getText().equals(Integer.toString(mNoCam))){
+                        Dimension dPrim = mMainCam.getSize();
+                        Image primImage = image2.getScaledInstance(dPrim.width, dPrim.height,  java.awt.Image.SCALE_SMOOTH);
+                        BufferedImage imagePrim = toBufferedImage(primImage); 
+                        //Watermark
+                        Graphics2D g2d = (Graphics2D) imagePrim.getGraphics();
+                        AlphaComposite alphaChannel = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1f);
+                        g2d.setComposite(alphaChannel); 
+                        g2d.setColor(Color.RED); 
+                        g2d.setFont(new Font("Arial", Font.BOLD, 24)); 
+                        FontMetrics fontMetrics = g2d.getFontMetrics(); 
+                        Rectangle2D rect = fontMetrics.getStringBounds("gdwa", g2d); 
+                        int centerX = (imagePrim.getWidth() - (int) rect.getWidth()) - 200; 
+                        int centerY = imagePrim.getHeight() - 30; 
+                        DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+                        Date date = new Date();
+                        g2d.drawString(dateFormat.format(date), centerX, centerY);
+                        g2d.dispose();
+                        mMainCam.setIcon(new ImageIcon(imagePrim));
+                    }
                 }
             }
         } catch (IOException e) {
@@ -200,8 +237,14 @@ public class UDPThread implements Runnable{
                 mJLabel2.setText("Différence: " + mDiff);
                 Image img = getImageFromArrayMEM(mImageActual,mWidth / decrementor, mHeight / decrementor);
                 BufferedImage image2 = toBufferedImage(img); // transform it 
-                Image newimg = image2.getScaledInstance(640, 360,  java.awt.Image.SCALE_SMOOTH);
+                Dimension d = mJLabel.getSize();
+                Image newimg = image2.getScaledInstance(d.width, d.height,  java.awt.Image.SCALE_SMOOTH);
                 mJLabel.setIcon(new ImageIcon(newimg));
+                if(mMainCamNumber.getText().equals(Integer.toString(mNoCam))){
+                    Dimension dPrim = mMainCam.getSize();
+                    Image primImage = image2.getScaledInstance(dPrim.width, dPrim.height,  java.awt.Image.SCALE_SMOOTH);
+                    mMainCam.setIcon(new ImageIcon(primImage));
+                }
             }
         }
      

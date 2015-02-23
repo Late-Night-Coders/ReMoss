@@ -29,20 +29,26 @@ import javax.swing.JLabel;
 public class TCPThread implements Runnable{
     JLabel mJLabel;
     JLabel mJLabel2;
+    JLabel mMainCam;
+    JLabel mMainCamNumber;
     JCheckBox mJCheckBox;
     int mPort;
     int[] mImageAvant;
     int mHeight;
     int mWidth;
+    int mNoCam;
 
      final ExecutorService clientProcessingPool = Executors
                 .newFixedThreadPool(10);
     
-    public TCPThread(JLabel jLabel, JLabel jLabel2, JCheckBox jCheckBox, int port){
+    public TCPThread(JLabel jLabel, JLabel jLabel2, JCheckBox jCheckBox, int port, JLabel mainCamera, JLabel mainCameraNumber, int noCam){
         mJLabel = jLabel;
         mPort = port;
         mJLabel2 = jLabel2;
         mJCheckBox = jCheckBox;
+        mMainCam = mainCamera;
+        mMainCamNumber = mainCameraNumber;
+        mNoCam = noCam;
     }
     
     @Override
@@ -57,7 +63,7 @@ public class TCPThread implements Runnable{
                 System.out.println("h = " + mWidth);
                 System.out.println("w = " + mHeight);
                 System.out.println("port = " + mPort);
-                (new Thread(new UDPThread(mJLabel, mJLabel2, mJCheckBox, mPort, mHeight, mWidth))).start();
+                (new Thread(new UDPThread(mJLabel, mJLabel2, mJCheckBox, mPort, mHeight, mWidth, mMainCam, mMainCamNumber, mNoCam))).start();
                 clientSocket.close();
             }
             catch(IOException e){
