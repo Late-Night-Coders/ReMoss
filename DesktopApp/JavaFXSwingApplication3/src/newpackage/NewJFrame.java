@@ -8,7 +8,8 @@ package newpackage;
 
 import java.awt.Graphics2D;
 import java.awt.Image;
-import java.awt.Rectangle;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.awt.image.BufferedImage;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -23,8 +24,10 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
+import javax.swing.JCheckBox;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
+import javax.swing.Timer;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 /**
@@ -38,7 +41,8 @@ public class NewJFrame extends javax.swing.JFrame {
     boolean isCam4Used = false;
     boolean isCam5Used = false;
     boolean isCam6Used = false;
-    boolean isCam1Enlarged = false;
+    boolean isShuffle = false;
+    Thread mShuffleThread = new Thread();
     
     TCPThread Cam1;
     TCPThread Cam2;
@@ -60,6 +64,35 @@ public class NewJFrame extends javax.swing.JFrame {
         System.out.println("Entrez " + encryptedIPAddress + " sur vos appareils mobile.");
         startServer();
         
+        NewJFrame.this.chkAutoShuffle.addItemListener(new ItemListener() {
+            @Override
+            public void itemStateChanged(ItemEvent e) {
+                if(!isShuffle){
+                    isShuffle = true;
+                    mShuffleThread = new Thread(
+                        new Runnable() {
+                            @Override
+                            public void run() {
+                               while(true){
+                                   for(int i = 1; i <= 6; i++){
+                                       NewJFrame.this.MainCameraNumber.setText(Integer.toString(i));
+                                       try {
+                                           Thread.sleep(3000);
+                                       } catch (InterruptedException ex) {
+                                           Logger.getLogger(NewJFrame.class.getName()).log(Level.SEVERE, null, ex);
+                                       }
+                                   }
+                               }
+                            }
+                      });
+                    mShuffleThread.start();
+                }
+                else{
+                    mShuffleThread.stop();
+                    isShuffle = false;
+                }
+            }
+      });
     }
 
     /**
@@ -91,6 +124,7 @@ public class NewJFrame extends javax.swing.JFrame {
         MainCamera = new javax.swing.JLabel();
         MainCameraNumber = new javax.swing.JLabel();
         jLabel1 = new javax.swing.JLabel();
+        chkAutoShuffle = new javax.swing.JCheckBox();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         jMenu2 = new javax.swing.JMenu();
@@ -185,6 +219,8 @@ public class NewJFrame extends javax.swing.JFrame {
 
         jLabel1.setText("Caméra Principale: #");
 
+        chkAutoShuffle.setText("Auto Shuffle Cameras");
+
         jMenu1.setText("File");
         jMenuBar1.add(jMenu1);
 
@@ -236,7 +272,8 @@ public class NewJFrame extends javax.swing.JFrame {
                         .addComponent(jLabel14, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(lblAddress, javax.swing.GroupLayout.PREFERRED_SIZE, 158, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(Camera6, javax.swing.GroupLayout.PREFERRED_SIZE, 213, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel13))
+                    .addComponent(jLabel13)
+                    .addComponent(chkAutoShuffle))
                 .addContainerGap(59, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
@@ -278,7 +315,9 @@ public class NewJFrame extends javax.swing.JFrame {
                     .addGroup(layout.createSequentialGroup()
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jCheckBox1)
-                        .addGap(56, 56, 56)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(chkAutoShuffle)
+                        .addGap(30, 30, 30)
                         .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 78, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
                         .addComponent(jLabel14)
@@ -387,6 +426,7 @@ public class NewJFrame extends javax.swing.JFrame {
     private javax.swing.JLabel Camera6;
     private javax.swing.JLabel MainCamera;
     private javax.swing.JLabel MainCameraNumber;
+    private javax.swing.JCheckBox chkAutoShuffle;
     private javax.swing.JButton jButton1;
     private javax.swing.JCheckBox jCheckBox1;
     private javax.swing.JLabel jLabel1;
