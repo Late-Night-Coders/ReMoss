@@ -354,7 +354,7 @@ public class NewJFrame extends javax.swing.JFrame {
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
-        BufferedImage bi = toBufferedImage(((ImageIcon)(NewJFrame.this.Camera1.getIcon())).getImage());
+        BufferedImage bi = toBufferedImage(((ImageIcon)(NewJFrame.this.MainCamera.getIcon())).getImage());
         JFileChooser fileChooser = new JFileChooser();
         FileNameExtensionFilter filter = new FileNameExtensionFilter("Image Files", "jpg", "jpeg");
         fileChooser.setFileFilter(filter);
@@ -558,16 +558,6 @@ public class NewJFrame extends javax.swing.JFrame {
             }
         }
     }
-    
-    private void EnlargeCamera(JLabel jlabel){
-        
-    }
-    
-    private void ShrinkCamera(JLabel jlabel){
-        String cam = jlabel.toString();
-        javax.swing.JOptionPane.showMessageDialog(null,cam);
-    }
- 
 }
 
 
