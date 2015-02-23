@@ -265,9 +265,12 @@ public class UDPThread implements Runnable{
                         }
                     }
                 }
-                long pourcentDiff = (long)mDiff / (long)(mWidth * mHeight / decrementor);
-                System.out.println(Double.toString(mDiff / (mWidth / decrementor * mHeight / decrementor)));
-                mJLabel2.setText("Différence: " + mDiff);
+                int pourcentDiff = (int)  Math.round((mDiff / ((double)mWidth  / (double)decrementor * (double)mHeight / (double)decrementor)) * 100);
+                DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+                Date date = new Date();
+                System.out.println("un traitement" + dateFormat.format(date));
+                
+                mJLabel2.setText("Différence: " + pourcentDiff);
                 Image img = getImageFromArrayMEM(mImageActual,mWidth / decrementor, mHeight / decrementor);
                 BufferedImage image2 = toBufferedImage(img); // transform it 
                 Dimension d = mJLabel.getSize();
