@@ -172,7 +172,6 @@ public class UDPThread implements Runnable{
     }
     
     public void PrintWatermark(BufferedImage imagePrim) {
-        //Watermark
         Graphics2D g2d = (Graphics2D) imagePrim.getGraphics();
         AlphaComposite alphaChannel = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1f);
         g2d.setComposite(alphaChannel); 
@@ -269,28 +268,23 @@ public class UDPThread implements Runnable{
                         }
                     }
                 }
-                int pourcentDiff = (int)  Math.round((mDiff / ((double)mWidth  / (double)decrementor * (double)mHeight / (double)decrementor)) * 100);
-                DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
-                Date date = new Date();
-                System.out.println("un traitement" + dateFormat.format(date));
-                
-                mJLabel2.setText("Différence: " + pourcentDiff);
                 Image img = getImageFromArrayMEM(mImageActual,mWidth / decrementor, mHeight / decrementor);
                 BufferedImage image2 = toBufferedImage(img); // transform it 
                 Dimension d = mJLabel.getSize();
                 Image newimg = image2.getScaledInstance(d.width, d.height,  java.awt.Image.SCALE_SMOOTH);
                 mJLabel.setIcon(new ImageIcon(newimg));
                 if(mMainCamNumber.getText().equals(Integer.toString(mNoCam))){
+                    int pourcentDiff = (int)  Math.round((mDiff / ((double)mWidth  / (double)decrementor * (double)mHeight / (double)decrementor)) * 100);               
+                    mJLabel2.setText("Différence: " + pourcentDiff);
                     Dimension dPrim = mMainCam.getSize();
                     Image primImage = image2.getScaledInstance(dPrim.width, dPrim.height,  java.awt.Image.SCALE_SMOOTH);
                     BufferedImage imagePrim = toBufferedImage(primImage); 
                     PrintWatermark(imagePrim);
                     mMainCam.setIcon(new ImageIcon(imagePrim));
-                }
-                
-                if(pourcentDiff > (int)mJSpinner.getValue() && mSaveOnMov){
-                    BufferedImage bi = toBufferedImage(((ImageIcon)(mMainCam.getIcon())).getImage());
-                    saveImageToDisk(bi, mMainCamNumber.getText());
+                    if(pourcentDiff > (int)mJSpinner.getValue() && mSaveOnMov){
+                        BufferedImage bi = toBufferedImage(((ImageIcon)(mMainCam.getIcon())).getImage());
+                        saveImageToDisk(bi, mMainCamNumber.getText());
+                    }
                 }
             }
         }
