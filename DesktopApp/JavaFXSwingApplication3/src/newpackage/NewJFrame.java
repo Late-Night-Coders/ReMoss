@@ -77,7 +77,8 @@ public class NewJFrame extends javax.swing.JFrame {
                                    for(int i = 1; i <= 6; i++){
                                        NewJFrame.this.MainCameraNumber.setText(Integer.toString(i));
                                        try {
-                                           Thread.sleep(3000);
+                                           int sleep = (int)NewJFrame.this.spnShuffle.getValue();
+                                           Thread.sleep(sleep * 1000);
                                        } catch (InterruptedException ex) {
                                            Logger.getLogger(NewJFrame.class.getName()).log(Level.SEVERE, null, ex);
                                        }
@@ -125,6 +126,8 @@ public class NewJFrame extends javax.swing.JFrame {
         MainCameraNumber = new javax.swing.JLabel();
         jLabel1 = new javax.swing.JLabel();
         chkAutoShuffle = new javax.swing.JCheckBox();
+        spnShuffle = new javax.swing.JSpinner();
+        jLabel3 = new javax.swing.JLabel();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         jMenu2 = new javax.swing.JMenu();
@@ -219,7 +222,11 @@ public class NewJFrame extends javax.swing.JFrame {
 
         jLabel1.setText("Caméra Principale: #");
 
-        chkAutoShuffle.setText("Auto Shuffle Cameras");
+        chkAutoShuffle.setText("Auto Shuffle Cameras every");
+
+        spnShuffle.setModel(new javax.swing.SpinnerNumberModel(1, 1, 15, 1));
+
+        jLabel3.setText("seconds");
 
         jMenu1.setText("File");
         jMenuBar1.add(jMenu1);
@@ -273,8 +280,13 @@ public class NewJFrame extends javax.swing.JFrame {
                         .addComponent(lblAddress, javax.swing.GroupLayout.PREFERRED_SIZE, 158, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(Camera6, javax.swing.GroupLayout.PREFERRED_SIZE, 213, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel13)
-                    .addComponent(chkAutoShuffle))
-                .addContainerGap(59, Short.MAX_VALUE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(chkAutoShuffle)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(spnShuffle, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jLabel3)))
+                .addContainerGap(27, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -316,7 +328,10 @@ public class NewJFrame extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jCheckBox1)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(chkAutoShuffle)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(chkAutoShuffle)
+                            .addComponent(spnShuffle, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel3))
                         .addGap(30, 30, 30)
                         .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 78, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
@@ -436,12 +451,14 @@ public class NewJFrame extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel13;
     private javax.swing.JLabel jLabel14;
     private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu2;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JLabel lblAddress;
+    private javax.swing.JSpinner spnShuffle;
     // End of variables declaration//GEN-END:variables
  public void startServer() {
         final ExecutorService clientProcessingPool = Executors
