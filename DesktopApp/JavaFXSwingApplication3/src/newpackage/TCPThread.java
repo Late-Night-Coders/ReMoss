@@ -12,8 +12,6 @@ import java.awt.image.MemoryImageSource;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.concurrent.ExecutorService;
@@ -28,8 +26,8 @@ import javax.swing.JSpinner;
  * @author Administrateur
  */
 public class TCPThread implements Runnable{
-    JLabel mJLabel;
-    JLabel mJLabel2;
+    JLabel mJLabelMainCam;
+    JLabel mJLabelDiff;
     JLabel mMainCam;
     JLabel mMainCamNumber;
     JCheckBox mJCheckBox;
@@ -44,11 +42,11 @@ public class TCPThread implements Runnable{
      final ExecutorService clientProcessingPool = Executors
                 .newFixedThreadPool(10);
     
-    public TCPThread(JLabel jLabel, JLabel jLabel2, JCheckBox jCheckBox, int port, JLabel mainCamera, JLabel mainCameraNumber, int noCam, JCheckBox saveOnMov, JSpinner jspinner){
-        mJLabel = jLabel;
+    public TCPThread(JLabel MainCam, JLabel diff, JCheckBox chk_diff, int port, JLabel mainCamera, JLabel mainCameraNumber, int noCam, JCheckBox saveOnMov, JSpinner jspinner){
+        mJLabelMainCam = MainCam;
         mPort = port;
-        mJLabel2 = jLabel2;
-        mJCheckBox = jCheckBox;
+        mJLabelDiff = diff;
+        mJCheckBox = chk_diff;
         mMainCam = mainCamera;
         mMainCamNumber = mainCameraNumber;
         mNoCam = noCam;
@@ -68,7 +66,7 @@ public class TCPThread implements Runnable{
                 System.out.println("h = " + mWidth);
                 System.out.println("w = " + mHeight);
                 System.out.println("port = " + mPort);
-                (new Thread(new UDPThread(mJLabel, mJLabel2, mJCheckBox, mPort, mHeight, mWidth, mMainCam, mMainCamNumber, mNoCam, mSaveOnMov, mJSpinner))).start();
+                (new Thread(new UDPThread(mJLabelMainCam, mJLabelDiff, mJCheckBox, mPort, mHeight, mWidth, mMainCam, mMainCamNumber, mNoCam, mSaveOnMov, mJSpinner))).start();
                 clientSocket.close();
             }
             catch(IOException e){
@@ -166,9 +164,9 @@ public class TCPThread implements Runnable{
                         }
                     }
                 }
-                mJLabel2.setText("Différence: " + mDiff);
+                mJLabelDiff.setText("Différence: " + mDiff);
                 Image img = getImageFromArrayMEM(mImageActual,480,270);
-                mJLabel.setIcon(new ImageIcon(img));
+                mJLabelMainCam.setIcon(new ImageIcon(img));
             }
         }
     }

@@ -12,7 +12,6 @@ import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics2D;
 import java.awt.Image;
-import static java.awt.SystemColor.text;
 import java.awt.Toolkit;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
@@ -37,19 +36,16 @@ import java.util.zip.Inflater;
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JCheckBox;
-import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JSpinner;
-import javax.swing.filechooser.FileNameExtensionFilter;
-import static newpackage.NewJFrame.toBufferedImage;
 
 /**
  *
  * @author Fred
  */
 public class UDPThread implements Runnable{
-    JLabel mJLabel;
-    JLabel mJLabel2;
+    JLabel mJLabelMainCam;
+    JLabel mJLabelDiff;
     JCheckBox mJCheckBox;
     int mPort;
     int[] mImageAvant;
@@ -66,19 +62,19 @@ public class UDPThread implements Runnable{
     final ExecutorService clientProcessingPool = Executors
                 .newFixedThreadPool(10);
     
-    public UDPThread(JLabel jLabel, JLabel jLabel2, JCheckBox jCheckBox, int port, int height, int width, JLabel mainCamera, 
-            JLabel mainCameraNumber, int noCam, JCheckBox saveOnMov, JSpinner jspinner){
-        mJLabel = jLabel;
+    public UDPThread(JLabel mainCam, JLabel diff, JCheckBox chk_diff, int port, int height, int width, JLabel mainCamera, 
+            JLabel mainCameraNumber, int noCam, JCheckBox saveOnMov, JSpinner spn_trigger){
+        mJLabelMainCam = mainCam;
         mPort = port;
-        mJLabel2 = jLabel2;
-        mJCheckBox = jCheckBox;
+        mJLabelDiff = diff;
+        mJCheckBox = chk_diff;
         mHeight = height;
         mWidth = width;
         mMainCam = mainCamera;
         mMainCamNumber = mainCameraNumber;
         mNoCam = noCam;
         mSaveOnMov = saveOnMov;
-        mJSpinner = jspinner;
+        mJSpinner = spn_trigger;
     }
     
     @Override
@@ -108,9 +104,9 @@ public class UDPThread implements Runnable{
                 else{
                     Image img = getImageFromArrayMEM(image,mWidth / decrementor, mHeight / decrementor);
                     BufferedImage image2 = toBufferedImage(img); 
-                    Dimension d = mJLabel.getSize();
+                    Dimension d = mJLabelMainCam.getSize();
                     Image newimg = image2.getScaledInstance(d.width, d.height,  java.awt.Image.SCALE_SMOOTH);                   
-                    mJLabel.setIcon(new ImageIcon(newimg));
+                    mJLabelMainCam.setIcon(new ImageIcon(newimg));
                     if(mMainCamNumber.getText().equals(Integer.toString(mNoCam))){
                         Dimension dPrim = mMainCam.getSize();
                         Image primImage = image2.getScaledInstance(dPrim.width, dPrim.height,  java.awt.Image.SCALE_SMOOTH);
@@ -270,12 +266,12 @@ public class UDPThread implements Runnable{
                 }
                 Image img = getImageFromArrayMEM(mImageActual,mWidth / decrementor, mHeight / decrementor);
                 BufferedImage image2 = toBufferedImage(img); // transform it 
-                Dimension d = mJLabel.getSize();
+                Dimension d = mJLabelMainCam.getSize();
                 Image newimg = image2.getScaledInstance(d.width, d.height,  java.awt.Image.SCALE_SMOOTH);
-                mJLabel.setIcon(new ImageIcon(newimg));
+                mJLabelMainCam.setIcon(new ImageIcon(newimg));
                 if(mMainCamNumber.getText().equals(Integer.toString(mNoCam))){
                     int pourcentDiff = (int)  Math.round((mDiff / ((double)mWidth  / (double)decrementor * (double)mHeight / (double)decrementor)) * 100);               
-                    mJLabel2.setText("Différence: " + pourcentDiff);
+                    mJLabelDiff.setText("Différence: " + pourcentDiff);
                     Dimension dPrim = mMainCam.getSize();
                     Image primImage = image2.getScaledInstance(dPrim.width, dPrim.height,  java.awt.Image.SCALE_SMOOTH);
                     BufferedImage imagePrim = toBufferedImage(primImage); 
