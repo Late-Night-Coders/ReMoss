@@ -21,43 +21,74 @@ public class IpAddressCipher {
     
     public IpAddressCipher() {
         mIPAddress = getIPAddress();
+        mMask = getIPv4SubnetMask();
     }
     
     public String getIPAddress() {
         InetAddress IP;
-        String ipAddress = "";
+        String ipAddressTemp = "";
         String ipAddressReal = "";
         
-        Enumeration enumNI;  // Enumeration de network interfaces.
         try {
-            enumNI = NetworkInterface.getNetworkInterfaces();
+            Enumeration enumNI = NetworkInterface.getNetworkInterfaces();
             
             while(enumNI.hasMoreElements()){
                 NetworkInterface ni = (NetworkInterface) enumNI.nextElement();
-                Enumeration ee = ni.getInetAddresses();
+                Enumeration enumAddresses = ni.getInetAddresses();
                 
-                while(ee.hasMoreElements()) {
-                    Object ee1 = ee.nextElement();
-                    InetAddress ia = (InetAddress) ee1; 
-                    ipAddress = ia.getHostAddress();
-                    
-                    
-                    
-                    if (!ipAddress.startsWith("127.") && !ipAddress.startsWith("0.") && !ipAddress.startsWith("0:") && !ipAddress.contains(":")) {
-                        mIPAddress = ipAddress;
-                        mMask = ni.getInterfaceAddresses().get(0).getNetworkPrefixLength();
+                while(enumAddresses.hasMoreElements()) {
+                    Object elem = enumAddresses.nextElement();
+                    InetAddress ia = (InetAddress) elem;
+                    ipAddressTemp = ia.getHostAddress();                      
+                    if (validateIPAddress(ipAddressTemp)) {
+                        ipAddressReal = ipAddressTemp;
                     }
-                }
-             }
-        } catch (SocketException ex) {
+                }       
+            }
+        } 
+        catch (SocketException ex) {
             Logger.getLogger(IpAddressCipher.class.getName()).log(Level.SEVERE, null, ex);
         }
   
-        return mIPAddress;
+        return ipAddressReal;
+    }
+    
+    private Boolean validateIPAddress(String ipAddress) {
+        return !ipAddress.startsWith("127.") && !ipAddress.startsWith("0.") && !ipAddress.startsWith("169") && !ipAddress.contains(":");
+    }
+    
+    private short getIPv4SubnetMask() {
+        short subnetMask = 0;
+        int i = 0;
+        
+        try {
+            Enumeration enumNI = NetworkInterface.getNetworkInterfaces();
+            
+            while(enumNI.hasMoreElements()){
+                NetworkInterface ni = (NetworkInterface) enumNI.nextElement();
+                Enumeration enumAddresses = ni.getInetAddresses();
+                
+                while(enumAddresses.hasMoreElements()) {
+                    String sType = ni.getInterfaceAddresses().get(i).getAddress().getClass().toString();
+
+                    if (!sType.contains("IPv6")) {   
+                        subnetMask = ni.getInterfaceAddresses().get(i).getNetworkPrefixLength();
+                    }
+
+                    i++;
+                }
+            }
+        } 
+        catch (SocketException ex) {
+            Logger.getLogger(IpAddressCipher.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        return subnetMask;
     }
 
     public String encryptIPAddress() throws UnknownHostException {
         String CIDRaddr = mIPAddress + "/" + Integer.toString(mMask);
+        System.out.println(CIDRaddr);
         SubnetUtils utils = new SubnetUtils(CIDRaddr);
         String mask = utils.getInfo().getNetmask();
         InetAddress ip = InetAddress.getByName(mIPAddress);
@@ -93,6 +124,14 @@ public class IpAddressCipher {
         hexIPAddress = hexIPAddress.substring(1, length);
         
         return hexIPAddress;
+    }
+    
+    private String fillWithZeros(String s) {
+        while (s.length() < 3) {
+            s = "0" + s;
+        }
+        
+        return s;
     }
     
     public static int byteArrayToInt(byte[] b) 
