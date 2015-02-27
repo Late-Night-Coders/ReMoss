@@ -6,7 +6,6 @@ import android.net.DhcpInfo;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
-import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.FrameLayout;
@@ -27,6 +26,7 @@ public class MainActivity extends ActionBarActivity{
         private Activity mActivity;
         private EditText mServerEditText;
         private FrameLayout mCameraPreview;
+        private WifiManager mWifiManager;
 
         public Connection_OnClickListener(Activity activity) {
             mActivity = activity;
@@ -37,10 +37,11 @@ public class MainActivity extends ActionBarActivity{
         public void onClick(View v) {
             setContentView(R.layout.remote_mode);
             Context context = getApplicationContext();
-            String encryptedAddress = mServerEditText.getText().toString();
 
-            IPAddressCipher ipCipher = new IPAddressCipher(context);
-            String decryptedAddress = ipCipher.decryptIPAddress(encryptedAddress);
+            mWifiManager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
+            ConnectionString connStr = new ConnectionString( mWifiManager.getDhcpInfo().gateway);
+            String encryptedAddress = mServerEditText.getText().toString();
+            String decryptedAddress = connStr.decrypt(encryptedAddress);
 
             mCameraPreview = (FrameLayout)findViewById(R.id.camera_preview);
             UDPRunnable udpRunnable = new UDPRunnable(

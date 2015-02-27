@@ -6,21 +6,18 @@ import android.net.wifi.WifiManager;
 import android.util.Log;
 import android.text.format.Formatter;
 
-public class IPAddressCipher {
+public class ConnectionString {
 
-    public int mGateway;
+    private int mGateway;
 
-    public IPAddressCipher(Context context) {
-        WifiManager mWifiMgr = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
-        DhcpInfo mDhcpInfo = mWifiMgr.getDhcpInfo();
-        int mNetmask = mDhcpInfo.netmask;
-        mGateway = mDhcpInfo.gateway;
+    public ConnectionString(int gateway) {
+        mGateway = gateway;
     }
 
-    public String decryptIPAddress(String serverAddress) {
-        String gatewayAddr = Formatter.formatIpAddress(mGateway);
+    public String decrypt(String serverAddress) {
+        String gatewayAddress = Formatter.formatIpAddress(mGateway);
         String[] connectionStringArray = splitEveryThirdCharacter(serverAddress);
-        String[] gatewayAddressArray = gatewayAddr.split("\\.");
+        String[] gatewayAddressArray = gatewayAddress.split("\\.");
         String[] hostAddressArray = new String[4];
 
         String ipAddress = "";
