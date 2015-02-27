@@ -157,13 +157,15 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
                         mSendingData = true;
                         (new Thread() {
                             public void run() {
-                                byte[] dataCouper = halveYUV420(data, frameWidth, frameHeight, 6);
-
-
-
-
+                                int format =  ImageFormat.NV21;
+                                YuvImage yuv_image = new YuvImage(data, format, frameWidth, frameHeight, null);
+                                Rect rect = new Rect(0, 0, frameWidth, frameHeight);
+                                ByteArrayOutputStream output_stream = new ByteArrayOutputStream();
+                                yuv_image.compressToJpeg(rect, 50, output_stream);
+                                byte[] byt=output_stream.toByteArray();
                                 try {
-                                    byte[] compressedData = compress(dataCouper);
+                                    byte[] compressedData = compress(byt);
+                                    Log.d("CameraTest", Integer.toString(compressedData.length));
                                     ThreadSendUDPFeed UDP = new ThreadSendUDPFeed(compressedData, mServerIP, mNoPort);
                                     UDP.send();
                                 } catch (IOException e) {
@@ -182,28 +184,6 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
         } catch (Exception e) {
             Log.d("Error", "Error starting camera preview: " + e.getMessage());
         }
-    }
-
-    public byte[] halveYUV420(byte[] data, int imageWidth, int imageHeight, int decrementor) {
-        byte[] yuv = new byte[imageWidth/2 * imageHeight/2 * 3 / decrementor];
-        // halve yuma
-        int i = 0;
-        for (int y = 0; y < imageHeight; y+=decrementor) {
-            for (int x = 0; x < imageWidth; x+=decrementor) {
-                yuv[i] = data[y * imageWidth + x];
-                i++;
-            }
-        }
-        // halve U and V color components
-        for (int y = 0; y < imageHeight / 2; y+=decrementor) {
-            for (int x = 0; x < imageWidth; x += (decrementor * 2)) {
-                yuv[i] = data[(imageWidth * imageHeight) + (y * imageWidth) + x];
-                i++;
-                yuv[i] = data[(imageWidth * imageHeight) + (y * imageWidth) + (x + 1)];
-                i++;
-            }
-        }
-        return yuv;
     }
 
     public byte[] compress(byte[] data) throws IOException {

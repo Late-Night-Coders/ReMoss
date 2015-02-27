@@ -16,6 +16,7 @@ import java.awt.Toolkit;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.MemoryImageSource;
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.File;
@@ -26,7 +27,9 @@ import java.net.DatagramSocket;
 import java.net.Socket;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.logging.Level;
@@ -34,6 +37,9 @@ import java.util.logging.Logger;
 import java.util.zip.DataFormatException;
 import java.util.zip.Inflater;
 import javax.imageio.ImageIO;
+import javax.imageio.ImageReadParam;
+import javax.imageio.ImageReader;
+import javax.imageio.stream.ImageInputStream;
 import javax.swing.ImageIcon;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
@@ -86,8 +92,12 @@ public class UDPThread implements Runnable{
             while (true) {
                 DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
                 serverSocket.receive(receivePacket);
-                int rgb[] = new int[receiveData.length];
-                int[] image = decodeYUV420SP(rgb, decompress(receivePacket.getData()), mWidth / decrementor, mHeight / decrementor);
+                byte[] data = decompress(trim(receivePacket.getData()));
+                System.out.println(data.length);
+                ByteArrayInputStream baos=new ByteArrayInputStream(data);
+                BufferedImage bImageFromConvert = ImageIO.read(baos);
+               
+                
                 
                 if(mSaveOnMov.isSelected() || mJCheckBox.isSelected()){
                     boolean showMov = false;
@@ -98,18 +108,16 @@ public class UDPThread implements Runnable{
                     if(mSaveOnMov.isSelected()){
                         saveOnMov = true;
                     }
-                    (new Thread(new UDPThread.CheckMovement(image, mImageAvant, showMov, saveOnMov))).start();
-                    mImageAvant = image;
+                    //(new Thread(new UDPThread.CheckMovement(image, mImageAvant, showMov, saveOnMov))).start();
+                    //mImageAvant = image;
                 }
                 else{
-                    Image img = getImageFromArrayMEM(image,mWidth / decrementor, mHeight / decrementor);
-                    BufferedImage image2 = toBufferedImage(img); 
                     Dimension d = mJLabelMainCam.getSize();
-                    Image newimg = image2.getScaledInstance(d.width, d.height,  java.awt.Image.SCALE_SMOOTH);                   
+                    Image newimg = bImageFromConvert.getScaledInstance(d.width, d.height,  java.awt.Image.SCALE_SMOOTH);                   
                     mJLabelMainCam.setIcon(new ImageIcon(newimg));
                     if(mMainCamNumber.getText().equals(Integer.toString(mNoCam))){
                         Dimension dPrim = mMainCam.getSize();
-                        Image primImage = image2.getScaledInstance(dPrim.width, dPrim.height,  java.awt.Image.SCALE_SMOOTH);
+                        Image primImage = bImageFromConvert.getScaledInstance(dPrim.width, dPrim.height,  java.awt.Image.SCALE_SMOOTH);
                         BufferedImage imagePrim = toBufferedImage(primImage); 
                         PrintWatermark(imagePrim);
                         mMainCam.setIcon(new ImageIcon(imagePrim));
@@ -117,39 +125,21 @@ public class UDPThread implements Runnable{
                 }
             }
         } catch (IOException e) {
-            System.err.println("Unable to process client request");
+
         } catch (DataFormatException ex) {
             Logger.getLogger(UDPThread.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        
+        }        
     }
     
-    public int[] decodeYUV420SP(int[] rgb, byte[] yuv420sp, int width, int height) {
-        final int frameSize = width * height;
-
-        for (int j = 0, yp = 0; j < height; j++) {
-                int uvp = frameSize + (j >> 1) * width, u = 0, v = 0;
-                for (int i = 0; i < width; i++, yp++) {
-                        int y = (0xff & ((int) yuv420sp[yp])) - 16;
-                        if (y < 0) y = 0;
-                        if ((i & 1) == 0) {
-                                v = (0xff & yuv420sp[uvp++]) - 128;
-                                u = (0xff & yuv420sp[uvp++]) - 128;
-                        }
-
-                        int y1192 = 1192 * y;
-                        int r = (y1192 + 1634 * v);
-                        int g = (y1192 - 833 * v - 400 * u);
-                        int b = (y1192 + 2066 * u);
-
-                        if (r < 0) r = 0; else if (r > 262143) r = 262143;
-                        if (g < 0) g = 0; else if (g > 262143) g = 262143;
-                        if (b < 0) b = 0; else if (b > 262143) b = 262143;
-
-                        rgb[yp] = 0xff000000 | ((r << 6) & 0xff0000) | ((g >> 2) & 0xff00) | ((b >> 10) & 0xff);
-                }
+    static byte[] trim(byte[] bytes)
+    {
+        int i = bytes.length - 1;
+        while (i >= 0 && bytes[i] == 0)
+        {
+            --i;
         }
-        return rgb;
+
+        return Arrays.copyOf(bytes, i + 1);
     }
     
     public Image getImageFromArrayMEM(int[] pixels, int width, int height) {
@@ -157,16 +147,7 @@ public class UDPThread implements Runnable{
         Toolkit tk = Toolkit.getDefaultToolkit();
         return tk.createImage(mis);
     }
-    
-    public byte[] readBytes(Socket socket) throws IOException {
-            InputStream in = socket.getInputStream();
-            DataInputStream dis = new DataInputStream(in);
-            
-            byte[] data = new byte[21600];
-            dis.readFully(data);
-            return data;
-    }
-    
+
     public void PrintWatermark(BufferedImage imagePrim) {
         Graphics2D g2d = (Graphics2D) imagePrim.getGraphics();
         AlphaComposite alphaChannel = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1f);
@@ -208,6 +189,8 @@ public class UDPThread implements Runnable{
         inflater.end();
         return output;  
        }  
+    
+    
     
     private class CheckMovement implements Runnable{
      int[] mImageAvant;
