@@ -186,6 +186,28 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
         }
     }
 
+    public static byte[] halveYUV420(byte[] data, int imageWidth, int imageHeight) {
+        byte[] yuv = new byte[imageWidth/2 * imageHeight/2 * 3 / 2];
+        // halve yuma
+        int i = 0;
+        for (int y = 0; y < imageHeight; y+=2) {
+            for (int x = 0; x < imageWidth; x+=2) {
+                yuv[i] = data[y * imageWidth + x];
+                i++;
+            }
+        }
+        // halve U and V color components
+        for (int y = 0; y < imageHeight / 2; y+=2) {
+            for (int x = 0; x < imageWidth; x += 4) {
+                yuv[i] = data[(imageWidth * imageHeight) + (y * imageWidth) + x];
+                i++;
+                yuv[i] = data[(imageWidth * imageHeight) + (y * imageWidth) + (x + 1)];
+                i++;
+            }
+        }
+        return yuv;
+    }
+
     public byte[] compress(byte[] data) throws IOException {
         Deflater deflater = new Deflater();
         deflater.setInput(data);
