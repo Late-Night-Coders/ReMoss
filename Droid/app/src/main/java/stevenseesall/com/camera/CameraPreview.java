@@ -2,6 +2,9 @@ package stevenseesall.com.camera;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.ImageFormat;
+import android.graphics.Rect;
+import android.graphics.YuvImage;
 import android.hardware.Camera;
 import android.util.Log;
 import android.view.SurfaceHolder;
@@ -137,60 +140,47 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
                     final int frameHeight = camera.getParameters().getPreviewSize().height;
                     final int frameWidth = camera.getParameters().getPreviewSize().width;
 
+                    if(!ScreenSizeSent && !mGettingPort){
+                        (new Thread() {
+                            public void run() {
+                                mGettingPort = true;
+                                SendScreenSizeTCP TCP = new SendScreenSizeTCP(frameHeight, frameWidth, mServerIP);
+                                TCP.GetCam();
+                                mNoPort = TCP.mPort;
+                                ScreenSizeSent = true;
+                            }
+                        }).start();
 
-                    if(IsStandAlone) {
-                        if (Libre) {
-                            (new Thread() {
-                                public void run() {
-                                    Libre = false;
-                                    int rgb[] = new int[(frameWidth * frameHeight) / mRationCheckedPixelHor / mRationCheckedPixelVer];
-                                    int[] image = decodeYUV420SP(rgb, data, frameWidth, frameHeight, mRationCheckedPixelHor, mRationCheckedPixelVer);
-                                    if (mImageAvant == null) {
-                                        mImageAvant = image;
-                                    }
-                                    CheckMovementRunnable checkMovement = new CheckMovementRunnable(image, frameWidth, frameHeight,
-                                            mSensibility, mImageAvant, mActivity, mMouvementTextView, mContext, isAlarmOn);
-                                    (new Thread(checkMovement)).start();
-                                    mImageAvant = checkMovement.getmImage();
-                                    Libre = true;
-                                }
-                            }).start();
-                        }
-                    }
-                    else{
-                        if(!ScreenSizeSent && !mGettingPort){
-                            (new Thread() {
-                                public void run() {
-                                    mGettingPort = true;
-                                    SendScreenSizeTCP TCP = new SendScreenSizeTCP(frameHeight, frameWidth, mServerIP);
-                                    TCP.GetCam();
-                                    mNoPort = TCP.mPort;
-                                    ScreenSizeSent = true;
-                                }
-                            }).start();
-
-                        }
-
-                        if(!mSendingData && ScreenSizeSent){
-                            mSendingData = true;
-                            (new Thread() {
-                                public void run() {
-                                    final byte[] dataCouper = halveYUV420(data, frameWidth, frameHeight, 6);
-                                    try {
-                                        byte[] compressedData = compress(dataCouper);
-                                        ThreadSendUDPFeed UDP = new ThreadSendUDPFeed(compressedData, mServerIP, mNoPort);
-                                        UDP.send();
-                                    } catch (IOException e) {
-                                        e.printStackTrace();
-                                    }
-                                    finally{
-                                        mSendingData = false;
-                                    }
-                                }
-                            }).start();
-                        }
                     }
 
+                    if(!mSendingData && ScreenSizeSent){
+                        mSendingData = true;
+                        (new Thread() {
+                            public void run() {
+                                byte[] dataCouper = halveYUV420(data, frameWidth, frameHeight, 6);
+
+                                int format =  ImageFormat.NV21;
+                                YuvImage yuv_image = new YuvImage(data, format, frameWidth, frameHeight, null);
+                                // Convert YuV to Jpeg
+                                Rect rect = new Rect(0, 0, frameWidth, frameHeight);
+                                ByteArrayOutputStream output_stream = new ByteArrayOutputStream();
+                                yuv_image.compressToJpeg(rect, 75, output_stream);
+                                byte[] byt=output_stream.toByteArray();
+
+
+                                try {
+                                    byte[] compressedData = compress(byt);
+                                    ThreadSendUDPFeed UDP = new ThreadSendUDPFeed(compressedData, mServerIP, mNoPort);
+                                    UDP.send();
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
+                                finally{
+                                    mSendingData = false;
+                                }
+                            }
+                        }).start();
+                    }
                 }
             });
             mCamera.startPreview();
@@ -200,44 +190,8 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
         }
     }
 
-    int[] decodeYUV420SP(int[] rgb, byte[] yuv420sp, int width, int height, int skippedFrameHorizontal, int skippedFrameVertical) {
-        final int frameSize = (width * height / skippedFrameHorizontal) / skippedFrameVertical;
-        for (int j = 0, yp = 0; j < height; j += skippedFrameHorizontal) {
-            int uvp = frameSize + (j >> 1) * width, u = 0, v = 0;
-            for (int i = 0; i < width; i += skippedFrameVertical, yp++) {
-                int y = (0xff & ((int) yuv420sp[yp])) - 16;
-                if (y < 0)
-                    y = 0;
-                if ((i & 1) == 0) {
-                    v = (0xff & yuv420sp[uvp++]) - 128;
-                    u = (0xff & yuv420sp[uvp++]) - 128;
-                }
-
-                int y1192 = 1192 * y;
-                int r = (y1192 + 1634 * v);
-                int g = (y1192 - 833 * v - 400 * u);
-                int b = (y1192 + 2066 * u);
-
-                if (r < 0) {
-                    r = 0;
-                } else if (r > 262143)
-                    r = 262143;
-                if (g < 0)
-                    g = 0;
-                else if (g > 262143)
-                    g = 262143;
-                if (b < 0)
-                    b = 0;
-                else if (b > 262143)
-                    b = 262143;
-                rgb[yp] = 0xff000000 | ((r << 6) & 0xff0000) | ((g >> 2) & 0xff00) | ((b >> 10) & 0xff);
-            }
-        }
-        return rgb;
-    }
-
     public byte[] halveYUV420(byte[] data, int imageWidth, int imageHeight, int decrementor) {
-        byte[] yuv = new byte[imageWidth/decrementor * imageHeight/decrementor * 3 / 2];
+        byte[] yuv = new byte[imageWidth/2 * imageHeight/2 * 3 / decrementor];
         // halve yuma
         int i = 0;
         for (int y = 0; y < imageHeight; y+=decrementor) {
