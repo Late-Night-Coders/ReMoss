@@ -10,6 +10,7 @@ import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -54,12 +55,14 @@ public class IpAddressCipher {
     }
     
     private Boolean validateIPAddress(String ipAddress) {
-        return !ipAddress.startsWith("127.") && !ipAddress.startsWith("0.") && !ipAddress.startsWith("169") && !ipAddress.contains(":");
+        return !ipAddress.startsWith("127.") && !ipAddress.startsWith("0.") && 
+                !ipAddress.startsWith("169") && !ipAddress.contains(":");
     }
     
     private short getIPv4SubnetMask() {
         short subnetMask = 0;
         int i = 0;
+        String sType;
         
         try {
             Enumeration enumNI = NetworkInterface.getNetworkInterfaces();
@@ -68,13 +71,17 @@ public class IpAddressCipher {
                 NetworkInterface ni = (NetworkInterface) enumNI.nextElement();
                 Enumeration enumAddresses = ni.getInetAddresses();
                 
-                while(enumAddresses.hasMoreElements()) {
-                    String sType = ni.getInterfaceAddresses().get(i).getAddress().getClass().toString();
+                while(enumAddresses.hasMoreElements()) {  
+                    sType = ni.getInterfaceAddresses().get(i).getAddress().getClass().toString();
 
-                    if (!sType.contains("IPv6")) {   
+                    if (!sType.contains("Inet6Address")) {   
                         subnetMask = ni.getInterfaceAddresses().get(i).getNetworkPrefixLength();
+                        
+                        // TODO: issue #21. 
+                        // Résoudre le workaround (utilisation du break pour arrêter la loop).
+                        break;
                     }
-
+                    
                     i++;
                 }
             }
@@ -94,17 +101,17 @@ public class IpAddressCipher {
         InetAddress ip = InetAddress.getByName(mIPAddress);
         InetAddress netmask = InetAddress.getByName(mask);
         
-        String[] ipAddrParts=mIPAddress.split("\\.");
+        String[] ipAddressArray = mIPAddress.split("\\.");
         String[] maskParts = mask.split("\\.");
         
         String finalIP = "";
         for(int i=0; i < 4; i++){
-            int x = Integer.parseInt(ipAddrParts[i]);
+            int x = Integer.parseInt(ipAddressArray[i]);
             int y = Integer.parseInt(maskParts[i]);
             int z = x & y;
             System.out.println(z);
             if(z != x){
-                finalIP += x+".";
+                finalIP += x + ".";
             }
         }
 
@@ -114,15 +121,10 @@ public class IpAddressCipher {
         String hexIPAddress = "";
         
         for (String st: parts) {
-            byte[] bStr = st.getBytes(Charset.forName("UTF-8"));
-            int i = Integer.parseInt(st);
-            String hex = Integer.toHexString(i);
-            hexIPAddress = hexIPAddress + '.' + hex;         
+            st = fillWithZeros(st);
+            hexIPAddress = hexIPAddress + st;         
         }
-        
-        int length = hexIPAddress.length();
-        hexIPAddress = hexIPAddress.substring(1, length);
-        
+
         return hexIPAddress;
     }
     

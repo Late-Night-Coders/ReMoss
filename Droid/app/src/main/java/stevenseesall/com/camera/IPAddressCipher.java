@@ -44,6 +44,8 @@ public class IPAddressCipher {
             ipAddress = ipAddress + '.' + st;
         }
 
+        ipAddress = ipAddress.substring(1, ipAddress.length());
+
         return ipAddress;
     }
 
