@@ -159,17 +159,11 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
                             public void run() {
                                 byte[] dataCouper = halveYUV420(data, frameWidth, frameHeight, 6);
 
-                                int format =  ImageFormat.NV21;
-                                YuvImage yuv_image = new YuvImage(data, format, frameWidth, frameHeight, null);
-                                // Convert YuV to Jpeg
-                                Rect rect = new Rect(0, 0, frameWidth, frameHeight);
-                                ByteArrayOutputStream output_stream = new ByteArrayOutputStream();
-                                yuv_image.compressToJpeg(rect, 75, output_stream);
-                                byte[] byt=output_stream.toByteArray();
+
 
 
                                 try {
-                                    byte[] compressedData = compress(byt);
+                                    byte[] compressedData = compress(dataCouper);
                                     ThreadSendUDPFeed UDP = new ThreadSendUDPFeed(compressedData, mServerIP, mNoPort);
                                     UDP.send();
                                 } catch (IOException e) {
