@@ -30,10 +30,6 @@ public class ThreadSendUDPFeed {
     }
 
     public void send(){
-        //Bitmap image = BitmapFactory.decodeByteArray(mData, 0, mData.length);
-        //image.compress(Bitmap.CompressFormat.JPEG, 10);
-        //OutputStream fOut = new FileOutputStream(externalStorageFile);
-
         DatagramSocket clientSocket = null;
         try {
             clientSocket = new DatagramSocket();

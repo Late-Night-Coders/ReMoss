@@ -6,26 +6,13 @@
 
 package newpackage;
 
-import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
-import java.awt.image.BufferedImage;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.ServerSocket;
-import java.net.Socket;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
-import javax.swing.ImageIcon;
-import javax.swing.JFileChooser;
-import javax.swing.filechooser.FileNameExtensionFilter;
 
 /**
  *
@@ -451,124 +438,39 @@ public class NewJFrame extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JLabel Camera1;
-    private javax.swing.JLabel Camera2;
-    private javax.swing.JLabel Camera3;
-    private javax.swing.JLabel Camera4;
-    private javax.swing.JLabel Camera5;
-    private javax.swing.JLabel Camera6;
-    private javax.swing.JLabel MainCamera;
-    private javax.swing.JLabel MainCameraNumber;
-    private javax.swing.JCheckBox chkAutoShuffle;
-    private javax.swing.JCheckBox chk_SaveMovement;
-    private javax.swing.JCheckBox chk_diff;
-    private javax.swing.JButton jButton1;
-    private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel10;
-    private javax.swing.JLabel jLabel11;
-    private javax.swing.JLabel jLabel12;
-    private javax.swing.JLabel jLabel13;
-    private javax.swing.JLabel jLabel14;
-    private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel3;
-    private javax.swing.JLabel jLabel4;
-    private javax.swing.JLabel jLabel5;
-    private javax.swing.JLabel jLabel8;
-    private javax.swing.JLabel jLabel9;
+    public javax.swing.JLabel Camera1;
+    public javax.swing.JLabel Camera2;
+    public javax.swing.JLabel Camera3;
+    public javax.swing.JLabel Camera4;
+    public javax.swing.JLabel Camera5;
+    public javax.swing.JLabel Camera6;
+    public javax.swing.JLabel MainCamera;
+    public javax.swing.JLabel MainCameraNumber;
+    public javax.swing.JCheckBox chkAutoShuffle;
+    public javax.swing.JCheckBox chk_SaveMovement;
+    public javax.swing.JCheckBox chk_diff;
+    public javax.swing.JButton jButton1;
+    public javax.swing.JLabel jLabel1;
+    public javax.swing.JLabel jLabel10;
+    public javax.swing.JLabel jLabel11;
+    public javax.swing.JLabel jLabel12;
+    public javax.swing.JLabel jLabel13;
+    public javax.swing.JLabel jLabel14;
+    public javax.swing.JLabel jLabel2;
+    public javax.swing.JLabel jLabel3;
+    public javax.swing.JLabel jLabel4;
+    public javax.swing.JLabel jLabel5;
+    public javax.swing.JLabel jLabel8;
+    public javax.swing.JLabel jLabel9;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu2;
     private javax.swing.JMenuBar jMenuBar1;
-    private javax.swing.JLabel lblAddress;
-    private javax.swing.JSpinner spnShuffle;
-    private javax.swing.JSpinner spn_trigger;
+    public javax.swing.JLabel lblAddress;
+    public javax.swing.JSpinner spnShuffle;
+    public javax.swing.JSpinner spn_trigger;
     // End of variables declaration//GEN-END:variables
  public void startServer() {
-        final ExecutorService clientProcessingPool = Executors.newFixedThreadPool(10);
-        (new Thread(new AssignCamera())).start();
-        //MainCamera
-        new Thread(new TCPThread(NewJFrame.this.Camera1, NewJFrame.this.jLabel2, NewJFrame.this.chk_diff, 40000, 
-                NewJFrame.this.MainCamera, NewJFrame.this.MainCameraNumber, 1, chk_SaveMovement, NewJFrame.this.spn_trigger)).start();
-        new Thread(new TCPThread(NewJFrame.this.Camera2, NewJFrame.this.jLabel2, NewJFrame.this.chk_diff, 40001,
-                NewJFrame.this.MainCamera, NewJFrame.this.MainCameraNumber, 2, chk_SaveMovement, NewJFrame.this.spn_trigger)).start();
-        new Thread(new TCPThread(NewJFrame.this.Camera3, NewJFrame.this.jLabel2, NewJFrame.this.chk_diff, 40002, 
-                NewJFrame.this.MainCamera, NewJFrame.this.MainCameraNumber, 3, chk_SaveMovement, NewJFrame.this.spn_trigger)).start();
-        new Thread(new TCPThread(NewJFrame.this.Camera4, NewJFrame.this.jLabel2, NewJFrame.this.chk_diff, 40003, 
-                NewJFrame.this.MainCamera, NewJFrame.this.MainCameraNumber, 4, chk_SaveMovement, NewJFrame.this.spn_trigger)).start();
-        new Thread(new TCPThread(NewJFrame.this.Camera5, NewJFrame.this.jLabel2, NewJFrame.this.chk_diff, 40004, 
-                NewJFrame.this.MainCamera, NewJFrame.this.MainCameraNumber, 5, chk_SaveMovement, NewJFrame.this.spn_trigger)).start();
-        new Thread(new TCPThread(NewJFrame.this.Camera6, NewJFrame.this.jLabel2, NewJFrame.this.chk_diff, 40005, 
-                NewJFrame.this.MainCamera, NewJFrame.this.MainCameraNumber, 6, chk_SaveMovement, NewJFrame.this.spn_trigger)).start();
-    }
-    
-    private class AssignCamera implements Runnable {
-        @Override 
-        public void run(){
-            ServerSocket serverSocket;
-            try {
-                while(true){
-                    serverSocket = new ServerSocket(44444);
-                    System.out.println("En attente de paquets pour assignation Caméra...");
-                    final Socket clientSocket = serverSocket.accept();
-                    System.out.println("Pacquet accepté");
-                    try{
-                        readStr(clientSocket);
-                        clientSocket.close();
-                        serverSocket.close();
-                    }
-                    catch(IOException e){
-                        System.out.println(e);          
-                    }
-                }
-            }
-            catch(Exception e){
-                
-            }
-        }
-        
-        public void readStr(Socket socket) throws IOException {
-            InputStream in = socket.getInputStream();
-            DataInputStream dis = new DataInputStream(in);
-            
-            String check = dis.readLine();
-            System.out.println("check: " + check);
-            if(check != null){
-                Socket AskSocket = new Socket(check, 44444);
-                DataOutputStream AskSocketout = new DataOutputStream(AskSocket.getOutputStream());
-                
-                if(!isCam1Used){
-                    isCam1Used = true;
-                    AskSocketout.writeInt(40000);
-                }
-                else
-                    if(!isCam2Used){
-                        isCam2Used = true;
-                        AskSocketout.writeInt(40001);
-                    }
-                    else
-                        if(!isCam3Used){
-                            isCam3Used = true;
-                            AskSocketout.writeInt(40002);
-                        }
-                        else
-                            if(!isCam4Used){
-                                isCam4Used = true;
-                                AskSocketout.writeInt(40003);
-                            }
-                            else
-                                if(!isCam5Used){
-                                    isCam5Used = true;
-                                    AskSocketout.writeInt(40004);
-                                }
-                                else
-                                    if(!isCam6Used){
-                                        isCam6Used = true;
-                                        AskSocketout.writeInt(40005);
-                                    }
-                
-                AskSocketout.close();
-                AskSocket.close();
-            }
-        }
+        (new Thread(new AssignCamera(NewJFrame.this))).start();
     }
 }
 
