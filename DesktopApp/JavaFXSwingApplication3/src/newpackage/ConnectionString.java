@@ -15,12 +15,12 @@ import java.util.Enumeration;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class IpAddressCipher {
+public class ConnectionString {
     private String mIPAddress;
     private String mIPAdrressEncrypted;
     private short mMask;
     
-    public IpAddressCipher() {
+    public ConnectionString() {
         mIPAddress = getIPAddress();
         mMask = getIPv4SubnetMask();
     }
@@ -48,7 +48,7 @@ public class IpAddressCipher {
             }
         } 
         catch (SocketException ex) {
-            Logger.getLogger(IpAddressCipher.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ConnectionString.class.getName()).log(Level.SEVERE, null, ex);
         }
   
         return ipAddressReal;
@@ -87,45 +87,41 @@ public class IpAddressCipher {
             }
         } 
         catch (SocketException ex) {
-            Logger.getLogger(IpAddressCipher.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ConnectionString.class.getName()).log(Level.SEVERE, null, ex);
         }
         
         return subnetMask;
     }
-
-    public String encryptIPAddress() throws UnknownHostException {
-        String CIDRaddr = mIPAddress + "/" + Integer.toString(mMask);
-        System.out.println(CIDRaddr);
-        SubnetUtils utils = new SubnetUtils(CIDRaddr);
-        String mask = utils.getInfo().getNetmask();
-        InetAddress ip = InetAddress.getByName(mIPAddress);
-        InetAddress netmask = InetAddress.getByName(mask);
+    
+    private String createConnectionString(String[] ipAddress, String[] mask) {
+        String connectionString = "";
         
-        String[] ipAddressArray = mIPAddress.split("\\.");
-        String[] maskParts = mask.split("\\.");
-        
-        String finalIP = "";
-        for(int i=0; i < 4; i++){
-            int x = Integer.parseInt(ipAddressArray[i]);
-            int y = Integer.parseInt(maskParts[i]);
+        for (int i = 0; i < 4; i++) {
+            int x = Integer.parseInt(ipAddress[i]);
+            int y = Integer.parseInt(mask[i]);
             int z = x & y;
-            System.out.println(z);
+
             if(z != x){
-                finalIP += x + ".";
+                String st = Integer.toString(x);
+                connectionString += fillWithZeros(st);
             }
         }
-
-        System.out.println(finalIP);
-       
-        String[] parts = finalIP.split("\\.");
-        String hexIPAddress = "";
         
-        for (String st: parts) {
-            st = fillWithZeros(st);
-            hexIPAddress = hexIPAddress + st;         
-        }
+        return connectionString;
+    }
 
-        return hexIPAddress;
+    public String encrypt() throws UnknownHostException {
+        
+        String CIDRaddr = mIPAddress + "/" + Integer.toString(mMask);
+        SubnetUtils utils = new SubnetUtils(CIDRaddr);
+        String mask = utils.getInfo().getNetmask();
+        
+        String[] ipAddressArray = mIPAddress.split("\\.");
+        String[] maskArray = mask.split("\\.");
+        
+        String connectionString = createConnectionString(ipAddressArray, maskArray);
+        
+        return connectionString;
     }
     
     private String fillWithZeros(String s) {
