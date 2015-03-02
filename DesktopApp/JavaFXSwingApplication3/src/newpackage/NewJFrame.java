@@ -42,13 +42,6 @@ public class NewJFrame extends javax.swing.JFrame {
     boolean isSaveOnMov = false;
     Thread mShuffleThread = new Thread();
     
-    TCPThread Cam1;
-    TCPThread Cam2;
-    TCPThread Cam3;
-    TCPThread Cam4;
-    TCPThread Cam5;
-    TCPThread Cam6;
-    
     public NewJFrame() throws IOException {
         Image i = ImageIO.read(getClass().getResource("/newpackage/Camera.png"));
         setIconImage(i);
@@ -490,8 +483,7 @@ public class NewJFrame extends javax.swing.JFrame {
     private javax.swing.JSpinner spn_trigger;
     // End of variables declaration//GEN-END:variables
  public void startServer() {
-        final ExecutorService clientProcessingPool = Executors
-                .newFixedThreadPool(10);
+        final ExecutorService clientProcessingPool = Executors.newFixedThreadPool(10);
         (new Thread(new AssignCamera())).start();
         //MainCamera
         new Thread(new TCPThread(NewJFrame.this.Camera1, NewJFrame.this.jLabel2, NewJFrame.this.chk_diff, 40000, 

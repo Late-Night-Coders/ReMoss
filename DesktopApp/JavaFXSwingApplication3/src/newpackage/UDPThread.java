@@ -57,7 +57,6 @@ public class UDPThread implements Runnable{
     int[] mImageAvant;
     int mHeight;
     int mWidth;
-    int decrementor = 6;
     int mNoCam;
     JLabel mMainCam;
     JLabel mMainCamNumber;
@@ -65,11 +64,10 @@ public class UDPThread implements Runnable{
     JCheckBox mSaveOnMov;
     JSpinner mJSpinner;
 
-    final ExecutorService clientProcessingPool = Executors
-                .newFixedThreadPool(10);
+    final ExecutorService clientProcessingPool = Executors.newFixedThreadPool(10);
     
     public UDPThread(JLabel mainCam, JLabel diff, JCheckBox chk_diff, int port, int height, int width, JLabel mainCamera, 
-            JLabel mainCameraNumber, int noCam, JCheckBox saveOnMov, JSpinner spn_trigger){
+        JLabel mainCameraNumber, int noCam, JCheckBox saveOnMov, JSpinner spn_trigger){
         mJLabelMainCam = mainCam;
         mPort = port;
         mJLabelDiff = diff;
@@ -93,11 +91,8 @@ public class UDPThread implements Runnable{
                 DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
                 serverSocket.receive(receivePacket);
                 byte[] data = decompress(trim(receivePacket.getData()));
-                System.out.println(data.length);
-                ByteArrayInputStream baos=new ByteArrayInputStream(data);
-                BufferedImage bImageFromConvert = ImageIO.read(baos);
-               
-                
+                ImageProcessing ImageProc = new ImageProcessing(data);
+                BufferedImage bImageFromConvert = ImageProc.ToBufferedImage();               
                 
                 if(mSaveOnMov.isSelected() || mJCheckBox.isSelected()){
                     boolean showMov = false;
@@ -108,8 +103,12 @@ public class UDPThread implements Runnable{
                     if(mSaveOnMov.isSelected()){
                         saveOnMov = true;
                     }
-                    //(new Thread(new UDPThread.CheckMovement(image, mImageAvant, showMov, saveOnMov))).start();
-                    //mImageAvant = image;
+                    int width = bImageFromConvert.getWidth();
+                    int height = bImageFromConvert.getHeight();
+                    int rgb[] = new int[width*height];
+                    bImageFromConvert.getRGB(0,0,width, height,rgb,0,width);
+                    (new Thread(new UDPThread.CheckMovement(rgb, mImageAvant, showMov, saveOnMov, width, height))).start();
+                    mImageAvant = rgb;
                 }
                 else{
                     Dimension d = mJLabelMainCam.getSize();
@@ -189,22 +188,24 @@ public class UDPThread implements Runnable{
         inflater.end();
         return output;  
        }  
-    
-    
-    
+
     private class CheckMovement implements Runnable{
      int[] mImageAvant;
      int[] mImageActual;
      int mDiff = 0;
      boolean mShowMov = false;
      boolean mSaveOnMov = false;
+     int mWidthMov;
+     int mHeightMov;
      
      
-     public CheckMovement(int[] imageAvant, int[] imageActual, boolean showMov, boolean saveOnMov){
+     public CheckMovement(int[] imageAvant, int[] imageActual, boolean showMov, boolean saveOnMov, int width, int height){
          mImageAvant = imageAvant;
          mImageActual = imageActual;
          mShowMov = showMov;
          mSaveOnMov = saveOnMov;
+         mWidthMov = width;
+         mHeightMov = height;
      }
      
      public void run(){
@@ -247,13 +248,13 @@ public class UDPThread implements Runnable{
                         }
                     }
                 }
-                Image img = getImageFromArrayMEM(mImageActual,mWidth / decrementor, mHeight / decrementor);
+                Image img = getImageFromArrayMEM(mImageActual,mWidthMov, mHeightMov);
                 BufferedImage image2 = toBufferedImage(img); // transform it 
                 Dimension d = mJLabelMainCam.getSize();
                 Image newimg = image2.getScaledInstance(d.width, d.height,  java.awt.Image.SCALE_SMOOTH);
                 mJLabelMainCam.setIcon(new ImageIcon(newimg));
                 if(mMainCamNumber.getText().equals(Integer.toString(mNoCam))){
-                    int pourcentDiff = (int)  Math.round((mDiff / ((double)mWidth  / (double)decrementor * (double)mHeight / (double)decrementor)) * 100);               
+                    int pourcentDiff = (int)  Math.round(mDiff / ((double)mWidthMov * (double)mHeightMov) * 100);               
                     mJLabelDiff.setText("Différence: " + pourcentDiff);
                     Dimension dPrim = mMainCam.getSize();
                     Image primImage = image2.getScaledInstance(dPrim.width, dPrim.height,  java.awt.Image.SCALE_SMOOTH);

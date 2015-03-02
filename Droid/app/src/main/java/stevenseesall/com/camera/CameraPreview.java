@@ -141,41 +141,13 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
                     final int frameWidth = camera.getParameters().getPreviewSize().width;
 
                     if(!ScreenSizeSent && !mGettingPort){
-                        (new Thread() {
-                            public void run() {
-                                mGettingPort = true;
-                                SendScreenSizeTCP TCP = new SendScreenSizeTCP(frameHeight, frameWidth, mServerIP);
-                                TCP.GetCam();
-                                mNoPort = TCP.mPort;
-                                ScreenSizeSent = true;
-                            }
-                        }).start();
-
+                        SendSize(frameHeight, frameWidth);
                     }
 
                     if(!mSendingData && ScreenSizeSent){
                         mSendingData = true;
-                        (new Thread() {
-                            public void run() {
-                                int format =  ImageFormat.NV21;
-                                YuvImage yuv_image = new YuvImage(data, format, frameWidth, frameHeight, null);
-                                Rect rect = new Rect(0, 0, frameWidth, frameHeight);
-                                ByteArrayOutputStream output_stream = new ByteArrayOutputStream();
-                                yuv_image.compressToJpeg(rect, 50, output_stream);
-                                byte[] byt=output_stream.toByteArray();
-                                try {
-                                    byte[] compressedData = compress(byt);
-                                    Log.d("CameraTest", Integer.toString(compressedData.length));
-                                    ThreadSendUDPFeed UDP = new ThreadSendUDPFeed(compressedData, mServerIP, mNoPort);
-                                    UDP.send();
-                                } catch (IOException e) {
-                                    e.printStackTrace();
-                                }
-                                finally{
-                                    mSendingData = false;
-                                }
-                            }
-                        }).start();
+                        byte[] dataCouper = halveYUV420(halveYUV420(data,frameWidth, frameHeight, 2),frameWidth/2, frameHeight/2, 2);
+                        SendData(dataCouper, frameHeight/4, frameWidth/4);
                     }
                 }
             });
@@ -186,19 +158,51 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
         }
     }
 
-    public static byte[] halveYUV420(byte[] data, int imageWidth, int imageHeight) {
-        byte[] yuv = new byte[imageWidth/2 * imageHeight/2 * 3 / 2];
-        // halve yuma
+    public void SendSize(final int height,final int width){
+        (new Thread() {
+            public void run() {
+                mGettingPort = true;
+                SendScreenSizeTCP TCP = new SendScreenSizeTCP(height, width, mServerIP);
+                TCP.GetCam();
+                mNoPort = TCP.mPort;
+                ScreenSizeSent = true;
+            }
+        }).start();
+
+    }
+
+    public void SendData(final byte[] data, final int width, final int height){
+        (new Thread() {
+            public void run() {
+                YuvImage yuv_image = new YuvImage(data, ImageFormat.NV21, width, height, null);
+                ByteArrayOutputStream output_stream = new ByteArrayOutputStream();
+                yuv_image.compressToJpeg(new Rect(0, 0, width, height), 90, output_stream);
+                byte[] byt=output_stream.toByteArray();
+                try {
+                    byte[] compressedData = compress(byt);
+                    ThreadSendUDPFeed UDP = new ThreadSendUDPFeed(compressedData, mServerIP, mNoPort);
+                    UDP.send();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                finally{
+                    mSendingData = false;
+                }
+            }
+        }).start();
+    }
+
+    public static byte[] halveYUV420(byte[] data, int imageWidth, int imageHeight, int decrementor) {
+        byte[] yuv = new byte[imageWidth/decrementor * imageHeight/decrementor * 3 / 2];
         int i = 0;
-        for (int y = 0; y < imageHeight; y+=2) {
-            for (int x = 0; x < imageWidth; x+=2) {
+        for (int y = 0; y < imageHeight; y+=decrementor) {
+            for (int x = 0; x < imageWidth; x+=decrementor) {
                 yuv[i] = data[y * imageWidth + x];
                 i++;
             }
         }
-        // halve U and V color components
-        for (int y = 0; y < imageHeight / 2; y+=2) {
-            for (int x = 0; x < imageWidth; x += 4) {
+        for (int y = 0; y < imageHeight / decrementor; y+=decrementor) {
+            for (int x = 0; x < imageWidth; x += decrementor*2) {
                 yuv[i] = data[(imageWidth * imageHeight) + (y * imageWidth) + x];
                 i++;
                 yuv[i] = data[(imageWidth * imageHeight) + (y * imageWidth) + (x + 1)];
