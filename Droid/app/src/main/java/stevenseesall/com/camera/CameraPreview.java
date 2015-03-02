@@ -147,7 +147,7 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
                     if(!mSendingData && ScreenSizeSent){
                         mSendingData = true;
                         byte[] dataCouper = halveYUV420(halveYUV420(data,frameWidth, frameHeight, 2),frameWidth/2, frameHeight/2, 2);
-                        SendData(dataCouper, frameHeight/4, frameWidth/4);
+                        SendData(dataCouper, frameWidth/4, frameHeight/4);
                     }
                 }
             });
@@ -194,6 +194,7 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
 
     public static byte[] halveYUV420(byte[] data, int imageWidth, int imageHeight, int decrementor) {
         byte[] yuv = new byte[imageWidth/decrementor * imageHeight/decrementor * 3 / 2];
+        // halve yuma
         int i = 0;
         for (int y = 0; y < imageHeight; y+=decrementor) {
             for (int x = 0; x < imageWidth; x+=decrementor) {
@@ -201,6 +202,7 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
                 i++;
             }
         }
+        // halve U and V color components
         for (int y = 0; y < imageHeight / decrementor; y+=decrementor) {
             for (int x = 0; x < imageWidth; x += decrementor*2) {
                 yuv[i] = data[(imageWidth * imageHeight) + (y * imageWidth) + x];
