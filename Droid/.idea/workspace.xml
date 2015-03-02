@@ -61,11 +61,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="CameraPreview.java" pinned="false" current="false" current-in-tab="false">
+      <file leaf-file-name="CameraPreview.java" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/app/src/main/java/stevenseesall/com/camera/CameraPreview.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="1921" max-vertical-offset="3842">
-              <caret line="149" column="55" selection-start-line="149" selection-start-column="55" selection-end-line="149" selection-end-column="55" />
+            <state vertical-scroll-proportion="0.73454547" vertical-offset="2792" max-vertical-offset="3842">
+              <caret line="204" column="41" selection-start-line="204" selection-start-column="41" selection-end-line="204" selection-end-column="41" />
               <folding>
                 <element signature="e#2458#2659#0" expanded="true" />
                 <element signature="e#2640#2641#0" expanded="true" />
@@ -83,17 +83,17 @@
       <file leaf-file-name="ThreadSendUDPFeed.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/app/src/main/java/stevenseesall/com/camera/ThreadSendUDPFeed.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="153" max-vertical-offset="816">
+            <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="816">
               <caret line="48" column="24" selection-start-line="48" selection-start-column="12" selection-end-line="48" selection-end-column="24" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="SendScreenSizeTCP.java" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="SendScreenSizeTCP.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/app/src/main/java/stevenseesall/com/camera/SendScreenSizeTCP.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.5" vertical-offset="272" max-vertical-offset="901">
+            <state vertical-scroll-proportion="0.0" vertical-offset="272" max-vertical-offset="901">
               <caret line="40" column="31" selection-start-line="40" selection-start-column="31" selection-end-line="40" selection-end-column="31" />
               <folding />
             </state>
@@ -1079,8 +1079,8 @@
         <option value="$PROJECT_DIR$/app/src/main/java/stevenseesall/com/camera/IPAddressCipher.java" />
         <option value="$PROJECT_DIR$/app/src/main/java/stevenseesall/com/camera/MainActivity.java" />
         <option value="$PROJECT_DIR$/app/src/main/java/stevenseesall/com/camera/ThreadSendUDPFeed.java" />
-        <option value="$PROJECT_DIR$/app/src/main/java/stevenseesall/com/camera/CameraPreview.java" />
         <option value="$PROJECT_DIR$/app/src/main/java/stevenseesall/com/camera/SendScreenSizeTCP.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/stevenseesall/com/camera/CameraPreview.java" />
       </list>
     </option>
   </component>
@@ -1420,7 +1420,7 @@
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
       <window_info id="Gradle Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="9" side_tool="true" content_ui="tabs" />
       <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32988507" sideWeight="0.5" order="13" side_tool="false" content_ui="tabs" />
-      <window_info id="Android" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.3034483" sideWeight="0.5" order="14" side_tool="false" content_ui="tabs" />
+      <window_info id="Android" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.3034483" sideWeight="0.5" order="14" side_tool="false" content_ui="tabs" />
       <window_info id="Gradle" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
@@ -1829,14 +1829,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/stevenseesall/com/camera/ConnectionActivity.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="629" max-vertical-offset="1190">
-          <caret line="37" column="128" selection-start-line="37" selection-start-column="122" selection-end-line="37" selection-end-column="128" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/java/stevenseesall/com/camera/UDPRunnable.java">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="306" max-vertical-offset="884">
@@ -1845,20 +1837,11 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/stevenseesall/com/camera/CameraPreview.java">
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/stevenseesall/com/camera/SendScreenSizeTCP.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="1921" max-vertical-offset="3842">
-          <caret line="149" column="55" selection-start-line="149" selection-start-column="55" selection-end-line="149" selection-end-column="55" />
-          <folding>
-            <element signature="e#2458#2659#0" expanded="true" />
-            <element signature="e#2640#2641#0" expanded="true" />
-            <element signature="e#4203#5006#0" expanded="true" />
-            <element signature="e#4991#4992#0" expanded="true" />
-            <element signature="e#5244#5546#0" expanded="true" />
-            <element signature="e#5535#5536#0" expanded="true" />
-            <element signature="e#5654#6453#0" expanded="true" />
-            <element signature="e#6442#6443#0" expanded="true" />
-          </folding>
+        <state vertical-scroll-proportion="0.0" vertical-offset="272" max-vertical-offset="901">
+          <caret line="40" column="31" selection-start-line="40" selection-start-column="31" selection-end-line="40" selection-end-column="31" />
+          <folding />
         </state>
       </provider>
     </entry>
@@ -1870,11 +1853,28 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/stevenseesall/com/camera/SendScreenSizeTCP.java">
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/stevenseesall/com/camera/ConnectionActivity.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.5" vertical-offset="272" max-vertical-offset="901">
-          <caret line="40" column="31" selection-start-line="40" selection-start-column="31" selection-end-line="40" selection-end-column="31" />
+        <state vertical-scroll-proportion="0.0" vertical-offset="629" max-vertical-offset="1190">
+          <caret line="37" column="128" selection-start-line="37" selection-start-column="122" selection-end-line="37" selection-end-column="128" />
           <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/stevenseesall/com/camera/CameraPreview.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.73454547" vertical-offset="2792" max-vertical-offset="3842">
+          <caret line="204" column="41" selection-start-line="204" selection-start-column="41" selection-end-line="204" selection-end-column="41" />
+          <folding>
+            <element signature="e#2458#2659#0" expanded="true" />
+            <element signature="e#2640#2641#0" expanded="true" />
+            <element signature="e#4203#5006#0" expanded="true" />
+            <element signature="e#4991#4992#0" expanded="true" />
+            <element signature="e#5244#5546#0" expanded="true" />
+            <element signature="e#5535#5536#0" expanded="true" />
+            <element signature="e#5654#6453#0" expanded="true" />
+            <element signature="e#6442#6443#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>

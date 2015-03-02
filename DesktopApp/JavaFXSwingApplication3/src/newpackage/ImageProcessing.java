@@ -80,22 +80,28 @@ public class ImageProcessing {
             int mHeightMov = img.getHeight();
             
             Image image = getImageFromArrayMEM(chkMov.mImageActual,mWidthMov, mHeightMov);
-            BufferedImage image2 = toBufferedImage(img); // transform it 
-            Dimension d = newJFrame.getSize();
-            Image newimg = image2.getScaledInstance(d.width, d.height,  java.awt.Image.SCALE_SMOOTH);
-            mJLabelCamera.setIcon(new ImageIcon(newimg));
             if(newJFrame.MainCameraNumber.getText().equals(Integer.toString(mNoCam))){
                 int pourcentDiff = (int)  Math.round(diff / ((double)mWidthMov * (double)mHeightMov) * 100);               
                 newJFrame.jLabel2.setText("Différence: " + pourcentDiff);
-                Dimension dPrim = newJFrame.getSize();
-                Image primImage = image2.getScaledInstance(dPrim.width, dPrim.height,  java.awt.Image.SCALE_SMOOTH);
+                Dimension dPrim = newJFrame.MainCamera.getSize();
+                Image primImage = image.getScaledInstance(dPrim.width, dPrim.height,  java.awt.Image.SCALE_SMOOTH);
                 BufferedImage imagePrim = toBufferedImage(primImage); 
                 PrintWatermark(imagePrim);
                 newJFrame.MainCamera.setIcon(new ImageIcon(imagePrim));
-                if(pourcentDiff > (int)newJFrame.spn_trigger.getValue() && newJFrame.chk_SaveMovement.isSelected()){
+                
+                Dimension d = mJLabelCamera.getSize();
+                Image thumbnailimg = img.getScaledInstance(d.width, d.height,  java.awt.Image.SCALE_SMOOTH);
+                mJLabelCamera.setIcon(new ImageIcon(thumbnailimg));
+                
+                if(pourcentDiff > (int)newJFrame.spn_trigger.getValue() && saveOnMov){
                     BufferedImage bi = toBufferedImage(((ImageIcon)(newJFrame.MainCamera.getIcon())).getImage());
                     saveImageToDisk(bi, newJFrame.MainCameraNumber.getText());
                 }
+            }
+            else{
+                Dimension d = mJLabelCamera.getSize();
+                Image thumbnailimg = img.getScaledInstance(d.width, d.height,  java.awt.Image.SCALE_SMOOTH);
+                mJLabelCamera.setIcon(new ImageIcon(thumbnailimg));
             }
         }
         else{
