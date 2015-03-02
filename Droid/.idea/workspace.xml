@@ -64,8 +64,8 @@
       <file leaf-file-name="CameraPreview.java" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/app/src/main/java/stevenseesall/com/camera/CameraPreview.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.73454547" vertical-offset="2792" max-vertical-offset="3842">
-              <caret line="204" column="41" selection-start-line="204" selection-start-column="41" selection-end-line="204" selection-end-column="41" />
+            <state vertical-scroll-proportion="0.3018182" vertical-offset="2792" max-vertical-offset="3842">
+              <caret line="190" column="13" selection-start-line="190" selection-start-column="13" selection-end-line="190" selection-end-column="13" />
               <folding>
                 <element signature="e#2458#2659#0" expanded="true" />
                 <element signature="e#2640#2641#0" expanded="true" />
@@ -74,7 +74,6 @@
                 <element signature="e#5244#5546#0" expanded="true" />
                 <element signature="e#5535#5536#0" expanded="true" />
                 <element signature="e#5654#6453#0" expanded="true" />
-                <element signature="e#6442#6443#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -1214,7 +1213,7 @@
     <property name="MemberChooser.showClasses" value="true" />
     <property name="MemberChooser.copyJavadoc" value="false" />
     <property name="recentsLimit" value="5" />
-    <property name="ANDROID_EXTENDED_DEVICE_CHOOSER_SERIALS" value="0e16b1c3" />
+    <property name="ANDROID_EXTENDED_DEVICE_CHOOSER_SERIALS" value="13910367715" />
     <property name="ANDROID_EXTENDED_DEVICE_CHOOSER_AVD" value="Nexus_5_API_21_x86" />
     <property name="FullScreen" value="false" />
     <property name="OverrideImplement.combined" value="true" />
@@ -1405,7 +1404,7 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="-8" y="-8" width="1696" height="1026" extended-state="6" />
+    <frame x="-8" y="-8" width="1696" height="1026" extended-state="7" />
     <editor active="true" />
     <layout>
       <window_info id="Palette&#9;" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
@@ -1537,7 +1536,6 @@
             <element signature="e#5244#5546#0" expanded="true" />
             <element signature="e#5535#5536#0" expanded="true" />
             <element signature="e#5654#6453#0" expanded="true" />
-            <element signature="e#6442#6443#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -1612,7 +1610,6 @@
             <element signature="e#5244#5546#0" expanded="true" />
             <element signature="e#5535#5536#0" expanded="true" />
             <element signature="e#5654#6453#0" expanded="true" />
-            <element signature="e#6442#6443#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -1863,8 +1860,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/java/stevenseesall/com/camera/CameraPreview.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.73454547" vertical-offset="2792" max-vertical-offset="3842">
-          <caret line="204" column="41" selection-start-line="204" selection-start-column="41" selection-end-line="204" selection-end-column="41" />
+        <state vertical-scroll-proportion="0.3018182" vertical-offset="2792" max-vertical-offset="3842">
+          <caret line="190" column="13" selection-start-line="190" selection-start-column="13" selection-end-line="190" selection-end-column="13" />
           <folding>
             <element signature="e#2458#2659#0" expanded="true" />
             <element signature="e#2640#2641#0" expanded="true" />
@@ -1873,7 +1870,6 @@
             <element signature="e#5244#5546#0" expanded="true" />
             <element signature="e#5535#5536#0" expanded="true" />
             <element signature="e#5654#6453#0" expanded="true" />
-            <element signature="e#6442#6443#0" expanded="true" />
           </folding>
         </state>
       </provider>

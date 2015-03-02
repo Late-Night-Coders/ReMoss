@@ -74,15 +74,17 @@ public class ImageProcessing {
             if(newJFrame.chk_SaveMovement.isSelected()){
                 saveOnMov = true;
             }
+            
             CheckMovement chkMov = new CheckMovement(BufferedImageToInt(oldImg), BufferedImageToInt(img), showMov);
             int diff = chkMov.CheckDiff();
             int mWidthMov = img.getWidth();
             int mHeightMov = img.getHeight();
-            
             Image image = getImageFromArrayMEM(chkMov.mImageActual,mWidthMov, mHeightMov);
+            
             if(newJFrame.MainCameraNumber.getText().equals(Integer.toString(mNoCam))){
                 int pourcentDiff = (int)  Math.round(diff / ((double)mWidthMov * (double)mHeightMov) * 100);               
                 newJFrame.jLabel2.setText("Différence: " + pourcentDiff);
+                
                 Dimension dPrim = newJFrame.MainCamera.getSize();
                 Image primImage = image.getScaledInstance(dPrim.width, dPrim.height,  java.awt.Image.SCALE_SMOOTH);
                 BufferedImage imagePrim = toBufferedImage(primImage); 
@@ -99,21 +101,15 @@ public class ImageProcessing {
                 }
             }
             else{
-                Dimension d = mJLabelCamera.getSize();
-                Image thumbnailimg = img.getScaledInstance(d.width, d.height,  java.awt.Image.SCALE_SMOOTH);
-                mJLabelCamera.setIcon(new ImageIcon(thumbnailimg));
+                displayImage(img);
             }
         }
         else{
-            Dimension d = mJLabelCamera.getSize();
-            Image newimg = img.getScaledInstance(d.width, d.height,  java.awt.Image.SCALE_SMOOTH);                   
-            mJLabelCamera.setIcon(new ImageIcon(newimg));
             if(newJFrame.MainCameraNumber.getText().equals(Integer.toString(mNoCam))){
-                Dimension dPrim = newJFrame.MainCamera.getSize();
-                Image primImage = img.getScaledInstance(dPrim.width, dPrim.height,  java.awt.Image.SCALE_SMOOTH);
-                BufferedImage imagePrim = toBufferedImage(primImage); 
-                PrintWatermark(imagePrim);
-                newJFrame.MainCamera.setIcon(new ImageIcon(imagePrim));
+                displayImageMain(newJFrame.MainCamera, img);
+            }
+            else{
+                displayImage(img);
             }
         }
     }
@@ -171,6 +167,20 @@ public class ImageProcessing {
         g2d.drawString(dateFormat.format(date), centerX, centerY);
         g2d.dispose();
     }   
+    
+    public void displayImage(BufferedImage img){
+        Dimension d = mJLabelCamera.getSize();
+        Image thumbnailimg = img.getScaledInstance(d.width, d.height,  java.awt.Image.SCALE_SMOOTH);
+        mJLabelCamera.setIcon(new ImageIcon(thumbnailimg));
+    }
+    
+    public void displayImageMain(JLabel mainCamera, BufferedImage img){
+        Dimension dPrim = mainCamera.getSize();
+        Image primImage = img.getScaledInstance(dPrim.width, dPrim.height,  java.awt.Image.SCALE_SMOOTH);
+        BufferedImage imagePrim = toBufferedImage(primImage); 
+        PrintWatermark(imagePrim);
+        mainCamera.setIcon(new ImageIcon(imagePrim));
+    }
     
     public static BufferedImage toBufferedImage(Image img)
     {
