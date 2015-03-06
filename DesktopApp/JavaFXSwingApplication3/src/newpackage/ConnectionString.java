@@ -76,19 +76,16 @@ public class ConnectionString {
 
                     if (!sType.contains("Inet6Address")) {   
                         subnetMask = ni.getInterfaceAddresses().get(i).getNetworkPrefixLength();
-                        
-                        // TODO: issue #21. 
-                        // Résoudre le workaround (utilisation du break pour arrêter la loop).
                         break;
                     }
-                    
                     i++;
                 }
-                
-                if(subnetMask !=0){
-                    break;   
+                if(subnetMask != 0){
+                    break;
                 }
+                i++;
             }
+
         } 
         catch (SocketException ex) {
             Logger.getLogger(ConnectionString.class.getName()).log(Level.SEVERE, null, ex);

@@ -6,29 +6,13 @@
 
 package newpackage;
 
-import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
-import java.awt.image.BufferedImage;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.ServerSocket;
-import java.net.Socket;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
-import javax.swing.ImageIcon;
-import javax.swing.JCheckBox;
-import javax.swing.JFileChooser;
-import javax.swing.JLabel;
-import javax.swing.Timer;
-import javax.swing.filechooser.FileNameExtensionFilter;
 
 /**
  *
@@ -45,16 +29,6 @@ public class NewJFrame extends javax.swing.JFrame {
     boolean isSaveOnMov = false;
     Thread mShuffleThread = new Thread();
     
-    TCPThread Cam1;
-    TCPThread Cam2;
-    TCPThread Cam3;
-    TCPThread Cam4;
-    TCPThread Cam5;
-    TCPThread Cam6;
-    
-    /**
-     * Creates new form NewJFrame   
-     */
     public NewJFrame() throws IOException {
         Image i = ImageIO.read(getClass().getResource("/newpackage/Camera.png"));
         setIconImage(i);
@@ -119,7 +93,7 @@ public class NewJFrame extends javax.swing.JFrame {
 
         Camera1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
-        jCheckBox1 = new javax.swing.JCheckBox();
+        chk_diff = new javax.swing.JCheckBox();
         jButton1 = new javax.swing.JButton();
         Camera2 = new javax.swing.JLabel();
         Camera4 = new javax.swing.JLabel();
@@ -161,10 +135,10 @@ public class NewJFrame extends javax.swing.JFrame {
 
         jLabel2.setText("Difference: 0");
 
-        jCheckBox1.setText("Show differences");
-        jCheckBox1.addActionListener(new java.awt.event.ActionListener() {
+        chk_diff.setText("Show differences");
+        chk_diff.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jCheckBox1ActionPerformed(evt);
+                chk_diffActionPerformed(evt);
             }
         });
 
@@ -304,7 +278,7 @@ public class NewJFrame extends javax.swing.JFrame {
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                             .addComponent(jLabel2, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jCheckBox1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                            .addComponent(chk_diff, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jLabel4))
                     .addComponent(Camera6, javax.swing.GroupLayout.PREFERRED_SIZE, 213, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -366,7 +340,7 @@ public class NewJFrame extends javax.swing.JFrame {
                             .addComponent(jLabel2)
                             .addComponent(jLabel4))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jCheckBox1)
+                        .addComponent(chk_diff)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(chkAutoShuffle)
@@ -389,14 +363,14 @@ public class NewJFrame extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jCheckBox1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBox1ActionPerformed
+    private void chk_diffActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_chk_diffActionPerformed
         
-    }//GEN-LAST:event_jCheckBox1ActionPerformed
+    }//GEN-LAST:event_chk_diffActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
-        BufferedImage bi = toBufferedImage(((ImageIcon)(NewJFrame.this.MainCamera.getIcon())).getImage());
-        saveImageToDisk(bi);
+        new JFrameImageSaver(NewJFrame.this, NewJFrame.this.MainCamera);
+        
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void Camera1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_Camera1MouseClicked
@@ -463,149 +437,39 @@ public class NewJFrame extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JLabel Camera1;
-    private javax.swing.JLabel Camera2;
-    private javax.swing.JLabel Camera3;
-    private javax.swing.JLabel Camera4;
-    private javax.swing.JLabel Camera5;
-    private javax.swing.JLabel Camera6;
-    private javax.swing.JLabel MainCamera;
-    private javax.swing.JLabel MainCameraNumber;
-    private javax.swing.JCheckBox chkAutoShuffle;
-    private javax.swing.JCheckBox chk_SaveMovement;
-    private javax.swing.JButton jButton1;
-    private javax.swing.JCheckBox jCheckBox1;
-    private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel10;
-    private javax.swing.JLabel jLabel11;
-    private javax.swing.JLabel jLabel12;
-    private javax.swing.JLabel jLabel13;
-    private javax.swing.JLabel jLabel14;
-    private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel3;
-    private javax.swing.JLabel jLabel4;
-    private javax.swing.JLabel jLabel5;
-    private javax.swing.JLabel jLabel8;
-    private javax.swing.JLabel jLabel9;
+    public javax.swing.JLabel Camera1;
+    public javax.swing.JLabel Camera2;
+    public javax.swing.JLabel Camera3;
+    public javax.swing.JLabel Camera4;
+    public javax.swing.JLabel Camera5;
+    public javax.swing.JLabel Camera6;
+    public javax.swing.JLabel MainCamera;
+    public javax.swing.JLabel MainCameraNumber;
+    public javax.swing.JCheckBox chkAutoShuffle;
+    public javax.swing.JCheckBox chk_SaveMovement;
+    public javax.swing.JCheckBox chk_diff;
+    public javax.swing.JButton jButton1;
+    public javax.swing.JLabel jLabel1;
+    public javax.swing.JLabel jLabel10;
+    public javax.swing.JLabel jLabel11;
+    public javax.swing.JLabel jLabel12;
+    public javax.swing.JLabel jLabel13;
+    public javax.swing.JLabel jLabel14;
+    public javax.swing.JLabel jLabel2;
+    public javax.swing.JLabel jLabel3;
+    public javax.swing.JLabel jLabel4;
+    public javax.swing.JLabel jLabel5;
+    public javax.swing.JLabel jLabel8;
+    public javax.swing.JLabel jLabel9;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu2;
     private javax.swing.JMenuBar jMenuBar1;
-    private javax.swing.JLabel lblAddress;
-    private javax.swing.JSpinner spnShuffle;
-    private javax.swing.JSpinner spn_trigger;
+    public javax.swing.JLabel lblAddress;
+    public javax.swing.JSpinner spnShuffle;
+    public javax.swing.JSpinner spn_trigger;
     // End of variables declaration//GEN-END:variables
  public void startServer() {
-        final ExecutorService clientProcessingPool = Executors
-                .newFixedThreadPool(10);
-        (new Thread(new AssignCamera())).start();
-        //MainCamera
-        Cam1 = new TCPThread(NewJFrame.this.Camera1, NewJFrame.this.jLabel2, NewJFrame.this.jCheckBox1, 40000, NewJFrame.this.MainCamera, NewJFrame.this.MainCameraNumber, 1, chk_SaveMovement, NewJFrame.this.spn_trigger);
-        Cam2 = new TCPThread(NewJFrame.this.Camera2, NewJFrame.this.jLabel2, NewJFrame.this.jCheckBox1, 40001, NewJFrame.this.MainCamera, NewJFrame.this.MainCameraNumber, 2, chk_SaveMovement, NewJFrame.this.spn_trigger);
-        Cam3 = new TCPThread(NewJFrame.this.Camera3, NewJFrame.this.jLabel2, NewJFrame.this.jCheckBox1, 40002, NewJFrame.this.MainCamera, NewJFrame.this.MainCameraNumber, 3, chk_SaveMovement, NewJFrame.this.spn_trigger);
-        Cam4 = new TCPThread(NewJFrame.this.Camera4, NewJFrame.this.jLabel2, NewJFrame.this.jCheckBox1, 40003, NewJFrame.this.MainCamera, NewJFrame.this.MainCameraNumber, 4, chk_SaveMovement, NewJFrame.this.spn_trigger);
-        Cam5 = new TCPThread(NewJFrame.this.Camera5, NewJFrame.this.jLabel2, NewJFrame.this.jCheckBox1, 40004, NewJFrame.this.MainCamera, NewJFrame.this.MainCameraNumber, 5, chk_SaveMovement, NewJFrame.this.spn_trigger);
-        Cam6 = new TCPThread(NewJFrame.this.Camera6, NewJFrame.this.jLabel2, NewJFrame.this.jCheckBox1, 40005, NewJFrame.this.MainCamera, NewJFrame.this.MainCameraNumber, 6, chk_SaveMovement, NewJFrame.this.spn_trigger);
-        (new Thread(Cam1)).start();
-        (new Thread(Cam2)).start();
-        (new Thread(Cam3)).start();
-        (new Thread(Cam4)).start();
-        (new Thread(Cam5)).start();
-        (new Thread(Cam6)).start();
-    }
- 
-    public static BufferedImage toBufferedImage(Image img)
-    {
-        BufferedImage bimage = new BufferedImage(img.getWidth(null), img.getHeight(null), BufferedImage.TYPE_INT_RGB);
-        Graphics2D bGr = bimage.createGraphics();
-        bGr.drawImage(img, 0, 0, null);
-        bGr.dispose();
-        return bimage;
-    }
-    
-    private void saveImageToDisk(BufferedImage bi){
-        JFileChooser fileChooser = new JFileChooser();
-        FileNameExtensionFilter filter = new FileNameExtensionFilter("Image Files", "jpg", "jpeg");
-        fileChooser.setFileFilter(filter);
-        if (fileChooser.showSaveDialog(NewJFrame.this) == JFileChooser.APPROVE_OPTION) {
-            File outputfile = new File(fileChooser.getSelectedFile()+".jpg");
-            outputfile.renameTo(outputfile);
-            try {
-                ImageIO.write(bi, "jpg", outputfile);
-            } catch (IOException ex) {
-                System.out.println("Erreur");
-            }
-        }
-    }
-    
-    private class AssignCamera implements Runnable {
-        @Override 
-        public void run(){
-            ServerSocket serverSocket;
-            try {
-                while(true){
-                    serverSocket = new ServerSocket(44444);
-                    System.out.println("En attente de paquets pour assignation Caméra...");
-                    final Socket clientSocket = serverSocket.accept();
-                    System.out.println("Pacquet accepté");
-                    try{
-                        readStr(clientSocket);
-                        clientSocket.close();
-                        serverSocket.close();
-                    }
-                    catch(IOException e){
-                        System.out.println(e);          
-                    }
-                }
-            }
-            catch(Exception e){
-                
-            }
-        }
-        
-        public void readStr(Socket socket) throws IOException {
-            InputStream in = socket.getInputStream();
-            DataInputStream dis = new DataInputStream(in);
-            
-            String check = dis.readLine();
-            System.out.println("check: " + check);
-            if(check != null){
-                Socket AskSocket = new Socket(check, 44444);
-                DataOutputStream AskSocketout = new DataOutputStream(AskSocket.getOutputStream());
-                
-                if(!isCam1Used){
-                    isCam1Used = true;
-                    AskSocketout.writeInt(40000);
-                }
-                else
-                    if(!isCam2Used){
-                        isCam2Used = true;
-                        AskSocketout.writeInt(40001);
-                    }
-                    else
-                        if(!isCam3Used){
-                            isCam3Used = true;
-                            AskSocketout.writeInt(40002);
-                        }
-                        else
-                            if(!isCam4Used){
-                                isCam4Used = true;
-                                AskSocketout.writeInt(40003);
-                            }
-                            else
-                                if(!isCam5Used){
-                                    isCam5Used = true;
-                                    AskSocketout.writeInt(40004);
-                                }
-                                else
-                                    if(!isCam6Used){
-                                        isCam6Used = true;
-                                        AskSocketout.writeInt(40005);
-                                    }
-                
-                AskSocketout.close();
-                AskSocket.close();
-            }
-        }
+        (new Thread(new AssignCamera(NewJFrame.this))).start();
     }
 }
 
