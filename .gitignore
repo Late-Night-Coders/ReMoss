@@ -1,2 +1,4 @@
 DesktopApp\JavaFXSwingApplication3\build\*
 DesktopApp\JavaFXSwingApplication3\build
+/DesktopApp/JavaFXSwingApplication3/build/
+/DesktopApp/JavaFXSwingApplication3/dist/*

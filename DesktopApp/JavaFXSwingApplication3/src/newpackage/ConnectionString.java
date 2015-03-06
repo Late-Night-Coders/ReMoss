@@ -84,6 +84,10 @@ public class ConnectionString {
                     
                     i++;
                 }
+                
+                if(subnetMask !=0){
+                    break;   
+                }
             }
         } 
         catch (SocketException ex) {
