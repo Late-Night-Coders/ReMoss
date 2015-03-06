@@ -108,9 +108,7 @@ public class ImageProcessing {
             if(newJFrame.MainCameraNumber.getText().equals(Integer.toString(mNoCam))){
                 displayImageMain(newJFrame.MainCamera, img);
             }
-            else{
-                displayImage(img);
-            }
+            displayImage(img);
         }
     }
     
