@@ -1,6 +1,17 @@
+<<<<<<< HEAD
 DesktopApp/JavaFXSwingApplication3/build/*
 DesktopApp/JavaFXSwingApplication3/dist/*
 DesktopApp/JavaFXSwingApplication3/dist/
 DesktopApp/JavaFXSwingApplication3/build/
 Droid/.idea/workspace.xml
 DesktopApp/JavaFXSwingApplication3/nbproject/
+=======
+<<<<<<< HEAD
+/DesktopApp/JavaFXSwingApplication3/build/
+=======
+DesktopApp\JavaFXSwingApplication3\build\*
+DesktopApp\JavaFXSwingApplication3\build
+/DesktopApp/JavaFXSwingApplication3/build/
+/DesktopApp/JavaFXSwingApplication3/dist/*
+>>>>>>> origin/master
+>>>>>>> origin/master

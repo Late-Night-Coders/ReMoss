@@ -1,7 +1,11 @@
 package stevenseesall.com.camera;
 
+import android.graphics.ImageFormat;
+import android.graphics.Rect;
+import android.graphics.YuvImage;
 import android.hardware.Camera;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
 import static stevenseesall.com.camera.Utils.*;
@@ -14,39 +18,35 @@ public class CameraPreviewCallback implements Camera.PreviewCallback {
     private boolean mSendingData;
     private String mServerIP;
     private int mPort;
-    private int mFrameHeight;
-    private int mFrameWidth;
 
     public CameraPreviewCallback(Camera camera, String serverIP) {
         mServerIP = serverIP;
-        mFrameHeight = camera.getParameters().getPreviewSize().height;
-        mFrameWidth = camera.getParameters().getPreviewSize().width;
-
         mGettingPort = false;
         mSendingData = false;
         mScreenSizeSent = false;
     }
 
-    private void sendSize() {
-        Thread thread = new Thread() {
+    private void SendSize(final int height,final int width){
+        (new Thread() {
             public void run() {
                 mGettingPort = true;
-                SendScreenSizeTCP TCP = new SendScreenSizeTCP(mFrameHeight, mFrameWidth, mServerIP);
+                SendScreenSizeTCP TCP = new SendScreenSizeTCP(height, width, mServerIP);
                 TCP.GetCam();
                 mPort = TCP.mPort;
                 mScreenSizeSent = true;
             }
-        };
-
-        thread.start();
+        }).start();
     }
 
-    private void sendFeed(final byte[] data) {
-        Thread thread = new Thread() {
+    private void SendData(final byte[] data, final int width, final int height){
+        (new Thread() {
             public void run() {
-                final byte[] dataCouper = halveYUV420(data, mFrameWidth, mFrameHeight, 6);
+                YuvImage yuv_image = new YuvImage(data, ImageFormat.NV21, width, height, null);
+                ByteArrayOutputStream output_stream = new ByteArrayOutputStream();
+                yuv_image.compressToJpeg(new Rect(0, 0, width, height), 90, output_stream);
+                byte[] byt=output_stream.toByteArray();
                 try {
-                    byte[] compressedData = compress(dataCouper);
+                    byte[] compressedData = compress(byt);
                     ThreadSendUDPFeed UDP = new ThreadSendUDPFeed(compressedData, mServerIP, mPort);
                     UDP.send();
                 } catch (IOException e) {
@@ -56,21 +56,23 @@ public class CameraPreviewCallback implements Camera.PreviewCallback {
                     mSendingData = false;
                 }
             }
-        };
-
-        thread.start();
+        }).start();
     }
 
     @Override
     public void onPreviewFrame(final byte[] data, final Camera camera) {
 
+        final int frameHeight = camera.getParameters().getPreviewSize().height;
+        final int frameWidth = camera.getParameters().getPreviewSize().width;
+
         if(!mScreenSizeSent && !mGettingPort){
-            sendSize();
+            SendSize(frameHeight, frameWidth);
         }
 
-        if(!mSendingData && mScreenSizeSent) {
+        if(!mSendingData && mScreenSizeSent){
             mSendingData = true;
-            sendFeed(data);
+            byte[] dataCouper = halveYUV420(halveYUV420(data,frameWidth, frameHeight, 2),frameWidth/2, frameHeight/2, 2);
+            SendData(dataCouper, frameWidth/4, frameHeight/4);
         }
     }
 }

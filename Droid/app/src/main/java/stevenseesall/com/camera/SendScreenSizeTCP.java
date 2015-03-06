@@ -20,7 +20,6 @@ public class SendScreenSizeTCP {
     }
 
     public void GetCam() {
-        Socket clientSocket = null;
         Socket AskSocket = null;
         try {
             AskSocket = new Socket(mServerIP, 44444);
@@ -35,14 +34,6 @@ public class SendScreenSizeTCP {
             readInts(PortSocket);
             serverSocket.close();
             PortSocket.close();
-
-            clientSocket = new Socket(mServerIP, mPort);
-            DataOutputStream dOut = new DataOutputStream(clientSocket.getOutputStream());
-            dOut.writeInt(mHeight);
-            dOut.writeInt(mWidth);
-            dOut.close();
-            clientSocket.close();
-
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -55,4 +46,3 @@ public class SendScreenSizeTCP {
         mPort = dis.readInt();
     }
 }
-
