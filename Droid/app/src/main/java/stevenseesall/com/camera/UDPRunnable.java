@@ -4,14 +4,8 @@ import android.app.Activity;
 import android.content.Context;
 import android.hardware.Camera;
 import android.os.Looper;
-import android.util.Log;
 import android.view.SurfaceHolder;
-import android.view.SurfaceView;
 import android.widget.FrameLayout;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.util.List;
-import java.util.zip.Deflater;
 
 /**
  * Created by Fred on 2/14/2015.
@@ -22,13 +16,13 @@ public class UDPRunnable extends Thread {
     Activity mActivity;
     FrameLayout mFrameLayout;
     private SurfaceHolder mHolder;
-    String ServerIP = "";
+    String mServerIP;
     Boolean mSendingData = false;
     Boolean ScreenSizeSent = false;
     String mNoCam;
 
-    public UDPRunnable(final Context context, Activity activity, FrameLayout frameLayout, String ip){
-        ServerIP = ip;
+    public UDPRunnable(final Context context, Activity activity, FrameLayout frameLayout, String serverIP){
+        mServerIP = serverIP;
         mContext = context;
         mActivity = activity;
         mFrameLayout = frameLayout;
@@ -37,7 +31,7 @@ public class UDPRunnable extends Thread {
     public void run() {
         mCamera = getCameraInstance();
         Looper.prepare();
-        final CameraPreview preview = new CameraPreview(mContext, mCamera, ServerIP);
+        final CameraPreview preview = new CameraPreview(mContext, mCamera, mServerIP);
         final FrameLayout previewFrame = mFrameLayout;
 
         mActivity.runOnUiThread(new Runnable() {
