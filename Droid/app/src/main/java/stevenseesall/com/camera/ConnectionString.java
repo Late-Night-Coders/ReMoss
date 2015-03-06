@@ -1,9 +1,5 @@
 package stevenseesall.com.camera;
 
-import android.content.Context;
-import android.net.DhcpInfo;
-import android.net.wifi.WifiManager;
-import android.util.Log;
 import android.text.format.Formatter;
 
 public class ConnectionString {
