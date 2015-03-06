@@ -3,6 +3,8 @@ package stevenseesall.com.camera;
 import java.io.*;
 import java.net.*;
 import java.util.*;
+import java.util.zip.Deflater;
+
 import org.apache.http.conn.util.InetAddressUtils;
 
 public class Utils {
@@ -120,4 +122,45 @@ public class Utils {
         return "";
     }
 
+    public static byte[] halveYUV420(byte[] data, int imageWidth, int imageHeight, int decrementor) {
+        byte[] yuv = new byte[imageWidth/decrementor * imageHeight/decrementor * 3 / 2];
+        // halve yuma
+        int i = 0;
+        for (int y = 0; y < imageHeight; y+=decrementor) {
+            for (int x = 0; x < imageWidth; x+=decrementor) {
+                yuv[i] = data[y * imageWidth + x];
+                i++;
+            }
+        }
+        // halve U and V color components
+        for (int y = 0; y < imageHeight / 2; y+=decrementor) {
+            for (int x = 0; x < imageWidth; x += (decrementor * 2)) {
+                yuv[i] = data[(imageWidth * imageHeight) + (y * imageWidth) + x];
+                i++;
+                yuv[i] = data[(imageWidth * imageHeight) + (y * imageWidth) + (x + 1)];
+                i++;
+            }
+        }
+        return yuv;
+    }
+
+    public static byte[] compress(byte[] data) throws IOException {
+        Deflater deflater = new Deflater();
+        deflater.setInput(data);
+
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream(data.length);
+
+        deflater.finish();
+        byte[] buffer = new byte[25000];
+        while (!deflater.finished()) {
+            int count = deflater.deflate(buffer); // returns the generated code... index
+            outputStream.write(buffer, 0, count);
+        }
+        outputStream.close();
+        byte[] output = outputStream.toByteArray();
+
+        deflater.end();
+
+        return output;
+    }
 }
