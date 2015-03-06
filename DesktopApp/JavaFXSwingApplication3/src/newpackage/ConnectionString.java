@@ -83,7 +83,9 @@ public class ConnectionString {
                 if(subnetMask != 0){
                     break;
                 }
+                i++;
             }
+
         } 
         catch (SocketException ex) {
             Logger.getLogger(ConnectionString.class.getName()).log(Level.SEVERE, null, ex);
