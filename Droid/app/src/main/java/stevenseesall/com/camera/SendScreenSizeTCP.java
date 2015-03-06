@@ -1,7 +1,5 @@
 package stevenseesall.com.camera;
 
-import android.util.Log;
-
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -9,9 +7,6 @@ import java.io.InputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 
-/**
- * Created by Fred on 2/14/2015.
- */
 public class SendScreenSizeTCP {
     String mServerIP;
     int mHeight = 0;

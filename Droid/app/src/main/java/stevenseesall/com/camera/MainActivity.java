@@ -2,7 +2,6 @@ package stevenseesall.com.camera;
 
 import android.app.Activity;
 import android.content.Context;
-import android.net.DhcpInfo;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;

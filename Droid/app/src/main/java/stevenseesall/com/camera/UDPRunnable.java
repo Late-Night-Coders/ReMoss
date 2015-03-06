@@ -7,19 +7,12 @@ import android.os.Looper;
 import android.view.SurfaceHolder;
 import android.widget.FrameLayout;
 
-/**
- * Created by Fred on 2/14/2015.
- */
 public class UDPRunnable extends Thread {
     Context mContext;
     Camera mCamera;
     Activity mActivity;
     FrameLayout mFrameLayout;
-    private SurfaceHolder mHolder;
     String mServerIP;
-    Boolean mSendingData = false;
-    Boolean ScreenSizeSent = false;
-    String mNoCam;
 
     public UDPRunnable(final Context context, Activity activity, FrameLayout frameLayout, String serverIP){
         mServerIP = serverIP;
@@ -41,7 +34,6 @@ public class UDPRunnable extends Thread {
             }
         });
         Looper.loop();
-
     }
 
     public static Camera getCameraInstance() {

@@ -1,38 +1,18 @@
 package stevenseesall.com.camera;
 
-import android.app.Activity;
 import android.content.Context;
 import android.hardware.Camera;
 import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
-import android.widget.SeekBar;
-import android.widget.TextView;
-import android.widget.ToggleButton;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.List;
-import java.util.zip.Deflater;
 
 public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback {
-    Context mContext;
     Camera mCamera;
-    Activity mActivity;
-    SeekBar mSeekBar;
     private SurfaceHolder mHolder;
-    int[] mImageAvant;
-    TextView mTextView;
-    TextView mMouvementTextView;
-    ToggleButton mToggleButton;
-    Boolean isAlarmOn = false;
-    Boolean IsStandAlone = false;
     String mServerIP;
-    int mNoPort;
-    boolean mGettingPort = false;
-
-    Boolean mSendingData = false;
-    Boolean ScreenSizeSent = false;
 
     public CameraPreview(final Context context, Camera camera, String serverIP) {
         super(context);
@@ -75,7 +55,7 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
         }
 
         try {
-            mCamera.stopPreview(); // Nécessaire?
+            mCamera.stopPreview();
             mCamera.setPreviewDisplay(mHolder);
             mCamera.setPreviewCallback(new CameraPreviewCallback(mCamera, mServerIP));
             mCamera.startPreview();
