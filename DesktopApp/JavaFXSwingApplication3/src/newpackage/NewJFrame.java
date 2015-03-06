@@ -33,10 +33,9 @@ public class NewJFrame extends javax.swing.JFrame {
         Image i = ImageIO.read(getClass().getResource("/newpackage/Camera.png"));
         setIconImage(i);
         initComponents();
-        IpAddressCipher ipCipher = new IpAddressCipher();
-        String encryptedIPAddress = ipCipher.encryptIPAddress();
+        ConnectionString ipCipher = new ConnectionString();
+        String encryptedIPAddress = ipCipher.encrypt();
         this.lblAddress.setText(encryptedIPAddress);
-        System.out.println("Entrez " + encryptedIPAddress + " sur vos appareils mobile.");
         startServer();
         
         NewJFrame.this.chkAutoShuffle.addItemListener(new ItemListener() {
