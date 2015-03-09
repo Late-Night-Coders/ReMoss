@@ -5,7 +5,9 @@ import android.hardware.Camera;
 import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+import android.widget.EditText;
 import android.widget.SeekBar;
+import android.widget.TextView;
 
 import java.io.IOException;
 import java.util.List;
@@ -24,7 +26,8 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
         mCamera = camera;
         mServerIP = serverIP;
         mQualitySeekBar = (SeekBar) findViewById(R.id.skb_Quality);
-        mQualitySeekBar.setOnSeekBarChangeListener(new SeekBarQualityListener());
+        mQualitySeekBar.setProgress(5);
+        mQualitySeekBar.setOnSeekBarChangeListener(new SeekBarQualityListener((TextView)findViewById(R.id.txt_SetQuality)));
     }
 
     @Override
