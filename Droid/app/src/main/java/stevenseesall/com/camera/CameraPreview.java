@@ -1,13 +1,11 @@
 package stevenseesall.com.camera;
 
 import android.content.Context;
-import android.graphics.ImageFormat;
-import android.graphics.Rect;
-import android.graphics.YuvImage;
 import android.hardware.Camera;
 import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+import android.widget.SeekBar;
 
 import java.io.IOException;
 import java.util.List;
@@ -16,6 +14,7 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
     Camera mCamera;
     private SurfaceHolder mHolder;
     String mServerIP;
+    SeekBar mQualitySeekBar;
 
     public CameraPreview(final Context context, Camera camera, String serverIP) {
         super(context);
@@ -24,6 +23,8 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
         mHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
         mCamera = camera;
         mServerIP = serverIP;
+        mQualitySeekBar = (SeekBar) findViewById(R.id.skb_Quality);
+        mQualitySeekBar.setOnSeekBarChangeListener(new SeekBarQualityListener());
     }
 
     @Override
