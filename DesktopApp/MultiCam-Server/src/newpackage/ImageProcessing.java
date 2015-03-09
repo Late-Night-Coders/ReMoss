@@ -37,41 +37,43 @@ public class ImageProcessing {
     int mNoCam;
     JLabel mJLabelCamera;
     boolean isSavingFile = false;
+    NewJFrame mNewJFrame;
     
     public ImageProcessing(byte[] data, byte[] mImageAvant, NewJFrame newJFrame, int noCam) throws IOException{
         mNoCam = noCam;
+        mNewJFrame = newJFrame;
         
         switch(noCam){
             case 1:
-                mJLabelCamera = newJFrame.Camera1;
+                mJLabelCamera = mNewJFrame.Camera1;
                 break;
             case 2:
-                mJLabelCamera = newJFrame.Camera2;
+                mJLabelCamera = mNewJFrame.Camera2;
                 break;
             case 3:
-                mJLabelCamera = newJFrame.Camera3;
+                mJLabelCamera = mNewJFrame.Camera3;
                 break;
             case 4:
-                mJLabelCamera = newJFrame.Camera4;
+                mJLabelCamera = mNewJFrame.Camera4;
                 break;
             case 5:
-                mJLabelCamera = newJFrame.Camera5;
+                mJLabelCamera = mNewJFrame.Camera5;
                 break;
             default:
-                mJLabelCamera = newJFrame.Camera6;
+                mJLabelCamera = mNewJFrame.Camera6;
                 break;
         }
         
         BufferedImage img = ToBufferedImage(data);
         
-        if(newJFrame.chk_SaveMovement.isSelected() || newJFrame.chk_diff.isSelected()){
+        if(mNewJFrame.chk_SaveMovement.isSelected() || mNewJFrame.chk_diff.isSelected()){
             BufferedImage oldImg = ToBufferedImage(mImageAvant);
             boolean showMov = false;
             boolean saveOnMov = false;
-            if(newJFrame.chk_diff.isSelected()){
+            if(mNewJFrame.chk_diff.isSelected()){
                 showMov = true;
             }
-            if(newJFrame.chk_SaveMovement.isSelected()){
+            if(mNewJFrame.chk_SaveMovement.isSelected()){
                 saveOnMov = true;
             }
             
@@ -81,23 +83,23 @@ public class ImageProcessing {
             int mHeightMov = img.getHeight();
             Image image = getImageFromArrayMEM(chkMov.mImageActual,mWidthMov, mHeightMov);
             
-            if(newJFrame.MainCameraNumber.getText().equals(Integer.toString(mNoCam))){
+            if(mNewJFrame.MainCameraNumber.getText().equals(Integer.toString(mNoCam))){
                 int pourcentDiff = (int)  Math.round(diff / ((double)mWidthMov * (double)mHeightMov) * 100);               
-                newJFrame.jLabel2.setText("Différence: " + pourcentDiff);
+                mNewJFrame.jLabel2.setText("Différence: " + pourcentDiff);
                 
-                Dimension dPrim = newJFrame.MainCamera.getSize();
+                Dimension dPrim = mNewJFrame.MainCamera.getSize();
                 Image primImage = image.getScaledInstance(dPrim.width, dPrim.height,  java.awt.Image.SCALE_SMOOTH);
                 BufferedImage imagePrim = toBufferedImage(primImage); 
                 PrintWatermark(imagePrim);
-                newJFrame.MainCamera.setIcon(new ImageIcon(imagePrim));
+                mNewJFrame.MainCamera.setIcon(new ImageIcon(imagePrim));
                 
                 Dimension d = mJLabelCamera.getSize();
                 Image thumbnailimg = img.getScaledInstance(d.width, d.height,  java.awt.Image.SCALE_SMOOTH);
                 mJLabelCamera.setIcon(new ImageIcon(thumbnailimg));
                 
-                if(pourcentDiff > (int)newJFrame.spn_trigger.getValue() && saveOnMov){
-                    BufferedImage bi = toBufferedImage(((ImageIcon)(newJFrame.MainCamera.getIcon())).getImage());
-                    saveImageToDisk(bi, newJFrame.MainCameraNumber.getText());
+                if(pourcentDiff > (int)mNewJFrame.spn_trigger.getValue() && saveOnMov){
+                    BufferedImage bi = toBufferedImage(((ImageIcon)(mNewJFrame.MainCamera.getIcon())).getImage());
+                    saveImageToDisk(bi, mNewJFrame.MainCameraNumber.getText());
                 }
             }
             else{
@@ -105,8 +107,8 @@ public class ImageProcessing {
             }
         }
         else{
-            if(newJFrame.MainCameraNumber.getText().equals(Integer.toString(mNoCam))){
-                displayImageMain(newJFrame.MainCamera, img);
+            if(mNewJFrame.MainCameraNumber.getText().equals(Integer.toString(mNoCam))){
+                displayImageMain(mNewJFrame.MainCamera, img);
             }
             displayImage(img);
         }
@@ -119,7 +121,8 @@ public class ImageProcessing {
                 DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH_mm_ss");
                 Date date = new Date();
                 String sysdrive = System.getenv("SystemDrive");
-                File outputfile = new File("C://" + dateFormat.format(date)+"-Camera "+ CameraMaison + ".jpg");
+                System.out.println(mNewJFrame.txt_Path.getText());
+                File outputfile = new File(mNewJFrame.txt_Path.getText() + "\\" + dateFormat.format(date)+"-Camera "+ CameraMaison + ".jpg");
                 outputfile.renameTo(outputfile);
                 try {
                     ImageIO.write(bi, "jpg", outputfile);

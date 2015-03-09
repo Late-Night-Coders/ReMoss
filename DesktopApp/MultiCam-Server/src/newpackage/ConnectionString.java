@@ -9,16 +9,13 @@ import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.net.UnknownHostException;
-import java.nio.charset.Charset;
-import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class ConnectionString {
-    private String mIPAddress;
-    private String mIPAdrressEncrypted;
-    private short mMask;
+    private final String mIPAddress;
+    private final short mMask;
     
     public ConnectionString() {
         mIPAddress = getIPAddress();
@@ -26,7 +23,6 @@ public class ConnectionString {
     }
     
     public String getIPAddress() {
-        InetAddress IP;
         String ipAddressTemp = "";
         String ipAddressReal = "";
         
@@ -61,7 +57,6 @@ public class ConnectionString {
     
     private short getIPv4SubnetMask() {
         short subnetMask = 0;
-        int i = 0;
         String sType;
         
         try {
@@ -70,12 +65,15 @@ public class ConnectionString {
             while(enumNI.hasMoreElements()){
                 NetworkInterface ni = (NetworkInterface) enumNI.nextElement();
                 Enumeration enumAddresses = ni.getInetAddresses();
-                
+                int i = 0;
                 while(enumAddresses.hasMoreElements()) {  
                     sType = ni.getInterfaceAddresses().get(i).getAddress().getClass().toString();
 
                     if (!sType.contains("Inet6Address")) {   
                         subnetMask = ni.getInterfaceAddresses().get(i).getNetworkPrefixLength();
+                        if(System.getProperty("os.name").toLowerCase().contains("windows")){
+                            subnetMask += 8;
+                        }
                         break;
                     }
                     i++;
@@ -83,7 +81,6 @@ public class ConnectionString {
                 if(subnetMask != 0){
                     break;
                 }
-                i++;
             }
 
         } 

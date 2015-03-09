@@ -1,13 +1,12 @@
 package stevenseesall.com.camera;
 
 import android.content.Context;
-import android.graphics.ImageFormat;
-import android.graphics.Rect;
-import android.graphics.YuvImage;
 import android.hardware.Camera;
 import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+import android.widget.SeekBar;
+import android.widget.TextView;
 
 import java.io.IOException;
 import java.util.List;
@@ -16,14 +15,16 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
     Camera mCamera;
     private SurfaceHolder mHolder;
     String mServerIP;
+    SeekBar mSkb;
 
-    public CameraPreview(final Context context, Camera camera, String serverIP) {
+    public CameraPreview(final Context context, Camera camera, String serverIP, SeekBar skb) {
         super(context);
         mHolder = getHolder();
         mHolder.addCallback(this);
         mHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
         mCamera = camera;
         mServerIP = serverIP;
+        mSkb = skb;
     }
 
     @Override
@@ -60,7 +61,7 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
         try {
             mCamera.stopPreview();
             mCamera.setPreviewDisplay(mHolder);
-            mCamera.setPreviewCallback(new CameraPreviewCallback(mCamera, mServerIP));
+            mCamera.setPreviewCallback(new CameraPreviewCallback(mCamera, mServerIP, mSkb));
             mCamera.startPreview();
         } catch (Exception e) {
             Log.d("Error", "Error starting camera preview: " + e.getMessage());

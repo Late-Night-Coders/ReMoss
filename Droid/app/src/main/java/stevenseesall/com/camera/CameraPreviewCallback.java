@@ -4,6 +4,9 @@ import android.graphics.ImageFormat;
 import android.graphics.Rect;
 import android.graphics.YuvImage;
 import android.hardware.Camera;
+import android.util.Log;
+import android.widget.SeekBar;
+import android.widget.TextView;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -18,12 +21,15 @@ public class CameraPreviewCallback implements Camera.PreviewCallback {
     private boolean mSendingData;
     private String mServerIP;
     private int mPort;
+    private int mQuality = 1;
+    SeekBar mSKB;
 
-    public CameraPreviewCallback(Camera camera, String serverIP) {
+    public CameraPreviewCallback(Camera camera, String serverIP, SeekBar skb) {
         mServerIP = serverIP;
         mGettingPort = false;
         mSendingData = false;
         mScreenSizeSent = false;
+        mSKB = skb;
     }
 
     private void SendSize(final int height,final int width){
@@ -43,7 +49,8 @@ public class CameraPreviewCallback implements Camera.PreviewCallback {
             public void run() {
                 YuvImage yuv_image = new YuvImage(data, ImageFormat.NV21, width, height, null);
                 ByteArrayOutputStream output_stream = new ByteArrayOutputStream();
-                yuv_image.compressToJpeg(new Rect(0, 0, width, height), 90, output_stream);
+                int qual = mSKB.getProgress();
+                yuv_image.compressToJpeg(new Rect(0, 0, width, height), 10 * qual, output_stream);
                 byte[] byt=output_stream.toByteArray();
                 try {
                     byte[] compressedData = compress(byt);
