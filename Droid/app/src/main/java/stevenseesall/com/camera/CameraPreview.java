@@ -5,7 +5,6 @@ import android.hardware.Camera;
 import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
-import android.widget.EditText;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
@@ -16,18 +15,16 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
     Camera mCamera;
     private SurfaceHolder mHolder;
     String mServerIP;
-    SeekBar mQualitySeekBar;
+    SeekBar mSkb;
 
-    public CameraPreview(final Context context, Camera camera, String serverIP) {
+    public CameraPreview(final Context context, Camera camera, String serverIP, SeekBar skb) {
         super(context);
         mHolder = getHolder();
         mHolder.addCallback(this);
         mHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
         mCamera = camera;
         mServerIP = serverIP;
-        //mQualitySeekBar = (SeekBar) findViewById(R.id.skb_Quality);
-        //mQualitySeekBar.setProgress(5);
-        //mQualitySeekBar.setOnSeekBarChangeListener(new SeekBarQualityListener((TextView)findViewById(R.id.txt_SetQuality)));
+        mSkb = skb;
     }
 
     @Override
@@ -64,7 +61,7 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
         try {
             mCamera.stopPreview();
             mCamera.setPreviewDisplay(mHolder);
-            mCamera.setPreviewCallback(new CameraPreviewCallback(mCamera, mServerIP));
+            mCamera.setPreviewCallback(new CameraPreviewCallback(mCamera, mServerIP, mSkb));
             mCamera.startPreview();
         } catch (Exception e) {
             Log.d("Error", "Error starting camera preview: " + e.getMessage());

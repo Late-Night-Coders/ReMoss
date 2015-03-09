@@ -26,7 +26,7 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:max="10"
-        android:progress="1"
+        android:progress="5"
         android:indeterminate="false"
         android:layout_alignRight="@+id/txt_Quality"
         android:layout_alignEnd="@+id/txt_Quality" />
@@ -44,15 +44,14 @@
         android:layout_alignEnd="@+id/camera_preview"
         android:textColor="#ffffffff" />
 
-    <TextView
+    <EditText
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceSmall"
-        android:text="5"
         android:id="@+id/txt_SetQuality"
-        android:layout_above="@+id/skb_Quality"
-        android:layout_alignRight="@+id/skb_Quality"
-        android:layout_alignEnd="@+id/skb_Quality"
-        android:layout_alignTop="@+id/txt_Quality" />
+        android:text="5"
+        android:textColor="#ff000000"
+        android:layout_alignTop="@+id/txt_Quality"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
 
 </RelativeLayout>

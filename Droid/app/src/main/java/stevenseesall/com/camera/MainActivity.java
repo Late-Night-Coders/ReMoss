@@ -8,6 +8,7 @@ import android.support.v7.app.ActionBarActivity;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.FrameLayout;
+import android.widget.SeekBar;
 
 public class MainActivity extends ActionBarActivity{
 
@@ -43,11 +44,14 @@ public class MainActivity extends ActionBarActivity{
             String decryptedAddress = connStr.decrypt(encryptedAddress);
 
             mCameraPreview = (FrameLayout)findViewById(R.id.camera_preview);
+            SeekBar mQualitySeekBar = (SeekBar) findViewById(R.id.skb_Quality);
+            mQualitySeekBar.setOnSeekBarChangeListener(new SeekBarQualityListener((EditText)findViewById(R.id.txt_SetQuality)));
             UDPRunnable udpRunnable = new UDPRunnable(
                     context,
                     mActivity,
                     mCameraPreview,
-                    decryptedAddress
+                    decryptedAddress,
+                    mQualitySeekBar
             );
 
             udpRunnable.start();

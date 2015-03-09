@@ -1,16 +1,13 @@
 package stevenseesall.com.camera;
 
+import android.widget.EditText;
 import android.widget.SeekBar;
-import android.widget.TextView;
 
-/**
- * Created by Administrateur on 2015-03-09.
- */
 public class SeekBarQualityListener implements SeekBar.OnSeekBarChangeListener {
 
-    TextView mQualityTextView;
+    EditText mQualityTextView;
 
-    public SeekBarQualityListener(TextView textView){
+    public SeekBarQualityListener(EditText textView){
         mQualityTextView = textView;
     }
 
@@ -27,6 +24,6 @@ public class SeekBarQualityListener implements SeekBar.OnSeekBarChangeListener {
     @Override
     public void onProgressChanged(SeekBar seekBar, int progress,boolean fromUser) {
         // TODO Auto-generated method stub
-        mQualityTextView.setText(progress);
+        mQualityTextView.setText(Integer.toString(progress));
     }
 }
