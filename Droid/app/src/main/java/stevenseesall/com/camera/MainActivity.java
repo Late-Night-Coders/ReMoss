@@ -34,7 +34,7 @@ public class MainActivity extends ActionBarActivity{
 
         @Override
         public void onClick(View v) {
-            setContentView(R.layout.remote_mode);
+            setContentView(R.layout.udpcamera);
             Context context = getApplicationContext();
 
             mWifiManager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);

@@ -25,9 +25,9 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
         mHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
         mCamera = camera;
         mServerIP = serverIP;
-        mQualitySeekBar = (SeekBar) findViewById(R.id.skb_Quality);
-        mQualitySeekBar.setProgress(5);
-        mQualitySeekBar.setOnSeekBarChangeListener(new SeekBarQualityListener((TextView)findViewById(R.id.txt_SetQuality)));
+        //mQualitySeekBar = (SeekBar) findViewById(R.id.skb_Quality);
+        //mQualitySeekBar.setProgress(5);
+        //mQualitySeekBar.setOnSeekBarChangeListener(new SeekBarQualityListener((TextView)findViewById(R.id.txt_SetQuality)));
     }
 
     @Override
