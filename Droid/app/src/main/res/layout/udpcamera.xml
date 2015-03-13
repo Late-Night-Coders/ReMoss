@@ -25,7 +25,7 @@
         android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:max="10"
+        android:max="9"
         android:progress="5"
         android:indeterminate="false"
         android:layout_alignRight="@+id/txt_Quality"
