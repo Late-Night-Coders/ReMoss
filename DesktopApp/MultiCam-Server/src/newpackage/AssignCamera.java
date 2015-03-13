@@ -1,9 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package newpackage;
 
 import java.io.DataInputStream;
@@ -12,12 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
-import javax.swing.JFrame;
 
-/**
- *
- * @author Administrateur
- */
 public class AssignCamera implements Runnable {
     Boolean isCam1Used = false;
     Boolean isCam2Used = false;
@@ -36,7 +25,6 @@ public class AssignCamera implements Runnable {
         mJFrame = jf;
     }
     
-    
     @Override 
     public void run(){
         ServerSocket serverSocket;
@@ -44,10 +32,10 @@ public class AssignCamera implements Runnable {
             while(true){
                 serverSocket = new ServerSocket(44444);
                 System.out.println("En attente de paquets pour assignation Caméra...");
-                final Socket ipSocket = serverSocket.accept();
-                mIP = readIP(ipSocket);
-                System.out.println("IP RECU" + mIP);
-                ipSocket.close();
+                try (Socket ipSocket = serverSocket.accept()) {
+                    mIP = readIP(ipSocket);
+                    System.out.println("IP RECU" + mIP);
+                }
                 serverSocket.close();
                 sendCamera(mIP);
                 System.out.println("Cam assignée");
@@ -70,47 +58,44 @@ public class AssignCamera implements Runnable {
 
     public void sendCamera(String ip) throws IOException {
         if(mIP != null){
-            Socket AskSocket = new Socket(ip, 44444);
-            DataOutputStream AskSocketout = new DataOutputStream(AskSocket.getOutputStream());
-
-            if(!isCam1Used){
-                isCam1Used = true;
-                mPort = 40000;
-                AskSocketout.writeInt(mPort);
-            }
-            else
-                if(!isCam2Used){
-                    isCam2Used = true;
-                    mPort = 40001;
+            try (Socket AskSocket = new Socket(ip, 44444); 
+                    DataOutputStream AskSocketout = new DataOutputStream(AskSocket.getOutputStream())) {
+                if(!isCam1Used){
+                    isCam1Used = true;
+                    mPort = 40000;
                     AskSocketout.writeInt(mPort);
                 }
                 else
-                    if(!isCam3Used){
-                        isCam3Used = true;
-                        mPort = 40002;
+                    if(!isCam2Used){
+                        isCam2Used = true;
+                        mPort = 40001;
                         AskSocketout.writeInt(mPort);
                     }
                     else
-                        if(!isCam4Used){
-                            isCam4Used = true;
-                            mPort = 40003;
+                        if(!isCam3Used){
+                            isCam3Used = true;
+                            mPort = 40002;
                             AskSocketout.writeInt(mPort);
                         }
                         else
-                            if(!isCam5Used){
-                                isCam5Used = true;
-                                mPort = 40004;
+                            if(!isCam4Used){
+                                isCam4Used = true;
+                                mPort = 40003;
                                 AskSocketout.writeInt(mPort);
                             }
                             else
-                                if(!isCam6Used){
-                                    isCam6Used = true;
-                                    mPort = 40005;
+                                if(!isCam5Used){
+                                    isCam5Used = true;
+                                    mPort = 40004;
                                     AskSocketout.writeInt(mPort);
                                 }
-
-            AskSocketout.close();
-            AskSocket.close();
+                                else
+                                    if(!isCam6Used){
+                                        isCam6Used = true;
+                                        mPort = 40005;
+                                        AskSocketout.writeInt(mPort);
+                                    }
+            }
         }
     }
 }
