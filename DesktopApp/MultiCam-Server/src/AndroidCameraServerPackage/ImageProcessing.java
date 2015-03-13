@@ -63,7 +63,7 @@ public final class ImageProcessing {
             BufferedImage imagePrim = GetHighQualityBufferedImage(chkMov, img.getWidth(), img.getHeight());
               
             if(pourcentDiff > (int)mNewJFrame.spn_trigger.getValue() && mNewJFrame.chk_SaveMovement.isSelected()){
-                saveImageToDisk(imagePrim, mNewJFrame.MainCameraNumber.getText());
+                saveImageToDisk(imagePrim, "Camera " + Integer.toString(noCam));
             }
             
             if(mNewJFrame.MainCameraNumber.getText().equals(Integer.toString(mNoCam))){

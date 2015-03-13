@@ -52,6 +52,9 @@
         android:textColor="#ff000000"
         android:layout_alignTop="@+id/txt_Quality"
         android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true" />
+        android:layout_alignParentEnd="true"
+        android:editable="true"
+        android:enabled="false"
+        android:visibility="invisible" />
 
 </RelativeLayout>
