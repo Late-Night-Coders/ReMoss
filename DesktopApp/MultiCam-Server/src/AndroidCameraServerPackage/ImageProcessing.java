@@ -1,4 +1,4 @@
-package newpackage;
+package AndroidCameraServerPackage;
 
 import java.awt.AlphaComposite;
 import java.awt.Color;
@@ -27,9 +27,9 @@ public final class ImageProcessing {
     int mNoCam;
     JLabel mJLabelCamera;
     boolean isSavingFile = false;
-    NewJFrame mNewJFrame;
+    AndroidCameraServer mNewJFrame;
     
-    public ImageProcessing(byte[] data, byte[] mImageAvant, NewJFrame newJFrame, int noCam) throws IOException{
+    public ImageProcessing(byte[] data, byte[] mImageAvant, AndroidCameraServer newJFrame, int noCam) throws IOException{
         mNoCam = noCam;
         mNewJFrame = newJFrame;
         

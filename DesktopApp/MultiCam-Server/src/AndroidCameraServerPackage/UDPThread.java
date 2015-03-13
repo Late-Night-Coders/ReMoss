@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package newpackage;
+package AndroidCameraServerPackage;
 
 import java.awt.AlphaComposite;
 import java.awt.Color;
@@ -44,13 +44,13 @@ import javax.swing.JSpinner;
 public class UDPThread implements Runnable{
     int mPort;
     int mNoCam;
-    NewJFrame mNewJFrame;
+    AndroidCameraServer mNewJFrame;
     byte[] mImageAvant;
     boolean isSavingFile = false;
 
     final ExecutorService clientProcessingPool = Executors.newFixedThreadPool(10);
     
-    public UDPThread(NewJFrame newJFrame, int port, int noCam){
+    public UDPThread(AndroidCameraServer newJFrame, int port, int noCam){
         mPort = port;
         mNoCam = noCam;
         mNewJFrame = newJFrame;

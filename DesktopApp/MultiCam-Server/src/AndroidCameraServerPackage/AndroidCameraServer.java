@@ -4,7 +4,7 @@
  * and open the template in the editor.
  */
 
-package newpackage;
+package AndroidCameraServerPackage;
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -22,7 +22,7 @@ import javax.swing.JFileChooser;
  *
  * @author Administrateur
  */
-public class NewJFrame extends javax.swing.JFrame {
+public class AndroidCameraServer extends javax.swing.JFrame {
     boolean isCam1Used = false; 
     boolean isCam2Used = false;
     boolean isCam3Used = false;
@@ -33,8 +33,8 @@ public class NewJFrame extends javax.swing.JFrame {
     boolean isSaveOnMov = false;
     Thread mShuffleThread = new Thread();
     
-    public NewJFrame() throws IOException {
-        Image i = ImageIO.read(getClass().getResource("/newpackage/Camera.jpg"));
+    public AndroidCameraServer() throws IOException {
+        Image i = ImageIO.read(getClass().getResource("/AndroidCameraServerPackage/Camera.jpg"));
         setIconImage(i);
         initComponents();
         ConnectionString ipCipher = new ConnectionString();
@@ -42,7 +42,7 @@ public class NewJFrame extends javax.swing.JFrame {
         this.lblAddress.setText(encryptedIPAddress);
         startServer();
         
-        NewJFrame.this.chkAutoShuffle.addItemListener(new ItemListener() {
+        AndroidCameraServer.this.chkAutoShuffle.addItemListener(new ItemListener() {
             @Override
             public void itemStateChanged(ItemEvent e) {
                 if(!isShuffle){
@@ -53,12 +53,12 @@ public class NewJFrame extends javax.swing.JFrame {
                             public void run() {
                                while(true){
                                    for(int i = 1; i <= 6; i++){
-                                       NewJFrame.this.MainCameraNumber.setText(Integer.toString(i));
+                                       AndroidCameraServer.this.MainCameraNumber.setText(Integer.toString(i));
                                        try {
-                                           int sleep = (int)NewJFrame.this.spnShuffle.getValue();
+                                           int sleep = (int)AndroidCameraServer.this.spnShuffle.getValue();
                                            Thread.sleep(sleep * 1000);
                                        } catch (InterruptedException ex) {
-                                           Logger.getLogger(NewJFrame.class.getName()).log(Level.SEVERE, null, ex);
+                                           Logger.getLogger(AndroidCameraServer.class.getName()).log(Level.SEVERE, null, ex);
                                        }
                                    }
                                }
@@ -73,7 +73,7 @@ public class NewJFrame extends javax.swing.JFrame {
             }
       });
         
-        NewJFrame.this.chk_SaveMovement.addItemListener(new ItemListener() {
+        AndroidCameraServer.this.chk_SaveMovement.addItemListener(new ItemListener() {
             @Override
             public void itemStateChanged(ItemEvent e) {
                 if(!isSaveOnMov){
@@ -407,27 +407,27 @@ public class NewJFrame extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void Camera1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_Camera1MouseClicked
-        NewJFrame.this.MainCameraNumber.setText("1");
+        AndroidCameraServer.this.MainCameraNumber.setText("1");
     }//GEN-LAST:event_Camera1MouseClicked
 
     private void Camera2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_Camera2MouseClicked
-        NewJFrame.this.MainCameraNumber.setText("2");
+        AndroidCameraServer.this.MainCameraNumber.setText("2");
     }//GEN-LAST:event_Camera2MouseClicked
 
     private void Camera3MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_Camera3MouseClicked
-        NewJFrame.this.MainCameraNumber.setText("3");
+        AndroidCameraServer.this.MainCameraNumber.setText("3");
     }//GEN-LAST:event_Camera3MouseClicked
 
     private void Camera4MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_Camera4MouseClicked
-        NewJFrame.this.MainCameraNumber.setText("4");
+        AndroidCameraServer.this.MainCameraNumber.setText("4");
     }//GEN-LAST:event_Camera4MouseClicked
 
     private void Camera5MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_Camera5MouseClicked
-        NewJFrame.this.MainCameraNumber.setText("5");
+        AndroidCameraServer.this.MainCameraNumber.setText("5");
     }//GEN-LAST:event_Camera5MouseClicked
 
     private void Camera6MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_Camera6MouseClicked
-        NewJFrame.this.MainCameraNumber.setText("6");
+        AndroidCameraServer.this.MainCameraNumber.setText("6");
     }//GEN-LAST:event_Camera6MouseClicked
 
     private void chk_diffActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_chk_diffActionPerformed
@@ -436,7 +436,7 @@ public class NewJFrame extends javax.swing.JFrame {
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
-        new JFrameImageSaver(NewJFrame.this, NewJFrame.this.MainCamera);
+        new JFrameImageSaver(AndroidCameraServer.this, AndroidCameraServer.this.MainCamera);
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void btn_PathActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_PathActionPerformed
@@ -447,7 +447,7 @@ public class NewJFrame extends javax.swing.JFrame {
         chooser.setAcceptAllFileFilterUsed(false);
 
         if (chooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
-            NewJFrame.this.txt_Path.setText(chooser.getSelectedFile().getAbsolutePath());
+            AndroidCameraServer.this.txt_Path.setText(chooser.getSelectedFile().getAbsolutePath());
         }
     }//GEN-LAST:event_btn_PathActionPerformed
 
@@ -472,13 +472,13 @@ public class NewJFrame extends javax.swing.JFrame {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(NewJFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(AndroidCameraServer.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(NewJFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(AndroidCameraServer.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(NewJFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(AndroidCameraServer.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(NewJFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(AndroidCameraServer.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
 
@@ -486,15 +486,15 @@ public class NewJFrame extends javax.swing.JFrame {
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
                 try {
-                    NewJFrame n = new NewJFrame();
+                    AndroidCameraServer n = new AndroidCameraServer();
                     
                     n.panel1.setBackground(Color.lightGray);
                     Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
                     n.setMinimumSize(screenSize);
-                    n.setExtendedState(n.getExtendedState() | NewJFrame.MAXIMIZED_BOTH);
+                    n.setExtendedState(n.getExtendedState() | AndroidCameraServer.MAXIMIZED_BOTH);
                     n.setVisible(true);
                 } catch (IOException ex) {
-                    Logger.getLogger(NewJFrame.class.getName()).log(Level.SEVERE, null, ex);
+                    Logger.getLogger(AndroidCameraServer.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
         });
@@ -532,7 +532,7 @@ public class NewJFrame extends javax.swing.JFrame {
     public javax.swing.JTextField txt_Path;
     // End of variables declaration//GEN-END:variables
  public void startServer() {
-        (new Thread(new AssignCamera(NewJFrame.this))).start();
+        (new Thread(new AssignCamera(AndroidCameraServer.this))).start();
     }
 }
 

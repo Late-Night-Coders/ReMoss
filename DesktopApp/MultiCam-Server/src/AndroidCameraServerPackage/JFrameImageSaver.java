@@ -4,7 +4,7 @@
  * and open the template in the editor.
  */
 
-package newpackage;
+package AndroidCameraServerPackage;
 
 import java.awt.Graphics2D;
 import java.awt.Image;

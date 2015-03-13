@@ -1,4 +1,4 @@
-package newpackage;
+package AndroidCameraServerPackage;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -18,10 +18,10 @@ public class AssignCamera implements Runnable {
     int mHeight = 0;
     int mWidth = 0;
     String mIP = "";
-    NewJFrame mJFrame;
+    AndroidCameraServer mJFrame;
     int mPort = 0;
     
-    public AssignCamera(NewJFrame jf){
+    public AssignCamera(AndroidCameraServer jf){
         mJFrame = jf;
     }
     

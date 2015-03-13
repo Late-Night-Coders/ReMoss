@@ -1,4 +1,4 @@
-package newpackage;
+package AndroidCameraServerPackage;
 
 public class CheckMovement{
      int[] mImageAvant;
