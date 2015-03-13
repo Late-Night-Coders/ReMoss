@@ -28,7 +28,7 @@ public class AssignCamera implements Runnable {
     @Override 
     public void run(){
         ServerSocket serverSocket;
-        try {
+        try {           
             while(true){
                 serverSocket = new ServerSocket(44444);
                 System.out.println("En attente de paquets pour assignation Caméra...");
@@ -39,9 +39,9 @@ public class AssignCamera implements Runnable {
                 serverSocket.close();
                 sendCamera(mIP);
                 System.out.println("Cam assignée");
-                serverSocket.close();
-                (new Thread(new UDPThread(mJFrame, mPort, noCam))).start();
-                noCam++;
+                UDPThread udp = new UDPThread(mJFrame, mPort, noCam, this);
+                Thread threadUDP = new Thread(udp);
+                threadUDP.start();
             }
         }
         catch(IOException e){
@@ -60,26 +60,31 @@ public class AssignCamera implements Runnable {
         if(mIP != null){
             try (Socket AskSocket = new Socket(ip, 44444); 
                     DataOutputStream AskSocketout = new DataOutputStream(AskSocket.getOutputStream())) {
+                System.out.println("Caméra1 used:" + isCam1Used);
                 if(!isCam1Used){
                     isCam1Used = true;
                     mPort = 40000;
+                    noCam = 1;
                     AskSocketout.writeInt(mPort);
                 }
                 else
                     if(!isCam2Used){
                         isCam2Used = true;
                         mPort = 40001;
+                        noCam = 2;
                         AskSocketout.writeInt(mPort);
                     }
                     else
                         if(!isCam3Used){
                             isCam3Used = true;
                             mPort = 40002;
+                            noCam = 3;
                             AskSocketout.writeInt(mPort);
                         }
                         else
                             if(!isCam4Used){
                                 isCam4Used = true;
+                                noCam = 4;
                                 mPort = 40003;
                                 AskSocketout.writeInt(mPort);
                             }
@@ -87,12 +92,14 @@ public class AssignCamera implements Runnable {
                                 if(!isCam5Used){
                                     isCam5Used = true;
                                     mPort = 40004;
+                                    noCam = 5;
                                     AskSocketout.writeInt(mPort);
                                 }
                                 else
                                     if(!isCam6Used){
                                         isCam6Used = true;
                                         mPort = 40005;
+                                        noCam = 6;
                                         AskSocketout.writeInt(mPort);
                                     }
             }

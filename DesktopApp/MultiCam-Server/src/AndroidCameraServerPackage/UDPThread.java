@@ -1,66 +1,43 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package AndroidCameraServerPackage;
 
-import java.awt.AlphaComposite;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.FontMetrics;
-import java.awt.Graphics2D;
-import java.awt.Image;
-import java.awt.Toolkit;
-import java.awt.geom.Rectangle2D;
-import java.awt.image.BufferedImage;
-import java.awt.image.MemoryImageSource;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
+import java.net.SocketTimeoutException;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.zip.DataFormatException;
 import java.util.zip.Inflater;
-import javax.imageio.ImageIO;
-import javax.swing.ImageIcon;
-import javax.swing.JCheckBox;
-import javax.swing.JLabel;
-import javax.swing.JSpinner;
 
-/**
- *
- * @author Fred
- */
 public class UDPThread implements Runnable{
     int mPort;
     int mNoCam;
     AndroidCameraServer mNewJFrame;
     byte[] mImageAvant;
     boolean isSavingFile = false;
+    public boolean TimedOut = false;
+    AssignCamera mCams;
+    DatagramSocket serverSocket;
 
     final ExecutorService clientProcessingPool = Executors.newFixedThreadPool(10);
     
-    public UDPThread(AndroidCameraServer newJFrame, int port, int noCam){
+    public UDPThread(AndroidCameraServer newJFrame, int port, int noCam, AssignCamera cams){
         mPort = port;
         mNoCam = noCam;
         mNewJFrame = newJFrame;
+        mCams = cams;
     }
     
     @Override
     public void run() {
         try {
             byte[] receiveData = new byte[100000];
-            DatagramSocket serverSocket = new DatagramSocket(mPort);
+            serverSocket = new DatagramSocket(mPort);
+            serverSocket.setSoTimeout(10000);
             System.out.println("En attente de paquets UDP...");
             while (true) {
                 DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
@@ -71,11 +48,37 @@ public class UDPThread implements Runnable{
                 }
                 mImageAvant = data;
             }
+        } catch(SocketTimeoutException STE){
+            System.out.println("Socket timeout");
+            serverSocket.close();
+            if(mNoCam == 1){
+                mCams.isCam1Used = false;
+            }
+            else
+                if(mNoCam == 2){
+                    mCams.isCam2Used = false;
+                }
+                else
+                    if(mNoCam == 3){
+                        mCams.isCam3Used = false;
+                    }
+                    else
+                        if(mNoCam == 4){
+                            mCams.isCam4Used = false;
+                        }
+                        else
+                            if(mNoCam == 5){
+                                mCams.isCam5Used = false;
+                            }
+                            else
+                                if(mNoCam == 6){
+                                    mCams.isCam6Used = false;
+                                }
         } catch (IOException e) {
 
         } catch (DataFormatException ex) {
             Logger.getLogger(UDPThread.class.getName()).log(Level.SEVERE, null, ex);
-        }        
+        } 
     }
     
     static byte[] trim(byte[] bytes)
@@ -105,4 +108,8 @@ public class UDPThread implements Runnable{
         inflater.end();
         return output;  
        }  
+    
+    public int CamIdled(){
+        return mNoCam;
+    }
 }
