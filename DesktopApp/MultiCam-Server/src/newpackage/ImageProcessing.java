@@ -1,9 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package newpackage;
 
 import java.awt.AlphaComposite;
@@ -29,10 +23,6 @@ import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 
-/**
- *
- * @author Administrateur
- */
 public final class ImageProcessing {
     int mNoCam;
     JLabel mJLabelCamera;
@@ -68,41 +58,18 @@ public final class ImageProcessing {
         
         if(mNewJFrame.chk_SaveMovement.isSelected() || mNewJFrame.chk_diff.isSelected()){
             BufferedImage oldImg = ToBufferedImage(mImageAvant);
-            boolean showMov = false;
-            boolean saveOnMov = false;
-            if(mNewJFrame.chk_diff.isSelected()){
-                showMov = true;
-            }
-            if(mNewJFrame.chk_SaveMovement.isSelected()){
-                saveOnMov = true;
-            }
-            
-            CheckMovement chkMov = new CheckMovement(BufferedImageToInt(oldImg), BufferedImageToInt(img), showMov);
-            int diff = chkMov.CheckDiff();
-            int mWidthMov = img.getWidth();
-            int mHeightMov = img.getHeight();
-            Dimension dPrim = mNewJFrame.MainCamera.getSize();
-            Image image = getImageFromArrayMEM(chkMov.mImageActual,mWidthMov, mHeightMov);
-            Image primImage = image.getScaledInstance(dPrim.width, dPrim.height,  java.awt.Image.SCALE_SMOOTH);
-            BufferedImage imagePrim = toBufferedImage(primImage); 
-            PrintWatermark(imagePrim);
-                
-            int pourcentDiff = (int)  Math.round(diff / ((double)mWidthMov * (double)mHeightMov) * 100);               
-            
-            if(pourcentDiff > (int)mNewJFrame.spn_trigger.getValue() && saveOnMov){
-                mNewJFrame.jLabel2.setText("Différence: " + pourcentDiff);
+            CheckMovement chkMov = new CheckMovement(BufferedImageToInt(oldImg), BufferedImageToInt(img), mNewJFrame.chk_diff.isSelected());
+            int pourcentDiff = (int)  Math.round(chkMov.CheckDiff() / ((double)img.getWidth() * (double)img.getHeight()) * 100); 
+            BufferedImage imagePrim = GetHighQualityBufferedImage(chkMov, img.getWidth(), img.getHeight());
+              
+            if(pourcentDiff > (int)mNewJFrame.spn_trigger.getValue() && mNewJFrame.chk_SaveMovement.isSelected()){
                 saveImageToDisk(imagePrim, mNewJFrame.MainCameraNumber.getText());
             }
             
             if(mNewJFrame.MainCameraNumber.getText().equals(Integer.toString(mNoCam))){
                 mNewJFrame.MainCamera.setIcon(new ImageIcon(imagePrim));
-                Dimension d = mJLabelCamera.getSize();
-                Image thumbnailimg = img.getScaledInstance(d.width, d.height,  java.awt.Image.SCALE_SMOOTH);
-                mJLabelCamera.setIcon(new ImageIcon(thumbnailimg));
             }
-            else{
-                displayImage(img);
-            }
+            displayImage(img);
         }
         else{
             if(mNewJFrame.MainCameraNumber.getText().equals(Integer.toString(mNoCam))){
@@ -114,11 +81,11 @@ public final class ImageProcessing {
     
     private void saveImageToDisk(final BufferedImage bi, final String CameraMaison){
         (new Thread() {
+            @Override
             public void run() {
                 isSavingFile = true;
                 DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH_mm_ss");
                 Date date = new Date();
-                String sysdrive = System.getenv("SystemDrive");
                 System.out.println(mNewJFrame.txt_Path.getText());
                 File outputfile = new File(mNewJFrame.txt_Path.getText() + "\\" + dateFormat.format(date)+"-Camera "+ CameraMaison + ".jpg");
                 outputfile.renameTo(outputfile);
@@ -196,5 +163,14 @@ public final class ImageProcessing {
         int rgb[] = new int[width*height];
         img.getRGB(0,0,width, height,rgb,0,width);
         return rgb;
+    }
+    
+    public BufferedImage GetHighQualityBufferedImage(CheckMovement chkMov, int width, int height){
+        Dimension dPrim = mNewJFrame.MainCamera.getSize();
+        Image image = getImageFromArrayMEM(chkMov.mImageActual,width, height);
+        Image primImage = image.getScaledInstance(dPrim.width, dPrim.height,  java.awt.Image.SCALE_SMOOTH);
+        BufferedImage imagePrim = toBufferedImage(primImage); 
+        PrintWatermark(imagePrim);
+        return imagePrim;
     }
 }
