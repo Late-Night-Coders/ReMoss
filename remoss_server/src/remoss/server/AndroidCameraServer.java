@@ -34,7 +34,7 @@ public class AndroidCameraServer extends javax.swing.JFrame {
     Thread mShuffleThread = new Thread();
     
     public AndroidCameraServer() throws IOException {
-        Image i = ImageIO.read(getClass().getResource("/AndroidCameraServerPackage/Camera.gif"));
+        Image i = ImageIO.read(getClass().getResource("Camera.gif"));
         setIconImage(i);
         initComponents();
         ConnectionString ipCipher = new ConnectionString();
