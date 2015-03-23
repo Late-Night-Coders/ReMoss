@@ -3,3 +3,6 @@ DesktopApp/MultiCam-Server/dist/*
 DesktopApp/MultiCam-Server/dist/
 DesktopApp/MultiCam-Server/build/
 
+/remoss-desktop/nbproject/private/
+/remoss-server/nbproject/private/
+/remoss_server/nbproject/private/
