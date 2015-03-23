@@ -1,9 +1,4 @@
-DesktopApp/MultiCam-Server/build/*
-DesktopApp/MultiCam-Server/dist/*
-DesktopApp/MultiCam-Server/dist/
-DesktopApp/MultiCam-Server/build/
-
-/remoss-desktop/nbproject/private/
 /remoss-server/nbproject/private/
-/remoss_server/nbproject/private/remoss_server/build/
-remoss_server/dist/
+/remoss_server/nbproject/private
+/remoss_server/build/
+/remoss_server/dist/
